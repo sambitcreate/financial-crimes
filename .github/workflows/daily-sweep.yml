@@ -1,0 +1,88 @@
+name: Daily Broadsheet Sweep & Auto-Publish (6:00 AM / 7:00 AM ET)
+
+on:
+  schedule:
+    # 6:00 AM ET (DST-safe via America/New_York): global court/regulator sweep,
+    # Gemini 4 Hydrogen research, drafting, and custom interactive JS painting spec generation.
+    - cron: '0 6 * * *'
+      timezone: 'America/New_York'
+    # 7:00 AM ET (DST-safe via America/New_York): auto-publish verified daily edition
+    # to main, triggering Cloudflare Workers Static Assets CI/CD deployment.
+    - cron: '0 7 * * *'
+      timezone: 'America/New_York'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Pipeline stage to execute'
+        required: true
+        default: 'sweep'
+        type: choice
+        options:
+          - sweep
+          - publish
+          - dry-run
+      edition_date:
+        description: 'Optional YYYY-MM-DD override (defaults to today in America/New_York)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: daily-broadsheet-pipeline
+  cancel-in-progress: false
+
+jobs:
+  run-pipeline:
+    name: Gemini 4 Hydrogen Daily Sweep / Auto-Publish
+    runs-on: ubuntu-latest
+    env:
+      TZ: America/New_York
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: gemini-4-hydrogen
+      ANTIGRAVITY_AGENT_ENDPOINT: ${{ secrets.ANTIGRAVITY_AGENT_ENDPOINT }}
+      ANTIGRAVITY_AGENT_TOKEN: ${{ secrets.ANTIGRAVITY_AGENT_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Determine stage (6:00 AM ET sweep vs 7:00 AM ET publish)
+        id: stage
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 7 * * *" ]; then
+            echo "mode=publish" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=sweep" >> "$GITHUB_OUTPUT"
+          fi
+          EDITION_DATE="${{ inputs.edition_date }}"
+          if [ -z "$EDITION_DATE" ]; then
+            EDITION_DATE="$(date +%Y-%m-%d)"
+          fi
+          echo "edition_date=$EDITION_DATE" >> "$GITHUB_OUTPUT"
+
+      - name: Run Gemini 4 Hydrogen sweep / publish pipeline
+        run: |
+          node pipeline/run-sweep.mjs \
+            --mode "${{ steps.stage.outputs.mode }}" \
+            --date "${{ steps.stage.outputs.edition_date }}"
+
+      - name: Validate generated content & build check
+        run: |
+          npm run validate:content
+          npm run check
+          npm run build
