@@ -211,13 +211,36 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
 </style>
 
 <script>
-  const editionBtns = document.querySelectorAll<HTMLButtonElement>('[data-edition-btn]');
   const storyCards = document.querySelectorAll<HTMLElement>('[data-story-card]');
   const notice = document.getElementById('fc-edition-notice');
   const noticeLabel = document.getElementById('fc-edition-notice-label');
   const noticeCount = document.getElementById('fc-edition-notice-count');
   const noticeLink = document.getElementById('fc-edition-ledger-link') as HTMLAnchorElement | null;
   const resetBtn = document.getElementById('fc-edition-reset');
+
+  const VALID_EDITIONS = new Set([
+    'all',
+    'us',
+    'new-york',
+    'chicago',
+    'los-angeles',
+    'london',
+    'india',
+    'europe',
+    'global',
+  ]);
+
+  function normalizeEditionKey(raw: string | null | undefined): string {
+    const cleaned = String(raw || 'all')
+      .trim()
+      .toLowerCase()
+      .replace(/[_\s]+/g, '-');
+    if (cleaned === 'la' || cleaned === 'l.a.' || cleaned === 'l-a') return 'los-angeles';
+    if (cleaned === 'ny' || cleaned === 'nyc') return 'new-york';
+    if (cleaned === 'u.s.' || cleaned === 'u-s' || cleaned === 'usa') return 'us';
+    if (cleaned === 'uk') return 'london';
+    return VALID_EDITIONS.has(cleaned) ? cleaned : 'all';
+  }
 
   function matchesEdition(card: HTMLElement, key: string): boolean {
     if (key === 'all') return true;
@@ -250,9 +273,18 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
     return ed === key;
   }
 
-  function applyEdition(key: string) {
-    editionBtns.forEach((btn) => {
-      const active = btn.dataset.editionBtn === key;
+  let currentEdition = 'all';
+
+  function applyEdition(
+    rawKey: string,
+    options: { syncUrl?: boolean; emit?: boolean } = {}
+  ) {
+    const { syncUrl = true, emit = true } = options;
+    const key = normalizeEditionKey(rawKey);
+    currentEdition = key;
+
+    document.querySelectorAll<HTMLElement>('[data-edition-btn]').forEach((btn) => {
+      const active = normalizeEditionKey(btn.dataset.editionBtn) === key;
       btn.classList.toggle('is-active', active);
       btn.setAttribute('aria-pressed', String(active));
     });
@@ -274,20 +306,68 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
         notice.classList.remove('is-visible');
       } else {
         notice.classList.add('is-visible');
-        noticeLabel.textContent = `${key.replace('-', ' ').toUpperCase()} BUREAU`;
+        noticeLabel.textContent = `${key.replace(/-/g, ' ').toUpperCase()} BUREAU`;
         noticeCount.textContent = `${matchCount} front-page ${matchCount === 1 ? 'case' : 'cases'}`;
         noticeLink.href = `/ledger?edition=${encodeURIComponent(key)}`;
       }
     }
 
-    window.dispatchEvent(new CustomEvent('fc:edition-change', { detail: { edition: key } }));
+    if (syncUrl && typeof window !== 'undefined' && window.history?.replaceState) {
+      const url = new URL(window.location.href);
+      if (key === 'all') {
+        url.searchParams.delete('edition');
+      } else {
+        url.searchParams.set('edition', key);
+      }
+      window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+    }
+
+    if (emit) {
+      window.dispatchEvent(
+        new CustomEvent('fc:edition-change', { detail: { edition: key, source: 'index' } })
+      );
+    }
   }
 
-  editionBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      applyEdition(btn.dataset.editionBtn || 'all');
-    });
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    const btn = target?.closest<HTMLElement>('[data-edition-btn]');
+    if (!btn) return;
+    applyEdition(btn.dataset.editionBtn || 'all', { syncUrl: true, emit: true });
   });
 
-  resetBtn?.addEventListener('click', () => applyEdition('all'));
+  resetBtn?.addEventListener('click', () => {
+    applyEdition('all', { syncUrl: true, emit: true });
+  });
+
+  // Sync when NavDrawer or another component dispatches fc:edition-change directly
+  window.addEventListener('fc:edition-change', ((e: CustomEvent<{ edition?: string; source?: string }>) => {
+    if (e.detail?.source === 'index') return;
+    const next = normalizeEditionKey(e.detail?.edition);
+    if (next !== currentEdition) {
+      applyEdition(next, { syncUrl: true, emit: false });
+    }
+  }) as EventListener);
+
+  // Support deep-linking from other pages via /?edition=<key>
+  const initialParam = new URLSearchParams(window.location.search).get('edition');
+  if (initialParam) {
+    const initialEdition = normalizeEditionKey(initialParam);
+    if (initialEdition !== 'all') {
+      applyEdition(initialEdition, { syncUrl: false, emit: true });
+      // Re-emit once after module graph / DOM settles so Masthead ticker & NavDrawer always sync
+      const reEmit = () => {
+        window.dispatchEvent(
+          new CustomEvent('fc:edition-change', {
+            detail: { edition: currentEdition, source: 'index' },
+          })
+        );
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', reEmit, { once: true });
+      } else {
+        queueMicrotask(reEmit);
+      }
+    }
+  }
 </script>

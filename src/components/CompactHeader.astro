@@ -16,19 +16,6 @@ const {
   topicLinks = [],
   showTopicBar = false,
 } = Astro.props;
-
-const drawerLinks = [
-  { label: 'Front Page', href: '/' },
-  { label: 'The Ledger', href: '/ledger' },
-  { label: "Today's Docket", href: '/edition/2026-11-19' },
-  { label: 'Wall Street', href: '/ledger?category=Wall+Street' },
-  { label: 'Crypto & AI', href: '/ledger?category=Crypto+%26+AI' },
-  { label: 'Courts', href: '/ledger?category=Courts' },
-  { label: 'India & Asia', href: '/ledger?category=India+%26+Asia' },
-  { label: 'Europe', href: '/ledger?category=Europe' },
-  { label: 'Politics', href: '/ledger?category=Politics' },
-  { label: 'Opinion', href: '/ledger?category=Opinion' },
-];
 ---
 
 <header class="fc-compact-header" role="banner">
@@ -38,17 +25,23 @@ const drawerLinks = [
         type="button"
         class="fc-icon-btn"
         id="fc-compact-menu-btn"
+        data-open-nav-drawer
         aria-label="Open navigation menu"
-        aria-controls="fc-compact-drawer"
+        aria-controls="fc-nav-drawer"
         aria-expanded="false"
       >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M2 3.5h12M2 8h12M2 12.5h12" stroke="currentColor" stroke-width="1.5" />
         </svg>
       </button>
 
-      <a href="/ledger" class="fc-icon-btn" aria-label="Search the Ledger" title="Search the Ledger">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <a
+        href="/ledger"
+        class="fc-icon-btn fc-compact-search-link"
+        aria-label="Search the Ledger"
+        title="Search the Ledger"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <circle cx="7" cy="7" r="4.8" stroke="currentColor" stroke-width="1.5" />
           <path d="M10.8 10.8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
         </svg>
@@ -83,43 +76,3 @@ const drawerLinks = [
     </div>
   </nav>
 )}
-
-<div class="fc-nav-drawer" id="fc-compact-drawer" aria-hidden="true">
-  <div class="fc-nav-drawer-backdrop" data-close-compact-drawer></div>
-  <nav class="fc-nav-drawer-panel" aria-label="Broadsheet navigation">
-    <div class="fc-nav-drawer-head">
-      <span style="font-family: var(--fc-font-masthead); font-size: 22px;">The Financial Crimes</span>
-      <button type="button" class="fc-icon-btn" data-close-compact-drawer aria-label="Close menu">&times;</button>
-    </div>
-
-    <ul class="fc-nav-drawer-list">
-      {drawerLinks.map((item) => (
-        <li><a href={item.href}>{item.label}</a></li>
-      ))}
-    </ul>
-
-    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
-      <button type="button" class="fc-btn-slate" data-open-subscribe data-close-compact-drawer>
-        Subscribe $0
-      </button>
-      <button type="button" class="fc-btn-outline" data-open-tipline data-close-compact-drawer>
-        Tip Line
-      </button>
-    </div>
-  </nav>
-</div>
-
-<script>
-  const menuBtn = document.getElementById('fc-compact-menu-btn');
-  const drawer = document.getElementById('fc-compact-drawer');
-  function toggleDrawer(open: boolean) {
-    if (!drawer || !menuBtn) return;
-    drawer.classList.toggle('is-open', open);
-    drawer.setAttribute('aria-hidden', String(!open));
-    menuBtn.setAttribute('aria-expanded', String(open));
-  }
-  menuBtn?.addEventListener('click', () => toggleDrawer(true));
-  document.querySelectorAll('[data-close-compact-drawer]').forEach((el) => {
-    el.addEventListener('click', () => toggleDrawer(false));
-  });
-</script>

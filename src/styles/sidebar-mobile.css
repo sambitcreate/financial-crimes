@@ -1,0 +1,957 @@
+/* ==========================================================================
+   The Financial Crimes — Interactive Navigation Sidebar, Carousel & Mobile Header
+   Follows modern-web-guidance specs: navigation-drawer, accordion, carousel
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. NATIVE <dialog> SLIDE-OUT NAVIGATION DRAWER (navigation-drawer)
+   -------------------------------------------------------------------------- */
+@property --drawer-backdrop {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@keyframes fc-drawer-backdrop-fade {
+  0% {
+    --drawer-backdrop: 1;
+  }
+  100% {
+    --drawer-backdrop: 0;
+  }
+}
+
+body:has(#fc-nav-drawer[open]) {
+  overflow: hidden;
+}
+
+.fc-drawer {
+  --drawer-width: min(350px, 86dvw, 100dvw - 36px);
+  --drawer-backdrop: 0;
+  inset: 0;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  overflow: visible;
+  color: var(--fc-ink-primary);
+}
+
+.fc-drawer::backdrop {
+  background: #121212;
+  opacity: calc(var(--drawer-backdrop, 0) * 0.48);
+}
+
+.fc-drawer-scroller {
+  display: grid;
+  grid-template-columns: var(--drawer-width) 100%;
+  width: 100%;
+  height: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+
+.fc-drawer-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fc-drawer-scroller {
+    scroll-behavior: smooth;
+  }
+}
+
+.fc-drawer-scroller::after {
+  content: '';
+  display: block;
+  scroll-snap-align: end;
+  scroll-initial-target: nearest;
+}
+
+.fc-drawer-sheet {
+  height: 100svh;
+  height: 100dvh;
+  background: #ffffff;
+  color: var(--fc-ink-primary);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-snap-align: start;
+  scrollbar-width: none;
+  border-right: 1px solid var(--fc-rule-strong);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+.fc-drawer-sheet::-webkit-scrollbar {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .fc-drawer {
+    timeline-scope: --drawer-fade;
+    animation: fc-drawer-backdrop-fade linear both;
+    animation-timeline: --drawer-fade;
+  }
+
+  .fc-drawer-scroller {
+    scroll-timeline: --drawer-fade x;
+  }
+}
+
+@media (max-width: 759.98px) {
+  .fc-drawer {
+    --drawer-width: 100dvw;
+  }
+
+  .fc-drawer-sheet {
+    border-right: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. EDITORIAL SIDEBAR CONTENTS
+   -------------------------------------------------------------------------- */
+.fc-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px 8px 18px;
+  min-height: 54px;
+  border-bottom: 1px solid var(--fc-rule-strong);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #ffffff;
+}
+
+.fc-drawer-brand {
+  font-family: var(--fc-font-masthead);
+  font-size: clamp(20px, 5.5vw, 23px);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--fc-ink-primary);
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+}
+
+.fc-drawer-close {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: var(--fc-ink-primary);
+  transition: background-color 0.12s ease;
+}
+
+.fc-drawer-close:hover {
+  background: var(--fc-bg-tint);
+}
+
+/* Search + GO Form */
+.fc-drawer-search {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--fc-rule-light);
+  background: #ffffff;
+}
+
+.fc-drawer-search-input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid var(--fc-rule-medium);
+  border-radius: 2px;
+  padding: 0 11px;
+  font-family: var(--fc-font-sans);
+  font-size: 13.5px;
+  color: var(--fc-ink-primary);
+  background: #ffffff;
+}
+
+.fc-drawer-search-input::placeholder {
+  color: var(--fc-ink-subtle);
+}
+
+.fc-drawer-search-input:focus {
+  border-color: var(--fc-ink-primary);
+  outline: none;
+}
+
+.fc-drawer-search-go {
+  min-width: 48px;
+  height: 40px;
+  padding: 0 13px;
+  border-radius: 2px;
+  background: var(--fc-accent-slate);
+  border: 1px solid var(--fc-accent-slate-dark);
+  color: #ffffff;
+  font-family: var(--fc-font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background-color 0.12s ease;
+}
+
+.fc-drawer-search-go:hover {
+  background: var(--fc-accent-slate-dark);
+}
+
+/* Live Docket Pulse Bar */
+.fc-drawer-pulse {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--fc-bg-newsprint);
+  border-bottom: 1px solid var(--fc-rule-column);
+  font-family: var(--fc-font-mono);
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--fc-ink-primary);
+  transition: background-color 0.12s ease;
+}
+
+.fc-drawer-pulse:hover {
+  background: #eee9dd;
+}
+
+.fc-drawer-pulse-stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+
+.fc-drawer-pulse-item {
+  white-space: nowrap;
+}
+
+.fc-drawer-pulse-item strong {
+  font-weight: 700;
+}
+
+.fc-drawer-pulse-crimson {
+  color: var(--fc-accent-crimson);
+}
+
+.fc-drawer-pulse-green {
+  color: var(--fc-accent-green);
+}
+
+.fc-drawer-pulse-sep {
+  color: var(--fc-rule-medium);
+}
+
+.fc-drawer-pulse-arrow {
+  color: var(--fc-ink-muted);
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Top Primary Links */
+.fc-drawer-primary {
+  list-style: none;
+  margin: 0;
+  padding: 4px 18px 8px;
+  border-bottom: 1px solid var(--fc-rule-strong);
+}
+
+.fc-drawer-primary-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--fc-rule-light);
+  font-family: var(--fc-font-sans);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--fc-ink-primary);
+  transition: color 0.12s ease;
+}
+
+.fc-drawer-primary li:last-child .fc-drawer-primary-link {
+  border-bottom: 0;
+}
+
+.fc-drawer-primary-link:hover {
+  color: var(--fc-accent-slate-dark);
+}
+
+.fc-drawer-primary-link[aria-current='page'] {
+  color: var(--fc-accent-slate-dark);
+}
+
+.fc-drawer-crest {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--fc-rule-strong);
+  background: var(--fc-bg-newsprint);
+  font-family: var(--fc-font-masthead);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--fc-ink-primary);
+  flex-shrink: 0;
+}
+
+.fc-drawer-primary-meta {
+  margin-left: auto;
+  font-family: var(--fc-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--fc-ink-muted);
+  text-transform: uppercase;
+}
+
+/* Section Label inside Drawer */
+.fc-drawer-section {
+  padding: 14px 18px 8px;
+}
+
+.fc-drawer-section-label {
+  font-family: var(--fc-font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fc-ink-muted);
+  margin: 0 0 6px;
+}
+
+/* --------------------------------------------------------------------------
+   3. ANIMATED <details> DESK ACCORDIONS (modern-web-guidance accordion)
+   -------------------------------------------------------------------------- */
+.fc-drawer-accordion {
+  border-bottom: 1px solid var(--fc-rule-light);
+}
+
+@supports (interpolate-size: allow-keywords) {
+  .fc-drawer-accordion {
+    interpolate-size: allow-keywords;
+  }
+}
+
+.fc-drawer-accordion-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--fc-font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fc-ink-primary);
+  user-select: none;
+  transition: color 0.12s ease;
+}
+
+.fc-drawer-accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.fc-drawer-accordion-summary:hover {
+  color: var(--fc-accent-slate-dark);
+}
+
+.fc-drawer-desk-count {
+  font-family: var(--fc-font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--fc-ink-muted);
+}
+
+.fc-drawer-chevron {
+  margin-left: auto;
+  width: 14px;
+  height: 14px;
+  color: var(--fc-ink-muted);
+  flex-shrink: 0;
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), color 0.12s ease;
+}
+
+.fc-drawer-accordion[open] > .fc-drawer-accordion-summary .fc-drawer-chevron {
+  transform: rotate(180deg);
+  color: var(--fc-ink-primary);
+}
+
+.fc-drawer-accordion::details-content {
+  block-size: 0;
+  overflow: clip;
+  contain: layout;
+  transition:
+    block-size 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    content-visibility 0.28s allow-discrete,
+    display 0.28s allow-discrete;
+  transition-behavior: allow-discrete;
+}
+
+.fc-drawer-accordion[open]::details-content {
+  block-size: auto;
+}
+
+.fc-drawer-accordion-body {
+  padding: 2px 0 12px 10px;
+  border-left: 2px solid var(--fc-rule-column);
+  margin: 0 0 6px 2px;
+}
+
+.fc-drawer-story-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fc-drawer-story-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 3px 0;
+}
+
+.fc-drawer-story-headline {
+  font-family: var(--fc-font-headline);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.24;
+  color: var(--fc-ink-primary);
+  transition: color 0.12s ease;
+}
+
+.fc-drawer-story-link:hover .fc-drawer-story-headline {
+  color: var(--fc-accent-slate-dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.fc-drawer-story-meta {
+  font-family: var(--fc-font-mono);
+  font-size: 10px;
+  color: var(--fc-ink-muted);
+  letter-spacing: 0.02em;
+}
+
+.fc-drawer-desk-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  font-family: var(--fc-font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fc-accent-slate-dark);
+  padding: 4px 0;
+}
+
+.fc-drawer-desk-all:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Interactive City Bureaus Strip inside Drawer */
+.fc-drawer-bureaus {
+  padding: 14px 18px 16px;
+  border-bottom: 1px solid var(--fc-rule-light);
+}
+
+.fc-drawer-bureau-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.fc-drawer-bureau-pill {
+  min-height: 34px;
+  padding: 6px 11px;
+  border: 1px solid var(--fc-rule-column);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--fc-ink-primary);
+  font-family: var(--fc-font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.fc-drawer-bureau-pill:hover {
+  background: var(--fc-bg-tint);
+  border-color: var(--fc-ink-primary);
+}
+
+.fc-drawer-bureau-pill.is-active,
+.fc-drawer-bureau-pill[aria-pressed='true'] {
+  background: var(--fc-ink-primary);
+  border-color: var(--fc-ink-primary);
+  color: #ffffff;
+}
+
+/* Bottom CTAs */
+.fc-drawer-footer {
+  margin-top: auto;
+  padding: 16px 18px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fc-drawer-cta {
+  min-height: 44px;
+  padding: 10px 12px;
+  font-size: 11px;
+}
+
+/* --------------------------------------------------------------------------
+   4. NYT-GRADE MOBILE MASTHEAD (< 760px: ~124px crisp 3-bar header)
+   -------------------------------------------------------------------------- */
+.fc-date-mobile-sep,
+.fc-date-short {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .fc-masthead {
+    padding-top: 0;
+  }
+
+  .fc-masthead-shell {
+    display: grid;
+    grid-template-columns: 44px auto minmax(0, 1fr) 44px;
+    align-items: center;
+    row-gap: 0;
+    column-gap: 0;
+  }
+
+  /* Flatten desktop wrappers on mobile so elements map cleanly into NYT 3-bar grid */
+  .fc-masthead-shell .fc-utility-bar,
+  .fc-masthead-shell .fc-utility-left,
+  .fc-masthead-shell .fc-nameplate-row {
+    display: contents;
+  }
+
+  /* Row 1: 48px compact top bar [ ☰ 44x44 | The Financial Crimes | 🔍 44x44 ] */
+  .fc-masthead-menu-trigger {
+    grid-column: 1 / 2;
+    grid-row: 1;
+    width: 44px;
+    height: 48px;
+    justify-self: stretch;
+    justify-content: flex-start;
+    padding-left: 2px;
+    margin-left: 0;
+    border-radius: 0;
+    border-bottom: 1px solid var(--fc-rule-light);
+  }
+
+  .fc-masthead-shell .fc-nameplate {
+    grid-column: 2 / 4;
+    grid-row: 1;
+    order: 0;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--fc-rule-light);
+    min-width: 0;
+  }
+
+  .fc-masthead-shell .fc-nameplate a {
+    font-size: clamp(21px, 5.6vw, 27px);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .fc-masthead-search-trigger {
+    grid-column: 4 / 5;
+    grid-row: 1;
+    width: 44px;
+    height: 48px;
+    justify-self: stretch;
+    justify-content: flex-end;
+    padding-right: 2px;
+    margin-right: 0;
+    border-radius: 0;
+    border-bottom: 1px solid var(--fc-rule-light);
+  }
+
+  /* Collapsible Search Drawer directly below Row 1 */
+  .fc-masthead-shell .fc-search-drawer {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 0;
+    border-top: 0;
+    padding: 8px 0 10px;
+  }
+
+  /* Row 2: Clean second bar [ Nov. 19, 2026 · Today's Docket | Subscribe $0 pill ] */
+  .fc-masthead-shell .fc-date-block {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    order: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 38px;
+    padding: 5px 8px 5px 0;
+    border-bottom: 1px solid var(--fc-rule-light);
+    text-align: left;
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .fc-date-full {
+    display: none;
+  }
+
+  .fc-date-short {
+    display: inline;
+  }
+
+  .fc-masthead-shell .fc-date-main {
+    display: inline;
+    font-weight: 700;
+  }
+
+  .fc-date-mobile-sep {
+    display: inline;
+    color: var(--fc-ink-subtle);
+  }
+
+  .fc-masthead-shell .fc-date-sub {
+    display: inline;
+    font-size: 11px;
+    color: var(--fc-ink-secondary);
+    padding: 4px 0;
+  }
+
+  .fc-masthead-shell .fc-utility-right {
+    grid-column: 3 / 5;
+    grid-row: 3;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 38px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--fc-rule-light);
+  }
+
+  .fc-masthead-shell .fc-utility-right .fc-btn-outline {
+    display: none;
+  }
+
+  .fc-masthead-shell .fc-utility-right .fc-btn-slate {
+    border-radius: 999px;
+    padding: 6px 12px;
+    min-height: 28px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Row 3: Crisp single-row horizontal ticker + edition strip above the double rule */
+  .fc-masthead-shell .fc-ticker-wrap {
+    grid-column: 1 / 3;
+    grid-row: 4;
+    order: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 34px;
+    padding-right: 8px;
+  }
+
+  .fc-masthead-shell .fc-masthead-ticker {
+    padding: 4px 2px 4px 0;
+    font-size: 10px;
+    gap: 4px;
+    text-align: left;
+  }
+
+  .fc-masthead-shell .fc-ticker-val {
+    font-size: 10.5px;
+  }
+
+  .fc-masthead-shell .fc-edition-bar {
+    grid-column: 3 / 5;
+    grid-row: 4;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    min-width: 0;
+    width: 100%;
+    min-height: 34px;
+    gap: 10px;
+    padding: 0 14px 0 10px;
+    border-left: 1px solid var(--fc-rule-column);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+  }
+
+  .fc-masthead-shell .fc-edition-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fc-masthead-shell .fc-edition-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 9.5px;
+    padding: 6px 1px;
+  }
+
+  /* Hide wrapped 2-row 9-link section bar on <760px (lives in interactive sidebar) */
+  .fc-masthead .fc-section-nav {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. COMPACT STICKY HEADER MOBILE REFINEMENT (Article / Opinion / Ledger / Edition)
+   -------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+  .fc-compact-inner {
+    height: 50px;
+    padding-inline: 10px 14px;
+    gap: 8px;
+  }
+
+  .fc-compact-left {
+    gap: 2px;
+  }
+
+  .fc-compact-header .fc-icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .fc-compact-right .fc-btn-outline {
+    display: none;
+  }
+
+  .fc-compact-right .fc-btn-slate {
+    border-radius: 999px;
+    padding: 7px 12px;
+    min-height: 32px;
+    font-size: 10px;
+  }
+
+  /* Fix topic sub-nav smooth scroll & eliminate left-edge clipping */
+  .fc-topic-subnav-inner {
+    justify-content: flex-start;
+    min-height: 40px;
+    padding: 0 14px;
+    gap: 14px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-padding-inline: 14px;
+    mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+  }
+
+  .fc-topic-subnav-inner::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fc-topic-subnav-links {
+    gap: 16px;
+    padding-block: 8px;
+    padding-right: 22px;
+  }
+
+  .fc-topic-subnav-links a {
+    padding-block: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fc-compact-inner {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding-inline: 6px 12px;
+    gap: 6px;
+  }
+
+  .fc-compact-search-link {
+    display: none;
+  }
+
+  .fc-compact-brand {
+    font-size: clamp(19px, 5.1vw, 22px);
+    text-align: center;
+  }
+
+  .fc-compact-right .fc-btn-slate {
+    padding: 7px 10px;
+    font-size: 9.5px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. NATIVE HORIZONTAL SCROLL-SNAP RIGHT RAIL CAROUSEL (carousel)
+   -------------------------------------------------------------------------- */
+.fc-rail-carousel-track {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fc-rail-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fc-rail-carousel-track {
+    scroll-behavior: smooth;
+  }
+}
+
+.fc-rail-slide {
+  flex: 0 0 calc(50% - 7px);
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.fc-rail-carousel .fc-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.fc-carousel-counter {
+  font-family: var(--fc-font-mono);
+  font-size: 10px;
+  color: var(--fc-ink-muted);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.fc-carousel-dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin: 0 auto;
+}
+
+.fc-carousel-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 32px;
+  padding: 0 4px;
+  background: transparent;
+  border: 0;
+}
+
+.fc-carousel-dot[hidden] {
+  display: none;
+}
+
+.fc-carousel-dot::after {
+  content: '';
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--fc-rule-medium);
+  transition: width 0.22s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.16s ease;
+}
+
+.fc-carousel-dot:hover::after {
+  background: var(--fc-ink-muted);
+}
+
+.fc-carousel-dot[aria-current='true']::after {
+  width: 20px;
+  background: var(--fc-ink-primary);
+}
+
+.fc-carousel-nav-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fc-rail-carousel .fc-carousel-btn {
+  width: 34px;
+  height: 34px;
+  font-size: 17px;
+}
+
+@media (max-width: 760px) {
+  .fc-rail-carousel-track {
+    gap: 12px;
+    padding-right: 4px;
+  }
+
+  /* NYT-style peeking swipe rail so the next painted portrait peeks cleanly on right */
+  .fc-rail-slide {
+    flex: 0 0 80%;
+  }
+
+  .fc-rail-carousel .fc-carousel-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 19px;
+  }
+
+  .fc-carousel-dot {
+    min-width: 28px;
+    min-height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-drawer-scroller,
+  .fc-rail-carousel-track {
+    scroll-behavior: auto;
+  }
+}

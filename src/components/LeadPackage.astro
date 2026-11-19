@@ -87,21 +87,23 @@ const heroFineRatio =
       data-edition={leadHero.edition}
       data-city={leadHero.city.toLowerCase()}
     >
-      <FcArt
-        id={leadHero.id}
-        slug={leadHero.slug}
-        spec={leadHero.interactive_art_spec}
-        mode="hero"
-        aspect="4/5"
-        showChrome={false}
-        showCaption={false}
-      />
+      <div class="fc-lead-hero-art fc-art-frame">
+        <FcArt
+          id={leadHero.id}
+          slug={leadHero.slug}
+          spec={leadHero.interactive_art_spec}
+          mode="hero"
+          aspect="4/5"
+          showChrome={false}
+          showCaption={false}
+        />
+      </div>
 
       <h2 class="fc-lead-hero-headline">
         <a href={leadHero.url} class="fc-headline-link">{leadHero.headline}</a>
       </h2>
       <p class="fc-lead-hero-deck">{leadHero.deck}</p>
-      <div class="fc-meta-row">
+      <div class="fc-meta-row fc-lead-hero-meta">
         <span class="fc-meta-readtime">{leadHero.read_time_min} MIN READ</span>
         {leadHero.slap_on_wrist_score !== null && (
           <span
@@ -157,7 +159,7 @@ const heroFineRatio =
             data-edition={item.edition}
             data-city={item.city.toLowerCase()}
           >
-            <div>
+            <div class="fc-lead-mini-body">
               {item.template === 'opinion' && (
                 <span class="fc-eyebrow fc-eyebrow--opinion">OPINION</span>
               )}

@@ -14,13 +14,13 @@ const {
 } = Astro.props;
 
 const editions = [
+  { key: 'all', label: 'GLOBAL' },
   { key: 'us', label: 'U.S.' },
   { key: 'new-york', label: 'NEW YORK' },
   { key: 'chicago', label: 'CHICAGO' },
   { key: 'los-angeles', label: 'L.A.' },
   { key: 'london', label: 'LONDON' },
   { key: 'india', label: 'INDIA' },
-  { key: 'all', label: 'GLOBAL' },
 ];
 
 const sectionsPrimary = [
@@ -37,6 +37,29 @@ const sectionsSecondary = [
   { label: 'The Ledger', href: '/ledger' },
   { label: 'Archive', href: `/edition/${editionDate}` },
 ];
+
+const AP_MONTHS: Record<string, string> = {
+  January: 'Jan.',
+  February: 'Feb.',
+  August: 'Aug.',
+  September: 'Sept.',
+  October: 'Oct.',
+  November: 'Nov.',
+  December: 'Dec.',
+};
+
+function formatCompactMobileDate(fullDate: string): string {
+  const withoutWeekday = fullDate.replace(
+    /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s*/i,
+    ''
+  );
+  return withoutWeekday.replace(
+    /\b(January|February|August|September|October|November|December)\b/g,
+    (month) => AP_MONTHS[month] ?? month
+  );
+}
+
+const compactMobileDate = formatCompactMobileDate(displayDate);
 
 function formatCompactBillions(usd: number, fallback: string): string {
   if (usd >= 1e9) return `$${(usd / 1e9).toFixed(1)}B`;
@@ -72,108 +95,115 @@ const tickerPayload = JSON.stringify({
 
 <header class="fc-masthead" role="banner">
   <div class="fc-container">
-    {/* Row 1: Utility Strip */}
-    <div class="fc-utility-bar">
-      <div class="fc-utility-left">
-        <button
-          type="button"
-          class="fc-icon-btn"
-          id="fc-masthead-menu-btn"
-          aria-label="Open sections menu"
-          aria-controls="fc-home-drawer"
-          aria-expanded="false"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M2 3.5h12M2 8h12M2 12.5h12" stroke="currentColor" stroke-width="1.5" />
-          </svg>
-        </button>
-
-        <button
-          type="button"
-          class="fc-icon-btn"
-          id="fc-masthead-search-toggle"
-          aria-label="Toggle docket search"
-          aria-controls="fc-masthead-search-drawer"
-          aria-expanded="false"
-        >
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <circle cx="7" cy="7" r="4.8" stroke="currentColor" stroke-width="1.5" />
-            <path d="M10.8 10.8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
-          </svg>
-        </button>
-      </div>
-
-      <nav class="fc-edition-bar" aria-label="City and regional editions">
-        {editions.map((ed) => (
+    <div class="fc-masthead-shell">
+      {/* Row 1: Utility Strip */}
+      <div class="fc-utility-bar">
+        <div class="fc-utility-left">
           <button
             type="button"
-            class:list={['fc-edition-btn', { 'is-active': ed.key === 'all' }]}
-            data-edition-btn={ed.key}
-            aria-pressed={ed.key === 'all' ? 'true' : 'false'}
+            class="fc-icon-btn fc-masthead-menu-trigger"
+            id="fc-masthead-menu-btn"
+            data-open-nav-drawer
+            aria-label="Open sections menu"
+            aria-controls="fc-nav-drawer"
+            aria-expanded="false"
           >
-            {ed.label}
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M2 3.5h12M2 8h12M2 12.5h12" stroke="currentColor" stroke-width="1.5" />
+            </svg>
           </button>
-        ))}
-      </nav>
 
-      <div class="fc-utility-right">
-        <button type="button" class="fc-btn-slate" data-open-subscribe>
-          Subscribe $0
-        </button>
-        <button type="button" class="fc-btn-outline" data-open-tipline>
-          Tip Line
-        </button>
+          <button
+            type="button"
+            class="fc-icon-btn fc-masthead-search-trigger"
+            id="fc-masthead-search-toggle"
+            aria-label="Toggle docket search"
+            aria-controls="fc-masthead-search-drawer"
+            aria-expanded="false"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.8" stroke="currentColor" stroke-width="1.5" />
+              <path d="M10.8 10.8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
+            </svg>
+          </button>
+        </div>
+
+        <nav class="fc-edition-bar" aria-label="City and regional editions">
+          {editions.map((ed) => (
+            <button
+              type="button"
+              class:list={['fc-edition-btn', { 'is-active': ed.key === 'all' }]}
+              data-edition-btn={ed.key}
+              aria-pressed={ed.key === 'all' ? 'true' : 'false'}
+            >
+              {ed.label}
+            </button>
+          ))}
+        </nav>
+
+        <div class="fc-utility-right">
+          <button type="button" class="fc-btn-slate" data-open-subscribe>
+            Subscribe $0
+          </button>
+          <button type="button" class="fc-btn-outline" data-open-tipline>
+            Tip Line
+          </button>
+        </div>
       </div>
-    </div>
 
-    {/* Collapsible Search Drawer */}
-    <div class="fc-search-drawer" id="fc-masthead-search-drawer">
-      <form class="fc-search-form" action="/ledger" method="get" role="search">
-        <label class="fc-sr-only" for="fc-masthead-search-input">Search cases, defendants, or dockets</label>
-        <input
-          id="fc-masthead-search-input"
-          class="fc-search-input"
-          type="search"
-          name="q"
-          placeholder="Search defendants, agencies, dockets..."
-        />
-        <button type="submit" class="fc-btn-slate" style="padding: 9px 14px;">Search</button>
-      </form>
-    </div>
-
-    {/* Row 2: Nameplate Row */}
-    <div class="fc-nameplate-row">
-      <div class="fc-date-block">
-        <span class="fc-date-main">{displayDate}</span>
-        <a href={`/edition/${editionDate}`} class="fc-date-sub">Today&rsquo;s Docket</a>
+      {/* Collapsible Search Drawer */}
+      <div class="fc-search-drawer" id="fc-masthead-search-drawer">
+        <form class="fc-search-form" action="/ledger" method="get" role="search">
+          <label class="fc-sr-only" for="fc-masthead-search-input">Search cases, defendants, or dockets</label>
+          <input
+            id="fc-masthead-search-input"
+            class="fc-search-input"
+            type="search"
+            name="q"
+            placeholder="Search defendants, agencies, dockets..."
+          />
+          <button type="submit" class="fc-btn-slate" style="padding: 9px 14px;">Search</button>
+        </form>
       </div>
 
-      <h1 class="fc-nameplate">
-        <a href="/">The Financial Crimes</a>
-      </h1>
-
-      <div class="fc-ticker-wrap">
-        <button
-          type="button"
-          class="fc-masthead-ticker"
-          id="fc-masthead-ticker-btn"
-          data-ticker-payload={tickerPayload}
-          title="Click to cycle ledger totals"
-        >
-          <span class="fc-ticker-label" id="fc-ticker-left-label">LOOTED</span>
-          <span class="fc-ticker-val fc-ticker-val--crimson" id="fc-ticker-left-val">
-            {initialLoot}
+      {/* Row 2: Nameplate Row */}
+      <div class="fc-nameplate-row">
+        <div class="fc-date-block">
+          <span class="fc-date-main">
+            <span class="fc-date-full">{displayDate}</span>
+            <span class="fc-date-short">{compactMobileDate}</span>
           </span>
-          <span class="fc-ticker-sep" aria-hidden="true">&middot;</span>
-          <span class="fc-ticker-label" id="fc-ticker-right-label">FINED</span>
-          <span class="fc-ticker-val fc-ticker-val--green" id="fc-ticker-right-val">
-            {initialRatio}
-          </span>
-        </button>
+          <span class="fc-date-mobile-sep" aria-hidden="true">&middot;</span>
+          <a href={`/edition/${editionDate}`} class="fc-date-sub">Today&rsquo;s Docket</a>
+        </div>
+
+        <h1 class="fc-nameplate">
+          <a href="/">The Financial Crimes</a>
+        </h1>
+
+        <div class="fc-ticker-wrap">
+          <button
+            type="button"
+            class="fc-masthead-ticker"
+            id="fc-masthead-ticker-btn"
+            data-ticker-payload={tickerPayload}
+            title="Click to cycle ledger totals"
+          >
+            <span class="fc-ticker-label" id="fc-ticker-left-label">LOOTED</span>
+            <span class="fc-ticker-val fc-ticker-val--crimson" id="fc-ticker-left-val">
+              {initialLoot}
+            </span>
+            <span class="fc-ticker-sep" aria-hidden="true">&middot;</span>
+            <span class="fc-ticker-label" id="fc-ticker-right-label">FINED</span>
+            <span class="fc-ticker-val fc-ticker-val--green" id="fc-ticker-right-val">
+              {initialRatio}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
 
-    {/* Row 3: Section Navigation */}
+    {/* Row 3: Section Navigation (hidden on <760px mobile) */}
     <nav class="fc-section-nav" aria-label="Primary sections">
       <ul class="fc-section-nav-list">
         {sectionsPrimary.map((item) => (
@@ -195,55 +225,6 @@ const tickerPayload = JSON.stringify({
   </div>
 </header>
 
-{/* Slide-Out Sections Drawer */}
-<div class="fc-nav-drawer" id="fc-home-drawer" aria-hidden="true">
-  <div class="fc-nav-drawer-backdrop" data-close-home-drawer></div>
-  <nav class="fc-nav-drawer-panel" aria-label="Sections and bureaus">
-    <div class="fc-nav-drawer-head">
-      <span style="font-family: var(--fc-font-masthead); font-size: 22px;">The Financial Crimes</span>
-      <button type="button" class="fc-icon-btn" data-close-home-drawer aria-label="Close menu">&times;</button>
-    </div>
-
-    <div>
-      <p class="fc-eyebrow" style="margin: 0 0 8px;">Desks</p>
-      <ul class="fc-nav-drawer-list">
-        <li><a href="/">Front Page</a></li>
-        <li><a href="/ledger">The Ledger</a></li>
-        <li><a href={`/edition/${editionDate}`}>Today&rsquo;s Docket</a></li>
-        {sectionsPrimary.map((item) => (
-          <li><a href={item.href}>{item.label}</a></li>
-        ))}
-      </ul>
-    </div>
-
-    <div>
-      <p class="fc-eyebrow" style="margin: 0 0 8px;">Bureaus</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-        {editions.map((ed) => (
-          <button
-            type="button"
-            class="fc-btn-outline"
-            data-edition-btn={ed.key}
-            data-close-home-drawer
-            style="font-size: 10px; padding: 5px 8px;"
-          >
-            {ed.label}
-          </button>
-        ))}
-      </div>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
-      <button type="button" class="fc-btn-slate" data-open-subscribe data-close-home-drawer>
-        Subscribe $0
-      </button>
-      <button type="button" class="fc-btn-outline" data-open-tipline data-close-home-drawer>
-        Tip Line
-      </button>
-    </div>
-  </nav>
-</div>
-
 <script>
   const searchBtn = document.getElementById('fc-masthead-search-toggle');
   const searchDrawer = document.getElementById('fc-masthead-search-drawer');
@@ -256,19 +237,6 @@ const tickerPayload = JSON.stringify({
       if (open && searchInput) searchInput.focus();
     });
   }
-
-  const menuBtn = document.getElementById('fc-masthead-menu-btn');
-  const drawer = document.getElementById('fc-home-drawer');
-  function toggleHomeDrawer(open: boolean) {
-    if (!drawer || !menuBtn) return;
-    drawer.classList.toggle('is-open', open);
-    drawer.setAttribute('aria-hidden', String(!open));
-    menuBtn.setAttribute('aria-expanded', String(open));
-  }
-  menuBtn?.addEventListener('click', () => toggleHomeDrawer(true));
-  document.querySelectorAll('[data-close-home-drawer]').forEach((el) => {
-    el.addEventListener('click', () => toggleHomeDrawer(false));
-  });
 
   // Compact Cycling Ticker
   const tickerBtn = document.getElementById('fc-masthead-ticker-btn');
@@ -347,6 +315,12 @@ const tickerPayload = JSON.stringify({
       metricIndex = (metricIndex + 1) % 3;
       renderTicker();
     });
+
+    const initialUrlEdition = new URLSearchParams(window.location.search).get('edition');
+    if (initialUrlEdition && initialUrlEdition !== 'all') {
+      activeRegion = initialUrlEdition.toLowerCase();
+      renderTicker();
+    }
 
     window.addEventListener('fc:edition-change', ((e: CustomEvent<{ edition: string }>) => {
       activeRegion = e.detail?.edition || 'all';

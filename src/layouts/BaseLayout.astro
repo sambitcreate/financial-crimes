@@ -1,8 +1,11 @@
 ---
 import '../styles/tokens.css';
 import '../styles/broadsheet.css';
+import '../styles/sidebar-mobile.css';
 import Footer from '../components/Footer.astro';
+import NavDrawer from '../components/NavDrawer.astro';
 import SubscribeModal from '../components/SubscribeModal.astro';
+import { loadAllArticles, loadRollupStats } from '../loaders/articles';
 
 interface Props {
   title: string;
@@ -19,6 +22,11 @@ const {
   ogType = 'website',
   hideFooter = false,
 } = Astro.props;
+
+const [navArticles, navRollup] = await Promise.all([
+  loadAllArticles(),
+  loadRollupStats(),
+]);
 
 const canonicalUrl = new URL(canonicalPath, Astro.site ?? 'https://financialcrimes.news').toString();
 const faviconSvg =
@@ -61,6 +69,7 @@ const faviconSvg =
 
     {!hideFooter && <Footer />}
 
+    <NavDrawer articles={navArticles} rollup={navRollup} currentPath={Astro.url.pathname} />
     <SubscribeModal />
     <slot name="modals" />
 
@@ -72,6 +81,7 @@ const faviconSvg =
         document.addEventListener('click', (event) => {
           const target = event.target as HTMLElement | null;
           if (!target) return;
+          if (target.closest('#fc-nav-drawer')) return;
 
           const subTrigger = target.closest('[data-open-subscribe]');
           if (subTrigger && subDialog) {

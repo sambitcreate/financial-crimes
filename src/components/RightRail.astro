@@ -41,18 +41,25 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
     </div>
   </article>
 
-  {/* MIDDLE: 2-Column Visual Mini-Cards + ‹ › Carousel */}
+  {/* MIDDLE: Native Horizontal CSS Scroll-Snap Carousel */}
   {miniArticles.length > 0 && (
-    <section class="fc-rail-carousel" aria-label="Visual Dispatches" data-rail-carousel>
-      <div class="fc-rail-mini-grid">
+    <section
+      class="fc-rail-carousel"
+      aria-roledescription="carousel"
+      aria-label="Visual Dispatches"
+      data-rail-carousel
+    >
+      <div class="fc-rail-carousel-track" data-carousel-track>
         {miniArticles.map((item, idx) => (
           <article
-            class="fc-rail-mini-card"
+            class="fc-rail-mini-card fc-rail-slide"
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${idx + 1} of ${miniArticles.length}`}
             data-carousel-item={idx}
             data-story-card
             data-edition={item.edition}
             data-city={item.city.toLowerCase()}
-            hidden={idx >= 2}
           >
             <a href={item.url} class="fc-rail-mini-art" aria-label={item.headline}>
               <FcArt
@@ -75,33 +82,47 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
         ))}
       </div>
 
-      {miniArticles.length > 2 && (
+      {miniArticles.length > 1 && (
         <div class="fc-carousel-controls">
-          <span
-            data-carousel-status
-            style="font-family: var(--fc-font-mono); font-size: 10px; color: var(--fc-ink-muted); margin-right: auto;"
-          >
-            1&ndash;2 OF {miniArticles.length}
+          <span class="fc-carousel-counter" data-carousel-status aria-hidden="true">
+            1&ndash;{Math.min(2, miniArticles.length)} OF {miniArticles.length}
           </span>
-          <button
-            type="button"
-            class="fc-carousel-btn"
-            data-carousel-prev
-            aria-label="Previous dispatches"
-            disabled
-          >
-            &lsaquo;
-          </button>
-          <button
-            type="button"
-            class="fc-carousel-btn"
-            data-carousel-next
-            aria-label="Next dispatches"
-          >
-            &rsaquo;
-          </button>
+
+          <div class="fc-carousel-dots" role="group" aria-label="Choose a dispatch">
+            {miniArticles.map((_, idx) => (
+              <button
+                type="button"
+                class="fc-carousel-dot"
+                data-carousel-dot={idx}
+                aria-label={`Go to dispatch ${idx + 1}`}
+                aria-current={idx === 0 ? 'true' : undefined}
+              />
+            ))}
+          </div>
+
+          <div class="fc-carousel-nav-group">
+            <button
+              type="button"
+              class="fc-carousel-btn"
+              data-carousel-prev
+              aria-label="Previous dispatches"
+              disabled
+            >
+              &lsaquo;
+            </button>
+            <button
+              type="button"
+              class="fc-carousel-btn"
+              data-carousel-next
+              aria-label="Next dispatches"
+            >
+              &rsaquo;
+            </button>
+          </div>
         </div>
       )}
+
+      <p class="fc-sr-only" role="status" aria-live="polite" data-carousel-live></p>
     </section>
   )}
 
@@ -144,40 +165,159 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
 </aside>
 
 <script>
-  document.querySelectorAll('[data-rail-carousel]').forEach((carousel) => {
-    const items = Array.from(carousel.querySelectorAll<HTMLElement>('[data-carousel-item]'));
-    const prevBtn = carousel.querySelector<HTMLButtonElement>('[data-carousel-prev]');
-    const nextBtn = carousel.querySelector<HTMLButtonElement>('[data-carousel-next]');
-    const status = carousel.querySelector<HTMLElement>('[data-carousel-status]');
-    if (items.length <= 2) return;
+  function initRailCarousels() {
+    document.querySelectorAll<HTMLElement>('[data-rail-carousel]').forEach((carousel) => {
+      if (carousel.dataset.fcCarouselInit === 'true') return;
+      carousel.dataset.fcCarouselInit = 'true';
 
-    let page = 0;
-    const pageSize = 2;
-    const totalPages = Math.ceil(items.length / pageSize);
+      const track = carousel.querySelector<HTMLElement>('[data-carousel-track]');
+      const slides = Array.from(carousel.querySelectorAll<HTMLElement>('[data-carousel-item]'));
+      const prevBtn = carousel.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+      const nextBtn = carousel.querySelector<HTMLButtonElement>('[data-carousel-next]');
+      const dots = Array.from(carousel.querySelectorAll<HTMLButtonElement>('[data-carousel-dot]'));
+      const statusEl = carousel.querySelector<HTMLElement>('[data-carousel-status]');
+      const liveEl = carousel.querySelector<HTMLElement>('[data-carousel-live]');
 
-    function render() {
-      const start = page * pageSize;
-      const end = Math.min(start + pageSize, items.length);
-      items.forEach((el, i) => {
-        el.hidden = i < start || i >= end;
+      if (!track || slides.length <= 1) return;
+
+      let lastAnnouncedIndex = 0;
+      let scrollTimer: number | null = null;
+
+      function getLayout() {
+        const trackWidth = track!.clientWidth;
+        const slideWidth = slides[0]?.offsetWidth || trackWidth;
+        const visibleCount =
+          trackWidth > 0 && slideWidth > 0 && slideWidth <= trackWidth * 0.56 ? 2 : 1;
+        const maxIndex = Math.max(0, slides.length - visibleCount);
+        const maxScroll = Math.max(0, track!.scrollWidth - track!.clientWidth);
+        return { visibleCount, maxIndex, maxScroll };
+      }
+
+      function getActiveIndex() {
+        const { maxIndex, maxScroll } = getLayout();
+        if (maxScroll <= 1) return 0;
+        if (track!.scrollLeft >= maxScroll - 4) return maxIndex;
+
+        let bestIdx = 0;
+        let bestDist = Infinity;
+        for (let i = 0; i <= maxIndex; i++) {
+          const dist = Math.abs(slides[i].offsetLeft - track!.scrollLeft);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIdx = i;
+          }
+        }
+        return bestIdx;
+      }
+
+      function syncUI(announce: boolean) {
+        const { visibleCount, maxIndex, maxScroll } = getLayout();
+        const activeIndex = getActiveIndex();
+        const atStart = activeIndex <= 0 || track!.scrollLeft <= 2;
+        const atEnd =
+          activeIndex >= maxIndex || (maxScroll > 0 && track!.scrollLeft >= maxScroll - 2);
+
+        if (prevBtn) {
+          if (atStart && document.activeElement === prevBtn && nextBtn && !atEnd) {
+            nextBtn.focus();
+          }
+          prevBtn.disabled = atStart;
+        }
+
+        if (nextBtn) {
+          if (atEnd && document.activeElement === nextBtn && prevBtn && !atStart) {
+            prevBtn.focus();
+          }
+          nextBtn.disabled = atEnd;
+        }
+
+        dots.forEach((dot, idx) => {
+          const isHidden = idx > maxIndex;
+          dot.hidden = isHidden;
+          if (!isHidden && idx === activeIndex) {
+            dot.setAttribute('aria-current', 'true');
+          } else {
+            dot.removeAttribute('aria-current');
+          }
+        });
+
+        const startNum = activeIndex + 1;
+        const endNum = Math.min(slides.length, activeIndex + visibleCount);
+        if (statusEl) {
+          statusEl.textContent =
+            startNum === endNum
+              ? `${startNum} OF ${slides.length}`
+              : `${startNum}–${endNum} OF ${slides.length}`;
+        }
+
+        if (announce && liveEl && activeIndex !== lastAnnouncedIndex) {
+          lastAnnouncedIndex = activeIndex;
+          liveEl.textContent =
+            startNum === endNum
+              ? `Showing dispatch ${startNum} of ${slides.length}`
+              : `Showing dispatches ${startNum} to ${endNum} of ${slides.length}`;
+        }
+      }
+
+      function scrollToIndex(targetIdx: number) {
+        const { maxIndex, maxScroll } = getLayout();
+        const clamped = Math.max(0, Math.min(maxIndex, targetIdx));
+        const targetLeft =
+          clamped === maxIndex ? maxScroll : Math.min(slides[clamped].offsetLeft, maxScroll);
+        track!.scrollTo({ left: targetLeft, behavior: 'auto' });
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          syncUI(true);
+        }
+      }
+
+      prevBtn?.addEventListener('click', () => {
+        const { visibleCount } = getLayout();
+        scrollToIndex(getActiveIndex() - visibleCount);
       });
-      if (prevBtn) prevBtn.disabled = page === 0;
-      if (nextBtn) nextBtn.disabled = page >= totalPages - 1;
-      if (status) status.textContent = `${start + 1}–${end} OF ${items.length}`;
-    }
 
-    prevBtn?.addEventListener('click', () => {
-      if (page > 0) {
-        page--;
-        render();
-      }
-    });
+      nextBtn?.addEventListener('click', () => {
+        const { visibleCount } = getLayout();
+        scrollToIndex(getActiveIndex() + visibleCount);
+      });
 
-    nextBtn?.addEventListener('click', () => {
-      if (page < totalPages - 1) {
-        page++;
-        render();
+      dots.forEach((dot, idx) => {
+        dot.addEventListener('click', () => scrollToIndex(idx));
+      });
+
+      track.addEventListener('scrollend', () => {
+        if (scrollTimer !== null) {
+          window.clearTimeout(scrollTimer);
+          scrollTimer = null;
+        }
+        syncUI(true);
+      });
+
+      track.addEventListener(
+        'scroll',
+        () => {
+          syncUI(false);
+          if (scrollTimer !== null) window.clearTimeout(scrollTimer);
+          scrollTimer = window.setTimeout(() => {
+            scrollTimer = null;
+            syncUI(true);
+          }, 160);
+        },
+        { passive: true }
+      );
+
+      if (typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => syncUI(false));
+        ro.observe(track);
       }
+
+      syncUI(false);
     });
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRailCarousels);
+  } else {
+    initRailCarousels();
+  }
 </script>

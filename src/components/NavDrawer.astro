@@ -1,0 +1,518 @@
+---
+import type { ArticleRecord, RollupStats } from '../schemas/article';
+
+interface Props {
+  articles: ArticleRecord[];
+  rollup: RollupStats;
+  currentPath?: string;
+}
+
+const { articles, rollup, currentPath = '/' } = Astro.props;
+
+const DESK_ORDER = [
+  'Wall Street',
+  'Crypto & AI',
+  'Courts',
+  'India & Asia',
+  'Europe',
+  'Politics',
+  'Opinion',
+] as const;
+
+const SLOT_PRIORITY: Record<string, number> = {
+  'lead-hero': 1,
+  'lead-live': 2,
+  'lead-right': 3,
+  'rail-feature': 4,
+  'secondary-1': 5,
+  'secondary-2': 6,
+  'lead-grid': 7,
+  'rail-opinion': 8,
+  'rail-mini': 9,
+  ledger: 10,
+};
+
+function sortDeskArticles(list: ArticleRecord[]): ArticleRecord[] {
+  return [...list].sort((a, b) => {
+    const slotDiff = (SLOT_PRIORITY[a.layout_slot] ?? 99) - (SLOT_PRIORITY[b.layout_slot] ?? 99);
+    if (slotDiff !== 0) return slotDiff;
+    return (b.financials.amount_usd ?? 0) - (a.financials.amount_usd ?? 0);
+  });
+}
+
+const desks = DESK_ORDER.map((name) => {
+  const matched = articles.filter((article) =>
+    name === 'Opinion'
+      ? article.category === 'Opinion' || article.template === 'opinion'
+      : article.category === name
+  );
+  const sorted = sortDeskArticles(matched);
+  return {
+    name,
+    count: sorted.length,
+    href: `/ledger?category=${encodeURIComponent(name)}`,
+    stories: sorted.slice(0, 3),
+  };
+});
+
+const bureaus = [
+  { key: 'all', label: 'Global' },
+  { key: 'us', label: 'U.S.' },
+  { key: 'new-york', label: 'New York' },
+  { key: 'chicago', label: 'Chicago' },
+  { key: 'los-angeles', label: 'L.A.' },
+  { key: 'london', label: 'London' },
+  { key: 'india', label: 'India' },
+];
+
+function formatCompactBillions(usd: number, fallback: string): string {
+  if (usd >= 1e9) return `$${(usd / 1e9).toFixed(1)}B`;
+  if (usd >= 1e6) return `$${(usd / 1e6).toFixed(0)}M`;
+  return fallback;
+}
+
+const pulseLoot = formatCompactBillions(rollup.total_loot_usd, rollup.total_loot_display);
+const pulseRatio = `${rollup.avg_fine_ratio_pct.toFixed(1)}%`;
+const docketHref = `/edition/${rollup.edition_date}`;
+const normalizedPath = currentPath.replace(/\/+$/, '') || '/';
+---
+
+<dialog
+  class="fc-drawer"
+  id="fc-nav-drawer"
+  aria-label="The Financial Crimes navigation sidebar"
+>
+  <div class="fc-drawer-scroller">
+    <nav class="fc-drawer-sheet" aria-label="Sections, desks, and bureaus">
+      {/* Header Row */}
+      <div class="fc-drawer-head">
+        <span class="fc-drawer-brand">The Financial Crimes</span>
+        <button
+          type="button"
+          class="fc-drawer-close"
+          data-close-nav-drawer
+          autofocus
+          aria-label="Close navigation sidebar"
+        >
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path
+              d="M3.5 3.5l11 11M14.5 3.5l-11 11"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="square"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Search + GO Form */}
+      <form class="fc-drawer-search" action="/ledger" method="get" role="search">
+        <label class="fc-sr-only" for="fc-drawer-search-input">
+          Search cases, defendants, or dockets
+        </label>
+        <input
+          id="fc-drawer-search-input"
+          class="fc-drawer-search-input"
+          type="search"
+          name="q"
+          placeholder="Search defendants, agencies, dockets..."
+        />
+        <button type="submit" class="fc-drawer-search-go">GO</button>
+      </form>
+
+      {/* Live Docket Pulse Bar */}
+      <a class="fc-drawer-pulse" href="/ledger" aria-label={`Live docket totals: Looted ${pulseLoot}, fined ${pulseRatio}, ${rollup.total_cases} cases`}>
+        <span class="fc-drawer-pulse-stats">
+          <span class="fc-drawer-pulse-item">
+            LOOTED <strong class="fc-drawer-pulse-crimson">{pulseLoot}</strong>
+          </span>
+          <span class="fc-drawer-pulse-sep" aria-hidden="true">&middot;</span>
+          <span class="fc-drawer-pulse-item">
+            FINED <strong class="fc-drawer-pulse-green">{pulseRatio}</strong>
+          </span>
+          <span class="fc-drawer-pulse-sep" aria-hidden="true">&middot;</span>
+          <span class="fc-drawer-pulse-item">
+            <strong>{rollup.total_cases}</strong> CASES
+          </span>
+        </span>
+        <span class="fc-drawer-pulse-arrow" aria-hidden="true">&rsaquo;</span>
+      </a>
+
+      {/* Top Primary Links */}
+      <ul class="fc-drawer-primary">
+        <li>
+          <a
+            class="fc-drawer-primary-link"
+            href="/"
+            aria-current={normalizedPath === '/' ? 'page' : undefined}
+          >
+            <span class="fc-drawer-crest" aria-hidden="true">FC</span>
+            <span>Front Page</span>
+          </a>
+        </li>
+        <li>
+          <a
+            class="fc-drawer-primary-link"
+            href="/ledger"
+            aria-current={normalizedPath === '/ledger' ? 'page' : undefined}
+          >
+            <span>The Ledger</span>
+            <span class="fc-drawer-primary-meta">{rollup.total_cases} cases</span>
+          </a>
+        </li>
+        <li>
+          <a
+            class="fc-drawer-primary-link"
+            href={docketHref}
+            aria-current={normalizedPath === docketHref ? 'page' : undefined}
+          >
+            <span>Today&rsquo;s Docket</span>
+            <span class="fc-drawer-primary-meta">Vol. I</span>
+          </a>
+        </li>
+      </ul>
+
+      {/* Animated <details> Desk Accordions */}
+      <div class="fc-drawer-section">
+        <p class="fc-drawer-section-label">Desks</p>
+        {desks.map((desk) => (
+          <details class="fc-drawer-accordion" name="fc-desk-accordion">
+            <summary class="fc-drawer-accordion-summary">
+              <span class="fc-drawer-desk-name">{desk.name}</span>
+              <span class="fc-drawer-desk-count">({desk.count})</span>
+              <svg
+                class="fc-drawer-chevron"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 6l4 4 4-4"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="square"
+                />
+              </svg>
+            </summary>
+
+            <div class="fc-drawer-accordion-body">
+              <ul class="fc-drawer-story-list">
+                {desk.stories.map((story) => (
+                  <li>
+                    <a class="fc-drawer-story-link" href={story.url}>
+                      <span class="fc-drawer-story-headline">{story.headline}</span>
+                      <span class="fc-drawer-story-meta">
+                        {story.city} &middot; {story.financials.amount_display}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <a class="fc-drawer-desk-all" href={desk.href}>
+                View all in {desk.name} &rarr;
+              </a>
+            </div>
+          </details>
+        ))}
+      </div>
+
+      {/* Interactive City Bureaus Strip */}
+      <div class="fc-drawer-bureaus">
+        <p class="fc-drawer-section-label">City Bureaus</p>
+        <div class="fc-drawer-bureau-pills" role="group" aria-label="Filter by city bureau">
+          {bureaus.map((bureau) => (
+            <button
+              type="button"
+              class:list={['fc-drawer-bureau-pill', { 'is-active': bureau.key === 'all' }]}
+              data-edition-btn={bureau.key}
+              data-drawer-edition={bureau.key}
+              aria-pressed={bureau.key === 'all' ? 'true' : 'false'}
+            >
+              {bureau.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom CTAs */}
+      <div class="fc-drawer-footer">
+        <button
+          type="button"
+          class="fc-btn-slate fc-drawer-cta"
+          data-open-subscribe
+          data-drawer-modal="fc-subscribe-dialog"
+        >
+          Subscribe $0
+        </button>
+        <button
+          type="button"
+          class="fc-btn-outline fc-drawer-cta"
+          data-open-tipline
+          data-drawer-modal="fc-tipline-dialog"
+        >
+          Tip Line
+        </button>
+      </div>
+    </nav>
+  </div>
+</dialog>
+
+<script>
+  function initNavDrawer() {
+    const drawer = document.getElementById('fc-nav-drawer') as HTMLDialogElement | null;
+    if (!drawer || drawer.dataset.fcDrawerInit === 'true') return;
+    drawer.dataset.fcDrawerInit = 'true';
+
+    const scroller = drawer.querySelector<HTMLElement>('.fc-drawer-scroller');
+    const sheet = drawer.querySelector<HTMLElement>('.fc-drawer-sheet');
+    if (!scroller || !sheet) return;
+
+    const supportsScrollTimeline =
+      typeof CSS !== 'undefined' && CSS.supports('animation-timeline: scroll()');
+    const supportsInitialTarget =
+      typeof CSS !== 'undefined' && CSS.supports('scroll-initial-target', 'nearest');
+    const prefersReducedMotion = () =>
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let hasBeenVisible = false;
+    let isClosing = false;
+    let openSeq = 0;
+    let closeFallbackTimer: number | null = null;
+    let onClosedCallback: (() => void) | null = null;
+    let lastTrigger: HTMLElement | null = null;
+
+    function syncTriggerExpanded(expanded: boolean) {
+      document.querySelectorAll<HTMLElement>('[data-open-nav-drawer]').forEach((btn) => {
+        btn.setAttribute('aria-expanded', String(expanded));
+      });
+    }
+
+    function updateBackdropFallback() {
+      if (supportsScrollTimeline || !sheet || !scroller || !drawer) return;
+      const width = sheet.offsetWidth || 1;
+      const progress = Math.max(0, Math.min(1, 1 - scroller.scrollLeft / width));
+      drawer.style.setProperty('--drawer-backdrop', progress.toFixed(3));
+    }
+
+    if (!supportsScrollTimeline) {
+      scroller.addEventListener('scroll', updateBackdropFallback, { passive: true });
+    }
+
+    function finishClose() {
+      if (closeFallbackTimer !== null) {
+        window.clearTimeout(closeFallbackTimer);
+        closeFallbackTimer = null;
+      }
+      isClosing = false;
+      hasBeenVisible = false;
+      const callback = onClosedCallback;
+      onClosedCallback = null;
+
+      if (drawer && drawer.open) {
+        drawer.close();
+      }
+
+      if (callback) {
+        callback();
+      } else if (lastTrigger && document.contains(lastTrigger)) {
+        lastTrigger.focus();
+      }
+    }
+
+    const visibleThreshold = 1 / Math.max(window.innerWidth, 1);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!drawer.open) continue;
+          if (entry.intersectionRatio >= visibleThreshold) {
+            if (!isClosing) {
+              hasBeenVisible = true;
+            }
+          } else if (hasBeenVisible || isClosing) {
+            finishClose();
+          }
+        }
+      },
+      {
+        root: drawer,
+        threshold: [visibleThreshold, 1],
+      }
+    );
+    observer.observe(sheet);
+
+    scroller.addEventListener('scrollend', () => {
+      if (!drawer.open) return;
+      const maxScroll = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      if (maxScroll > 0 && scroller.scrollLeft >= maxScroll - 2 && (hasBeenVisible || isClosing)) {
+        finishClose();
+      }
+    });
+
+    function openDrawer(trigger?: HTMLElement | null) {
+      if (!drawer || !scroller || !sheet) return;
+      if (closeFallbackTimer !== null) {
+        window.clearTimeout(closeFallbackTimer);
+        closeFallbackTimer = null;
+      }
+      onClosedCallback = null;
+      isClosing = false;
+      hasBeenVisible = false;
+      lastTrigger = trigger ?? (document.activeElement as HTMLElement | null);
+      const seq = ++openSeq;
+
+      if (!drawer.open) {
+        drawer.showModal();
+      }
+      syncTriggerExpanded(true);
+
+      const closedLeft = Math.max(scroller.offsetWidth, sheet.offsetWidth);
+      if (!supportsInitialTarget || scroller.scrollLeft < sheet.offsetWidth - 2) {
+        scroller.scrollTo({ left: closedLeft, behavior: 'instant' as ScrollBehavior });
+      }
+      updateBackdropFallback();
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (seq !== openSeq || !drawer.open || isClosing) return;
+          scroller.scrollTo({ left: 0, behavior: 'auto' });
+          if (prefersReducedMotion()) {
+            hasBeenVisible = true;
+            updateBackdropFallback();
+          }
+        });
+      });
+    }
+
+    function closeDrawer(afterClose?: () => void) {
+      if (!drawer || !scroller || !sheet || !drawer.open) {
+        afterClose?.();
+        return;
+      }
+      if (afterClose) {
+        onClosedCallback = afterClose;
+      }
+      if (isClosing) return;
+      isClosing = true;
+      ++openSeq;
+
+      const closedLeft = Math.max(scroller.offsetWidth, sheet.offsetWidth);
+      scroller.scrollTo({ left: closedLeft, behavior: 'auto' });
+
+      if (prefersReducedMotion()) {
+        updateBackdropFallback();
+        finishClose();
+        return;
+      }
+
+      closeFallbackTimer = window.setTimeout(() => {
+        finishClose();
+      }, 450);
+    }
+
+    // Open triggers across Masthead, CompactHeader, etc.
+    document.addEventListener('click', (e) => {
+      const trigger = (e.target as HTMLElement | null)?.closest<HTMLElement>(
+        '[data-open-nav-drawer]'
+      );
+      if (!trigger) return;
+      e.preventDefault();
+      if (drawer.open) {
+        closeDrawer();
+      } else {
+        openDrawer(trigger);
+      }
+    });
+
+    // Close button inside drawer
+    drawer.querySelectorAll<HTMLElement>('[data-close-nav-drawer]').forEach((btn) => {
+      btn.addEventListener('click', () => closeDrawer());
+    });
+
+    // Backdrop click outside sheet
+    drawer.addEventListener('click', (e) => {
+      if (!drawer.open) return;
+      const target = e.target as Node | null;
+      if (target && !sheet.contains(target)) {
+        closeDrawer();
+      }
+    });
+
+    // Escape key -> smooth slide-out via cancel event
+    drawer.addEventListener('cancel', (e) => {
+      if (e.cancelable) {
+        e.preventDefault();
+        closeDrawer();
+      }
+    });
+
+    // Native close cleanup
+    drawer.addEventListener('close', () => {
+      if (closeFallbackTimer !== null) {
+        window.clearTimeout(closeFallbackTimer);
+        closeFallbackTimer = null;
+      }
+      isClosing = false;
+      hasBeenVisible = false;
+      syncTriggerExpanded(false);
+    });
+
+    // City Bureau pills: on homepage trigger edition switch + slide closed; elsewhere navigate to /?edition=<key>
+    const drawerEditionBtns = drawer.querySelectorAll<HTMLButtonElement>('[data-drawer-edition]');
+    function syncDrawerBureaus(activeKey: string) {
+      drawerEditionBtns.forEach((btn) => {
+        const isActive = btn.dataset.drawerEdition === activeKey;
+        btn.classList.toggle('is-active', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
+      });
+    }
+
+    const initialEdition = new URLSearchParams(window.location.search).get('edition');
+    if (initialEdition) {
+      syncDrawerBureaus(initialEdition);
+    }
+
+    drawerEditionBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.drawerEdition || 'all';
+        const isHome =
+          window.location.pathname === '/' || window.location.pathname === '/index.html';
+
+        if (isHome) {
+          syncDrawerBureaus(key);
+          closeDrawer();
+        } else {
+          const targetUrl = key === 'all' ? '/' : `/?edition=${encodeURIComponent(key)}`;
+          closeDrawer(() => {
+            window.location.href = targetUrl;
+          });
+        }
+      });
+    });
+
+    window.addEventListener('fc:edition-change', ((e: CustomEvent<{ edition: string }>) => {
+      syncDrawerBureaus(e.detail?.edition || 'all');
+    }) as EventListener);
+
+    // Bottom CTAs: close drawer smoothly first, then open corresponding modal
+    drawer.querySelectorAll<HTMLButtonElement>('[data-drawer-modal]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const modalId = btn.dataset.drawerModal;
+        closeDrawer(() => {
+          if (!modalId) return;
+          const modal = document.getElementById(modalId) as HTMLDialogElement | null;
+          if (modal && !modal.open) {
+            modal.showModal();
+          }
+        });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavDrawer);
+  } else {
+    initNavDrawer();
+  }
+</script>

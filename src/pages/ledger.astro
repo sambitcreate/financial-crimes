@@ -86,62 +86,106 @@ const topicLinks = [
       </div>
     </header>
 
-    {/* Sticky Multi-Facet Filter Bar */}
+    {/* Multi-Facet Filter Bar (sticky on desktop, static + collapsible drawer on mobile) */}
     <section class="fc-ledger-filterbar" aria-label="Filter and sort the Ledger">
       <div class="fc-ledger-controls">
-        <label class="fc-sr-only" for="fc-ledger-search">Search cases</label>
-        <input
-          type="search"
-          id="fc-ledger-search"
-          placeholder="Search defendants, agencies, dockets..."
-        />
+        <div class="fc-ledger-primary-row">
+          <label class="fc-sr-only" for="fc-ledger-search">Search cases</label>
+          <input
+            type="search"
+            id="fc-ledger-search"
+            placeholder="Search cases, agencies..."
+          />
 
-        <label class="fc-sr-only" for="fc-ledger-edition">Bureau</label>
-        <select id="fc-ledger-edition">
-          {editions.map((ed) => (
-            <option value={ed.key}>{ed.label}</option>
-          ))}
-        </select>
-
-        <label class="fc-sr-only" for="fc-ledger-category">Category</label>
-        <select id="fc-ledger-category">
-          <option value="all">All Desks</option>
-          {categories.map((cat) => (
-            <option value={cat}>{cat}</option>
-          ))}
-        </select>
-
-        <label class="fc-sr-only" for="fc-ledger-magnitude">Scale</label>
-        <select id="fc-ledger-magnitude">
-          <option value="0">Any Scale</option>
-          <option value="10000000">$10M+</option>
-          <option value="100000000">$100M+</option>
-          <option value="500000000">$500M+</option>
-          <option value="1000000000">$1B+</option>
-        </select>
-
-        <label class="fc-sr-only" for="fc-ledger-slap">Outcome</label>
-        <select id="fc-ledger-slap">
-          <option value="all">All Outcomes</option>
-          <option value="70">Wrist-Slap &ge; 70</option>
-          <option value="85">Wrist-Slap &ge; 85</option>
-          <option value="zero-prison">Zero Prison</option>
-          <option value="pending">Pending</option>
-        </select>
-
-        <label class="fc-sr-only" for="fc-ledger-sort">Sort order</label>
-        <select id="fc-ledger-sort">
-          <option value="newest">Newest</option>
-          <option value="loot-desc">Largest Scale</option>
-          <option value="fine-desc">Largest Fine</option>
-          <option value="slap-desc">Highest Wrist-Slap</option>
-          <option value="ratio-asc">Lowest Fine Ratio</option>
-        </select>
-
-        <div class="fc-view-toggle" role="group" aria-label="Ledger display mode">
-          <button type="button" id="fc-view-editorial" aria-pressed="true">Editorial</button>
-          <button type="button" id="fc-view-table" aria-pressed="false">Table</button>
+          <div class="fc-view-toggle" role="group" aria-label="Ledger display mode">
+            <button type="button" id="fc-view-editorial" aria-pressed="true">Editorial</button>
+            <button type="button" id="fc-view-table" aria-pressed="false">Table</button>
+          </div>
         </div>
+
+        <details class="fc-ledger-mobile-drawer" id="fc-ledger-filter-drawer" open>
+          <summary class="fc-ledger-drawer-summary">
+            <span class="fc-ledger-drawer-summary-left">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M2 3.5h12M4.5 8h7M6.5 12.5h3"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="square"
+                />
+              </svg>
+              <span>Filters &amp; Sort</span>
+              <span class="fc-ledger-active-badge" id="fc-ledger-active-count" hidden>0</span>
+            </span>
+            <svg
+              class="fc-ledger-drawer-chevron"
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M2.5 4.25L6 7.75L9.5 4.25"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="square"
+              />
+            </svg>
+          </summary>
+
+          <div class="fc-ledger-drawer-grid">
+            <label class="fc-sr-only" for="fc-ledger-edition">Bureau</label>
+            <select id="fc-ledger-edition">
+              {editions.map((ed) => (
+                <option value={ed.key}>{ed.label}</option>
+              ))}
+            </select>
+
+            <label class="fc-sr-only" for="fc-ledger-category">Category</label>
+            <select id="fc-ledger-category">
+              <option value="all">All Desks</option>
+              {categories.map((cat) => (
+                <option value={cat}>{cat}</option>
+              ))}
+            </select>
+
+            <label class="fc-sr-only" for="fc-ledger-magnitude">Scale</label>
+            <select id="fc-ledger-magnitude">
+              <option value="0">Any Scale</option>
+              <option value="10000000">$10M+</option>
+              <option value="100000000">$100M+</option>
+              <option value="500000000">$500M+</option>
+              <option value="1000000000">$1B+</option>
+            </select>
+
+            <label class="fc-sr-only" for="fc-ledger-slap">Outcome</label>
+            <select id="fc-ledger-slap">
+              <option value="all">All Outcomes</option>
+              <option value="70">Wrist-Slap &ge; 70</option>
+              <option value="85">Wrist-Slap &ge; 85</option>
+              <option value="zero-prison">Zero Prison</option>
+              <option value="pending">Pending</option>
+            </select>
+
+            <label class="fc-sr-only" for="fc-ledger-sort">Sort order</label>
+            <select id="fc-ledger-sort" class="fc-ledger-select-sort">
+              <option value="newest">Sort: Newest</option>
+              <option value="loot-desc">Sort: Largest Scale</option>
+              <option value="fine-desc">Sort: Largest Fine</option>
+              <option value="slap-desc">Sort: Highest Wrist-Slap</option>
+              <option value="ratio-asc">Sort: Lowest Fine Ratio</option>
+            </select>
+          </div>
+        </details>
+        <script is:inline>
+          (function () {
+            var drawer = document.getElementById('fc-ledger-filter-drawer');
+            if (drawer && window.matchMedia && window.matchMedia('(max-width: 760px)').matches) {
+              drawer.open = false;
+            }
+          })();
+        </script>
       </div>
     </section>
 
@@ -194,10 +238,8 @@ const topicLinks = [
           >
             <div class="fc-ledger-date-col">
               <span class="fc-ledger-date-str">{formatShortDate(item.publish_date)}</span>
-              <div style="margin-top: 4px; color: var(--fc-ink-primary); font-weight: 600;">
-                {item.city}
-              </div>
-              <div style="margin-top: 6px;">
+              <div class="fc-ledger-city-str">{item.city}</div>
+              <div class="fc-ledger-slap-wrap">
                 {item.slap_on_wrist_score !== null ? (
                   <span
                     class:list={[
@@ -213,7 +255,7 @@ const topicLinks = [
               </div>
             </div>
 
-            <div>
+            <div class="fc-ledger-editorial-body">
               <span
                 class:list={[
                   'fc-eyebrow',
@@ -223,13 +265,11 @@ const topicLinks = [
                 {item.template === 'opinion' ? 'OPINION' : item.agencies.join(', ')}
               </span>
 
-              <h2 style="font-family: var(--fc-font-headline); font-size: 20px; font-weight: 700; line-height: 1.18; margin: 4px 0 6px;">
+              <h2 class="fc-ledger-editorial-headline">
                 <a href={item.url} class="fc-headline-link">{item.headline}</a>
               </h2>
 
-              <p style="font-family: var(--fc-font-body); font-size: 14px; line-height: 1.42; color: var(--fc-ink-muted); margin: 0 0 8px;">
-                {item.deck}
-              </p>
+              <p class="fc-ledger-editorial-deck">{item.deck}</p>
 
               <div class="fc-ledger-card-stats">
                 <span>SCALE <strong>{item.financials.amount_display}</strong></span>
@@ -262,93 +302,101 @@ const topicLinks = [
 
     {/* VIEW 2: Spreadsheet Table */}
     <section id="fc-ledger-table-view" class="fc-ledger-table-wrap" hidden aria-label="Spreadsheet ledger">
-      <table class="fc-ledger-table">
-        <thead>
-          <tr>
-            <th>Case</th>
-            <th>Bureau &amp; Agencies</th>
-            <th>Desk</th>
-            <th>Scale</th>
-            <th>Penalty</th>
-            <th>Ratio</th>
-            <th>Custody</th>
-            <th>Wrist-Slap</th>
-          </tr>
-        </thead>
-        <tbody id="fc-ledger-tbody">
-          {articles.map((item) => {
-            const searchBlob = [
-              item.headline,
-              item.deck,
-              item.city,
-              item.edition,
-              item.category,
-              item.agencies.join(' '),
-              item.docket_number ?? '',
-              item.jurisdiction.venue,
-            ]
-              .join(' ')
-              .toLowerCase();
+      <div class="fc-ledger-table-cue" aria-hidden="true">
+        <span class="fc-ledger-table-cue-pin">Case pinned</span>
+        <span class="fc-ledger-table-cue-swipe">Swipe table &rarr;</span>
+      </div>
+      <div class="fc-ledger-table-scroller">
+        <table class="fc-ledger-table">
+          <thead>
+            <tr>
+              <th class="fc-ledger-col-case">Case</th>
+              <th class="fc-ledger-col-bureau">Bureau &amp; Agencies</th>
+              <th class="fc-ledger-col-desk">Desk</th>
+              <th class="fc-ledger-col-scale">Scale</th>
+              <th class="fc-ledger-col-penalty">Penalty</th>
+              <th class="fc-ledger-col-ratio">Ratio</th>
+              <th class="fc-ledger-col-custody">Custody</th>
+              <th class="fc-ledger-col-slap">Wrist-Slap</th>
+            </tr>
+          </thead>
+          <tbody id="fc-ledger-tbody">
+            {articles.map((item) => {
+              const searchBlob = [
+                item.headline,
+                item.deck,
+                item.city,
+                item.edition,
+                item.category,
+                item.agencies.join(' '),
+                item.docket_number ?? '',
+                item.jurisdiction.venue,
+              ]
+                .join(' ')
+                .toLowerCase();
 
-            return (
-              <tr
-                data-ledger-row
-                data-slug={item.slug}
-                data-search={searchBlob}
-                data-edition={item.edition.toLowerCase()}
-                data-city={item.city.toLowerCase()}
-                data-category={item.category}
-                data-date={item.publish_date}
-                data-loot={item.financials.amount_usd ?? 0}
-                data-fine={item.financials.fine_usd ?? 0}
-                data-ratio={item.financials.fine_ratio_pct ?? -1}
-                data-prison={item.financials.prison_months ?? -1}
-                data-slap={item.slap_on_wrist_score ?? -1}
-              >
-                <td style="max-width: 310px;">
-                  <a
-                    href={item.url}
-                    class="fc-headline-link"
-                    style="font-family: var(--fc-font-headline); font-weight: 700; font-size: 14.5px; line-height: 1.22; display: block;"
-                  >
-                    {item.headline}
-                  </a>
-                  <span style="font-family: var(--fc-font-mono); font-size: 10.5px; color: var(--fc-ink-muted);">
-                    {item.docket_number ?? formatLegalStage(item.legal_stage)} &middot; {formatBroadsheetDate(item.publish_date)}
-                  </span>
-                </td>
-                <td>
-                  <strong style="display: block;">{item.city}</strong>
-                  <span style="font-size: 11px; color: var(--fc-ink-muted);">
-                    {item.agencies.join(', ')}
-                  </span>
-                </td>
-                <td>{item.category}</td>
-                <td class="fc-ledger-num"><strong>{item.financials.amount_display}</strong></td>
-                <td class="fc-ledger-num">{item.financials.fine_display}</td>
-                <td class="fc-ledger-num" style="color: var(--fc-art-crimson); font-weight: 600;">
-                  {formatFineRatio(item.financials.fine_ratio_pct, '—')}
-                </td>
-                <td class="fc-ledger-num">{item.financials.prison_display}</td>
-                <td class="fc-ledger-num">
-                  {item.slap_on_wrist_score !== null ? (
-                    <span
-                      class:list={[
-                        'fc-score-badge',
-                        { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
-                      ]}
+              return (
+                <tr
+                  data-ledger-row
+                  data-slug={item.slug}
+                  data-search={searchBlob}
+                  data-edition={item.edition.toLowerCase()}
+                  data-city={item.city.toLowerCase()}
+                  data-category={item.category}
+                  data-date={item.publish_date}
+                  data-loot={item.financials.amount_usd ?? 0}
+                  data-fine={item.financials.fine_usd ?? 0}
+                  data-ratio={item.financials.fine_ratio_pct ?? -1}
+                  data-prison={item.financials.prison_months ?? -1}
+                  data-slap={item.slap_on_wrist_score ?? -1}
+                >
+                  <td class="fc-ledger-col-case">
+                    <a
+                      href={item.url}
+                      class="fc-headline-link fc-ledger-table-headline"
                     >
-                      {item.slap_on_wrist_score}/100
+                      {item.headline}
+                    </a>
+                    <span class="fc-ledger-case-mobile-meta">
+                      {item.city} &middot; {item.agencies[0]}
                     </span>
-                  ) : (
-                    <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                    <span class="fc-ledger-table-sub">
+                      {item.docket_number ?? formatLegalStage(item.legal_stage)} &middot; {formatBroadsheetDate(item.publish_date)}
+                    </span>
+                  </td>
+                  <td class="fc-ledger-col-bureau">
+                    <strong style="display: block;">{item.city}</strong>
+                    <span style="font-size: 11px; color: var(--fc-ink-muted);">
+                      {item.agencies.join(', ')}
+                    </span>
+                  </td>
+                  <td class="fc-ledger-col-desk">{item.category}</td>
+                  <td class="fc-ledger-num fc-ledger-col-scale"><strong>{item.financials.amount_display}</strong></td>
+                  <td class="fc-ledger-num fc-ledger-col-penalty">{item.financials.fine_display}</td>
+                  <td class="fc-ledger-num fc-ledger-col-ratio" style="color: var(--fc-art-crimson); font-weight: 600;">
+                    {formatFineRatio(item.financials.fine_ratio_pct, '—')}
+                  </td>
+                  <td class="fc-ledger-num fc-ledger-col-custody">{item.financials.prison_display}</td>
+                  <td class="fc-ledger-num fc-ledger-col-slap">
+                    {item.slap_on_wrist_score !== null ? (
+                      <span
+                        class:list={[
+                          'fc-score-badge',
+                          { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
+                        ]}
+                      >
+                        {item.slap_on_wrist_score}/100
+                      </span>
+                    ) : (
+                      <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </section>
   </div>
 </BaseLayout>
@@ -369,6 +417,8 @@ const topicLinks = [
 
   const btnEditorial = document.getElementById('fc-view-editorial');
   const btnTable = document.getElementById('fc-view-table');
+  const filterDrawer = document.getElementById('fc-ledger-filter-drawer') as HTMLDetailsElement | null;
+  const activeCountBadge = document.getElementById('fc-ledger-active-count');
 
   const countOut = document.getElementById('fc-ledger-total-count');
   const lootOut = document.getElementById('fc-ledger-total-loot');
@@ -378,19 +428,41 @@ const topicLinks = [
   const listItems = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-item]'));
   const tableRows = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-row]'));
 
+  // Sync collapsible filter drawer across viewport breakpoint changes
+  if (filterDrawer && window.matchMedia) {
+    const mobileMq = window.matchMedia('(max-width: 760px)');
+    const syncDrawerForViewport = (matchesMobile: boolean) => {
+      filterDrawer.open = !matchesMobile;
+    };
+    syncDrawerForViewport(mobileMq.matches);
+    mobileMq.addEventListener('change', (e) => syncDrawerForViewport(e.matches));
+  }
+
   let pagefindApi: any = null;
   let pagefindSlugs: Set<string> | null = null;
+  let pagefindPromise: Promise<any> | null = null;
+  let pagefindUnavailable = Boolean(import.meta.env.DEV);
 
-  async function initPagefind() {
-    try {
-      const pfPath = '/pagefind/pagefind.js';
-      pagefindApi = await import(/* @vite-ignore */ pfPath);
-      if (pagefindApi?.init) await pagefindApi.init();
-    } catch {
-      pagefindApi = null;
+  async function ensurePagefind() {
+    if (pagefindApi) return pagefindApi;
+    if (pagefindUnavailable) return null;
+    if (!pagefindPromise) {
+      pagefindPromise = (async () => {
+        try {
+          const pfPath = '/pagefind/pagefind.js';
+          const mod = await import(/* @vite-ignore */ pfPath);
+          if (mod?.init) await mod.init();
+          pagefindApi = mod;
+          return mod;
+        } catch {
+          pagefindUnavailable = true;
+          pagefindApi = null;
+          return null;
+        }
+      })();
     }
+    return pagefindPromise;
   }
-  initPagefind();
 
   function formatUsdShort(value: number): string {
     if (value >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
@@ -494,32 +566,59 @@ const topicLinks = [
       const aggregateRatio = totalLoot > 0 ? (totalFines / totalLoot) * 100 : ratioCount > 0 ? ratioSum / ratioCount : 0;
       ratioOut.textContent = `${aggregateRatio.toFixed(1)}%`;
     }
+
+    if (activeCountBadge) {
+      let activeFilters = 0;
+      if ((editionSel?.value || 'all') !== 'all') activeFilters++;
+      if ((categorySel?.value || 'all') !== 'all') activeFilters++;
+      if ((magnitudeSel?.value || '0') !== '0') activeFilters++;
+      if ((slapSel?.value || 'all') !== 'all') activeFilters++;
+      if ((sortSel?.value || 'newest') !== 'newest') activeFilters++;
+      activeCountBadge.hidden = activeFilters === 0;
+      activeCountBadge.textContent = `${activeFilters} active`;
+    }
   }
 
   let pfDebounce: ReturnType<typeof setTimeout> | null = null;
+
+  async function runPagefindSearch(q: string) {
+    const api = await ensurePagefind();
+    if (!api || !searchInput || searchInput.value.trim() !== q) return;
+    try {
+      const res = await api.search(q);
+      const top = await Promise.all(res.results.slice(0, 30).map((r: any) => r.data()));
+      const slugs = new Set<string>();
+      top.forEach((d: any) => {
+        const m = String(d.url || '').match(/\/(?:article|opinion)\/([^/]+)/);
+        if (m) slugs.add(m[1]);
+      });
+      pagefindSlugs = slugs;
+      applyAll();
+    } catch {
+      pagefindSlugs = null;
+    }
+  }
+
+  searchInput?.addEventListener(
+    'focus',
+    () => {
+      void ensurePagefind();
+    },
+    { once: true }
+  );
+
   searchInput?.addEventListener('input', () => {
     const q = searchInput.value.trim();
-    if (!q || !pagefindApi) {
+    if (!q) {
       pagefindSlugs = null;
       applyAll();
       return;
     }
     applyAll();
+    if (pagefindUnavailable) return;
     if (pfDebounce) clearTimeout(pfDebounce);
-    pfDebounce = setTimeout(async () => {
-      try {
-        const res = await pagefindApi.search(q);
-        const top = await Promise.all(res.results.slice(0, 30).map((r: any) => r.data()));
-        const slugs = new Set<string>();
-        top.forEach((d: any) => {
-          const m = String(d.url || '').match(/\/(?:article|opinion)\/([^/]+)/);
-          if (m) slugs.add(m[1]);
-        });
-        pagefindSlugs = slugs;
-        applyAll();
-      } catch {
-        pagefindSlugs = null;
-      }
+    pfDebounce = setTimeout(() => {
+      void runPagefindSearch(q);
     }, 180);
   });
 
@@ -570,4 +669,7 @@ const topicLinks = [
   if (params.get('view') === 'table') setView('table');
 
   applyAll();
+  if (params.get('q') && !pagefindUnavailable) {
+    void runPagefindSearch(params.get('q')!.trim());
+  }
 </script>
