@@ -216,7 +216,7 @@ const publishedStamp = formatDatelineTimestamp(article.publish_date);
 
     {/* Related Cases */}
     {related.length > 0 && (
-      <section class="fc-related-section" aria-label="More from the Ledger">
+      <section class="fc-related-section" aria-label="More from the Ledger" data-pagefind-ignore>
         <h2 class="fc-related-heading">More From the Ledger</h2>
         <div class="fc-related-grid">
           {related.map((rel) => (

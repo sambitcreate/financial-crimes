@@ -1,5 +1,6 @@
 ---
 import type { RollupStats } from '../schemas/article';
+import { formatUsdShort } from '../utils/format';
 
 interface Props {
   displayDate?: string;
@@ -62,9 +63,7 @@ function formatCompactMobileDate(fullDate: string): string {
 const compactMobileDate = formatCompactMobileDate(displayDate);
 
 function formatCompactBillions(usd: number, fallback: string): string {
-  if (usd >= 1e9) return `$${(usd / 1e9).toFixed(1)}B`;
-  if (usd >= 1e6) return `$${(usd / 1e6).toFixed(0)}M`;
-  return fallback;
+  return usd >= 1e6 ? formatUsdShort(usd, { M: 0 }) : fallback;
 }
 
 const initialLoot = formatCompactBillions(rollup.total_loot_usd, rollup.total_loot_display);
@@ -269,6 +268,7 @@ const tickerPayload = JSON.stringify({
         fines: r.finesShort || r.total_fines_display,
         ratio: r.avg_fine_ratio_pct != null ? `${r.avg_fine_ratio_pct.toFixed(1)}%` : 'PENDING',
         cases: r.case_count,
+        // Not tracked per region: these stay site-wide, and the labels below say so
         zeroPrison: payload.global?.zeroPrison ?? 6,
         avgSlap: payload.global?.avgSlap ?? 53,
       };
@@ -289,7 +289,7 @@ const tickerPayload = JSON.stringify({
           l1: `${s.prefix}FINES`,
           v1: s.fines,
           c1: 'fc-ticker-val fc-ticker-val--green',
-          l2: '0-PRISON',
+          l2: s.prefix ? 'ALL 0-PRISON' : '0-PRISON',
           v2: `${s.zeroPrison}`,
           c2: 'fc-ticker-val fc-ticker-val--crimson',
         },
@@ -297,7 +297,7 @@ const tickerPayload = JSON.stringify({
           l1: `${s.prefix}CASES`,
           v1: String(s.cases),
           c1: 'fc-ticker-val',
-          l2: 'AVG SLAP',
+          l2: s.prefix ? 'ALL AVG SLAP' : 'AVG SLAP',
           v2: `${s.avgSlap}/100`,
           c2: 'fc-ticker-val fc-ticker-val--crimson',
         },

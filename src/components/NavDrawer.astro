@@ -1,5 +1,6 @@
 ---
 import type { ArticleRecord, RollupStats } from '../schemas/article';
+import { formatUsdShort } from '../utils/format';
 
 interface Props {
   articles: ArticleRecord[];
@@ -66,9 +67,7 @@ const bureaus = [
 ];
 
 function formatCompactBillions(usd: number, fallback: string): string {
-  if (usd >= 1e9) return `$${(usd / 1e9).toFixed(1)}B`;
-  if (usd >= 1e6) return `$${(usd / 1e6).toFixed(0)}M`;
-  return fallback;
+  return usd >= 1e6 ? formatUsdShort(usd, { M: 0 }) : fallback;
 }
 
 const pulseLoot = formatCompactBillions(rollup.total_loot_usd, rollup.total_loot_display);

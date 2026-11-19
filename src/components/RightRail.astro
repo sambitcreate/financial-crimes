@@ -193,6 +193,12 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
         }
       }
 
+      // offsetLeft is measured from the offsetParent (not the track), so normalise to slide 0,
+      // which sits at scrollLeft 0.
+      function slideLeft(i: number): number {
+        return slides[i].offsetLeft - slides[0].offsetLeft;
+      }
+
       function getLayout() {
         const trackWidth = track!.clientWidth;
         const slideWidth = slides[0]?.offsetWidth || trackWidth;
@@ -211,7 +217,7 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
         let bestIdx = 0;
         let bestDist = Infinity;
         for (let i = 0; i <= maxIndex; i++) {
-          const dist = Math.abs(slides[i].offsetLeft - track!.scrollLeft);
+          const dist = Math.abs(slideLeft(i) - track!.scrollLeft);
           if (dist < bestDist) {
             bestDist = dist;
             bestIdx = i;
@@ -278,7 +284,7 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
         const { maxIndex, maxScroll } = getLayout();
         const clamped = Math.max(0, Math.min(maxIndex, targetIdx));
         const targetLeft =
-          clamped === maxIndex ? maxScroll : Math.min(slides[clamped].offsetLeft, maxScroll);
+          clamped === maxIndex ? maxScroll : Math.min(slideLeft(clamped), maxScroll);
 
         clearPending();
         pendingIndex = clamped;

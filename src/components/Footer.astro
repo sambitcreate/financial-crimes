@@ -1,5 +1,11 @@
 ---
-const currentYear = 2026;
+interface Props {
+  /** Latest edition date (YYYY-MM-DD) so "Today's Docket" never goes stale. */
+  editionDate: string;
+}
+const { editionDate } = Astro.props;
+const currentYear = editionDate.slice(0, 4);
+const editionHref = `/edition/${editionDate}`;
 ---
 
 <footer class="fc-footer" role="contentinfo">
@@ -43,7 +49,7 @@ const currentYear = 2026;
           <li><a href="/ledger">Full Docket</a></li>
           <li><a href="/ledger?slap=70">Highest Wrist-Slaps</a></li>
           <li><a href="/ledger?magnitude=1b">$1B+ Cases</a></li>
-          <li><a href="/edition/2026-11-19">Today&rsquo;s Docket</a></li>
+          <li><a href={editionHref}>Today&rsquo;s Docket</a></li>
         </ul>
       </div>
 
@@ -61,7 +67,7 @@ const currentYear = 2026;
         <ul>
           <li><button type="button" data-open-subscribe>Subscribe ($0)</button></li>
           <li><button type="button" data-open-tipline>Tip Line</button></li>
-          <li><a href="/edition/2026-11-19">Edition Archive</a></li>
+          <li><a href={editionHref}>Edition Archive</a></li>
         </ul>
       </div>
     </div>

@@ -13,6 +13,8 @@ interface Props {
   canonicalPath?: string;
   ogType?: 'website' | 'article';
   hideFooter?: boolean;
+  /** Error pages: no canonical/og:url (every missing URL would claim /404/), and keep out of search. */
+  noindex?: boolean;
 }
 
 const {
@@ -21,6 +23,7 @@ const {
   canonicalPath = Astro.url.pathname,
   ogType = 'website',
   hideFooter = false,
+  noindex = false,
 } = Astro.props;
 
 const [navArticles, navRollup] = await Promise.all([
@@ -40,13 +43,13 @@ const faviconSvg =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalUrl} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonicalUrl} />}
     <link rel="icon" type="image/svg+xml" href={faviconSvg} />
     <meta property="og:site_name" content="The Financial Crimes" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={ogType} />
-    <meta property="og:url" content={canonicalUrl} />
+    {!noindex && <meta property="og:url" content={canonicalUrl} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -67,7 +70,7 @@ const faviconSvg =
       <slot />
     </main>
 
-    {!hideFooter && <Footer />}
+    {!hideFooter && <Footer editionDate={navRollup.edition_date} />}
 
     <NavDrawer articles={navArticles} rollup={navRollup} currentPath={Astro.url.pathname} />
     <SubscribeModal />

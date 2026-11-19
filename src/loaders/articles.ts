@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { formatUsdShort } from '../utils/format';
 import {
   ArticleMetaSchema,
   EditionManifestSchema,
@@ -53,32 +54,16 @@ async function findArticleDirs(dir: string): Promise<string[]> {
   return nested;
 }
 
-function formatUsdShort(value: number): string {
-  if (value >= 1e9) {
-    return `$${(value / 1e9).toFixed(1)}B`;
-  }
-  if (value >= 1e6) {
-    return `$${(value / 1e6).toFixed(1)}M`;
-  }
-  if (value >= 1e3) {
-    return `$${(value / 1e3).toFixed(0)}K`;
-  }
-  return `$${Math.round(value).toLocaleString('en-US')}`;
+/** Fines as a share of loot, aggregated (sum/sum) - the one ratio definition used site-wide. */
+function aggregateRatioPct(fines: number, loot: number): number | null {
+  return loot > 0 ? Number(((fines / loot) * 100).toFixed(2)) : null;
 }
 
 export function computeRollupFromArticles(articles: ArticleRecord[]): RollupStats {
   const totalLootUsd = articles.reduce((sum, a) => sum + (a.financials.amount_usd ?? 0), 0);
   const totalFinesUsd = articles.reduce((sum, a) => sum + (a.financials.fine_usd ?? 0), 0);
 
-  const fineRatios = articles
-    .map((a) => a.financials.fine_ratio_pct)
-    .filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
-  const avgFineRatioPct =
-    fineRatios.length > 0
-      ? Number((fineRatios.reduce((s, v) => s + v, 0) / fineRatios.length).toFixed(2))
-      : totalLootUsd > 0
-        ? Number(((totalFinesUsd / totalLootUsd) * 100).toFixed(2))
-        : 0;
+  const avgFineRatioPct = aggregateRatioPct(totalFinesUsd, totalLootUsd) ?? 0;
 
   const scores = articles
     .map((a) => a.slap_on_wrist_score)
@@ -104,9 +89,6 @@ export function computeRollupFromArticles(articles: ArticleRecord[]): RollupStat
   for (const [key, list] of regionBuckets.entries()) {
     const loot = list.reduce((sum, a) => sum + (a.financials.amount_usd ?? 0), 0);
     const fines = list.reduce((sum, a) => sum + (a.financials.fine_usd ?? 0), 0);
-    const ratios = list
-      .map((a) => a.financials.fine_ratio_pct)
-      .filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
     regions[key] = {
       label: key.toUpperCase(),
       case_count: list.length,
@@ -114,10 +96,7 @@ export function computeRollupFromArticles(articles: ArticleRecord[]): RollupStat
       total_loot_display: formatUsdShort(loot),
       total_fines_usd: fines,
       total_fines_display: formatUsdShort(fines),
-      avg_fine_ratio_pct:
-        ratios.length > 0
-          ? Number((ratios.reduce((s, v) => s + v, 0) / ratios.length).toFixed(2))
-          : null,
+      avg_fine_ratio_pct: aggregateRatioPct(fines, loot),
     };
   }
 
@@ -173,7 +152,7 @@ export async function loadAllArticles(): Promise<ArticleRecord[]> {
   }
 
   return articles.sort((a, b) => {
-    const dateCmp = b.publish_date.localeCompare(a.publish_date);
+    const dateCmp = (Date.parse(b.publish_date) || 0) - (Date.parse(a.publish_date) || 0);
     if (dateCmp !== 0) return dateCmp;
     return a.id.localeCompare(b.id);
   });
@@ -239,7 +218,14 @@ export async function loadAllEditions(): Promise<EditionManifest[]> {
 export async function loadRollupStats(): Promise<RollupStats> {
   if (await pathExists(ROLLUP_PATH)) {
     const raw = await fs.readFile(ROLLUP_PATH, 'utf-8');
-    return RollupStatsSchema.parse(JSON.parse(raw));
+    const rollup = RollupStatsSchema.parse(JSON.parse(raw));
+    // Regions in the file carry a mean of per-case ratios; normalise to the site-wide sum/sum
+    // definition so the ticker, drawer and ledger filters agree on the same cases.
+    for (const region of Object.values(rollup.regions)) {
+      region.avg_fine_ratio_pct =
+        aggregateRatioPct(region.total_fines_usd, region.total_loot_usd) ?? region.avg_fine_ratio_pct;
+    }
+    return rollup;
   }
   const articles = await loadAllArticles();
   return computeRollupFromArticles(articles);

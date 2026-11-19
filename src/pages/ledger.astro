@@ -402,6 +402,7 @@ const topicLinks = [
 </BaseLayout>
 
 <script>
+  import { formatUsdShort } from '../utils/format';
   const searchInput = document.getElementById('fc-ledger-search') as HTMLInputElement | null;
   const editionSel = document.getElementById('fc-ledger-edition') as HTMLSelectElement | null;
   const categorySel = document.getElementById('fc-ledger-category') as HTMLSelectElement | null;
@@ -464,13 +465,6 @@ const topicLinks = [
     return pagefindPromise;
   }
 
-  function formatUsdShort(value: number): string {
-    if (value >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
-    if (value >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
-    if (value >= 1e3) return `$${(value / 1e3).toFixed(0)}K`;
-    return `$${Math.round(value).toLocaleString('en-US')}`;
-  }
-
   function matchesEdition(el: HTMLElement, key: string): boolean {
     if (key === 'all') return true;
     const ed = el.dataset.edition || '';
@@ -522,7 +516,15 @@ const topicLinks = [
       const vb = rb < 0 ? 999999 : rb;
       return va - vb;
     }
-    return (b.dataset.date || '').localeCompare(a.dataset.date || '');
+    return (Date.parse(b.dataset.date || '') || 0) - (Date.parse(a.dataset.date || '') || 0);
+  }
+
+  // Moving a node re-runs <fc-painting> disconnect/connect, which repaints it from blank,
+  // so only touch the DOM order when the sort actually changed it.
+  let currentListOrder: HTMLElement[] = [...listItems];
+  let currentRowOrder: HTMLElement[] = [...tableRows];
+  function sameOrder(a: HTMLElement[], b: HTMLElement[]): boolean {
+    return a.length === b.length && a.every((el, i) => el === b[i]);
   }
 
   function applyAll() {
@@ -537,10 +539,15 @@ const topicLinks = [
     let ratioSum = 0;
     let ratioCount = 0;
 
+    const reorderList = !sameOrder(sortedList, currentListOrder);
+    const reorderRows = !sameOrder(sortedRows, currentRowOrder);
+    currentListOrder = sortedList;
+    currentRowOrder = sortedRows;
+
     sortedList.forEach((el) => {
       const visible = matchesFilters(el);
       el.hidden = !visible;
-      listView?.appendChild(el);
+      if (reorderList) listView?.appendChild(el);
       if (visible) {
         shown++;
         totalLoot += Number(el.dataset.loot || 0);
@@ -555,7 +562,7 @@ const topicLinks = [
 
     sortedRows.forEach((row) => {
       row.hidden = !matchesFilters(row);
-      tbody?.appendChild(row);
+      if (reorderRows) tbody?.appendChild(row);
     });
 
     if (emptyEl) emptyEl.hidden = shown > 0;

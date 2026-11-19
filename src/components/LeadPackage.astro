@@ -98,23 +98,6 @@ const heroFineRatio =
           showCaption={false}
         />
       </div>
-      <script is:inline>
-        (function () {
-          if (!window.matchMedia || !window.matchMedia('(max-width: 760px)').matches) return;
-          var el = document.querySelector('.fc-lead-center fc-painting');
-          if (!el) return;
-          el.setAttribute('data-aspect', '4/3');
-          el.style.setProperty('--fc-art-aspect', '4 / 3');
-          var cfgNode = el.querySelector('script.fc-painting-config');
-          if (cfgNode && cfgNode.textContent) {
-            try {
-              var cfg = JSON.parse(cfgNode.textContent);
-              cfg.aspect = 4 / 3;
-              cfgNode.textContent = JSON.stringify(cfg);
-            } catch (_) {}
-          }
-        })();
-      </script>
 
       <h2 class="fc-lead-hero-headline">
         <a href={leadHero.url} class="fc-headline-link">{leadHero.headline}</a>

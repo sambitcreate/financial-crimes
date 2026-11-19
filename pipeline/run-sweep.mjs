@@ -149,7 +149,8 @@ async function auditPaintRefs() {
 function parseArgs(argv) {
   const args = {
     mode: 'dry-run',
-    date: new Date().toISOString().slice(0, 10),
+    // en-CA formats as YYYY-MM-DD
+    date: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()),
   };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--mode' && argv[i + 1]) {

@@ -112,21 +112,11 @@ export function loadPixels(url: string, sampleWidth = SAMPLE_WIDTH): Promise<Pix
       return;
     }
 
-    let settled = false;
-    const timer = window.setTimeout(() => {
-      if (settled) return;
-      settled = true;
-      reject(new Error(`Timed out loading reference image ${url}`));
-    }, LOAD_TIMEOUT_MS);
-
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.decoding = 'async';
 
     img.onload = () => {
-      if (settled) return;
-      settled = true;
-      window.clearTimeout(timer);
 
       const naturalW = img.naturalWidth || sampleWidth;
       const naturalH = img.naturalHeight || sampleWidth;
@@ -153,9 +143,6 @@ export function loadPixels(url: string, sampleWidth = SAMPLE_WIDTH): Promise<Pix
     };
 
     img.onerror = () => {
-      if (settled) return;
-      settled = true;
-      window.clearTimeout(timer);
       reject(new Error(`Could not load ${url}`));
     };
 
@@ -456,7 +443,7 @@ export function createPortraitScene(
   config: PaintRefConfig,
   options: PortraitSceneOptions = {},
 ): Scene {
-  const aspect = config.aspect && config.aspect > 0 ? config.aspect : 16 / 10;
+  let aspect = config.aspect && config.aspect > 0 ? config.aspect : 16 / 10;
   const isPortrait = config.isPortrait ?? true;
   const focal = {
     u: clamp(config.focalPoint?.u ?? 0.5, 0.15, 0.85),
@@ -486,6 +473,7 @@ export function createPortraitScene(
     canvasFocalV: focal.v,
   };
   let status: 'idle' | 'loading' | 'ready' | 'failed' = config.refImage ? 'idle' : 'failed';
+  let pixelRevision = 0;
 
   // Pointer focus & idle eye drift
   let pointerTarget: { u: number; v: number } | null = null;
@@ -508,27 +496,38 @@ export function createPortraitScene(
   const waves: ChiaroscuroWave[] = [];
   const scratchHotspots: { u: number; v: number; t0: number }[] = [];
 
+  const applyCrop = () => {
+    if (!pixels) return;
+    crop = computeCoverCrop(aspect, pixels.width, pixels.height, focal, isPortrait);
+    focus.u = crop.canvasFocalU;
+    focus.v = crop.canvasFocalV;
+  };
+
+  // Loads lazily from update(), i.e. only once the painting is near the viewport.
   const startLoad = () => {
     if (status !== 'idle' || !config.refImage) return;
     status = 'loading';
+    // Slow networks paint the procedural fallback after LOAD_TIMEOUT_MS, but a late image
+    // still lands and bumps the revision so the painter restarts from the real portrait.
+    const timer = setTimeout(() => {
+      if (status === 'loading') status = 'failed';
+    }, LOAD_TIMEOUT_MS);
     loadFn(config.refImage).then(
       (field) => {
+        clearTimeout(timer);
+        if (pixels) return;
+        const late = status === 'failed';
         pixels = field;
-        crop = computeCoverCrop(aspect, field.width, field.height, focal, isPortrait);
-        focus.u = crop.canvasFocalU;
-        focus.v = crop.canvasFocalV;
+        applyCrop();
         status = 'ready';
+        if (late) pixelRevision++;
       },
       () => {
-        status = 'failed';
+        clearTimeout(timer);
+        if (!pixels) status = 'failed';
       },
     );
   };
-
-  // Kick off image decode eagerly in browser environments
-  if (typeof window !== 'undefined' && config.refImage) {
-    startLoad();
-  }
 
   /** Rich procedural New Yorker-style portrait silhouette fallback (never blank or broken). */
   function sampleFallbackPortrait(u: number, v: number, t: number): Sample {
@@ -1160,8 +1159,8 @@ export function createPortraitScene(
     triggerPlate(t, toyText, toySubtext);
   }
 
-  function scratchRedactionsAt(u: number, v: number, t: number): void {
-    if (redactions.length === 0) return;
+  function scratchRedactionsAt(u: number, v: number, t: number): boolean {
+    if (redactions.length === 0) return false;
     let scratched = false;
     for (let i = redactions.length - 1; i >= 0; i--) {
       const bar = redactions[i];
@@ -1197,6 +1196,7 @@ export function createPortraitScene(
       scratchHotspots.push({ u, v, t0: t });
       if (scratchHotspots.length > 6) scratchHotspots.shift();
     }
+    return scratched;
   }
 
   /* ============================================================================
@@ -2004,6 +2004,19 @@ export function createPortraitScene(
         ? `Impressionist oil painting of ${config.subject}`
         : 'Impressionist editorial oil painting by The Financial Crimes'),
     ready: () => status === 'ready' || status === 'failed',
+    revision: () => pixelRevision,
+    resize(width: number, height: number) {
+      if (width <= 0 || height <= 0) return;
+      aspect = width / height;
+      applyCrop();
+    },
+    busy: () =>
+      Boolean(activePlate || activeCrash || activeRoute) ||
+      stamps.length > 0 ||
+      goldPatches.length > 0 ||
+      foilFlecks.length > 0 ||
+      redactions.length > 0 ||
+      waves.length > 0,
     sample,
     hotspots(t: number): Hotspot[] {
       const spots: Hotspot[] = [
@@ -2120,7 +2133,7 @@ export function createPortraitScene(
         if (t - waves[i].t0 > 5.8) waves.splice(i, 1);
       }
     },
-    live(g, width, height, t) {
+    live(g, width, height, t, dpr) {
       if (
         !activePlate &&
         stamps.length === 0 &&
@@ -2131,11 +2144,10 @@ export function createPortraitScene(
         !activeRoute &&
         waves.length === 0
       ) {
-        return;
+        return false;
       }
 
       // Normalize to logical CSS pixels so 1px hairlines & typography are razor-sharp at 1x and 2x DPR
-      const dpr = typeof window !== 'undefined' ? Math.min(2, window.devicePixelRatio || 1) : 1;
       const cw = width / dpr;
       const ch = height / dpr;
 
@@ -2153,18 +2165,19 @@ export function createPortraitScene(
       if (activePlate) drawArchivalPlate(g, cw, ch, t);
 
       g.restore();
+      return true;
     },
     pointer(kind: PointerKind, u: number, v: number, t: number) {
       const at = Number.isFinite(t) ? t : lastClock;
       if (kind === 'leave') {
         pointerTarget = null;
-        return;
+        return false;
       }
 
       pointerTarget = { u: clamp(u, 0, 1), v: clamp(v, 0, 1) };
 
       if (kind === 'move' && interactive && toyKind === 'redaction') {
-        scratchRedactionsAt(u, v, at);
+        return scratchRedactionsAt(u, v, at);
       }
 
       if (kind === 'down' && interactive) {
@@ -2188,7 +2201,9 @@ export function createPortraitScene(
             triggerGavelRipple(u, v, at);
             break;
         }
+        return true;
       }
+      return false;
     },
     reset() {
       activePlate = null;

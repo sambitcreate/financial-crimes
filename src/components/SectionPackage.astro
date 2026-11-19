@@ -62,7 +62,12 @@ const { topicTitle, subLinks, leadArticle, companionArticles = [] } = Astro.prop
     </div>
 
     {/* RIGHT 65%: 16:9 Impasto Painting Centerpiece */}
-    <div data-story-card data-edition={leadArticle.edition} data-city={leadArticle.city.toLowerCase()}>
+    <div
+      data-story-card
+      data-story-href={leadArticle.url}
+      data-edition={leadArticle.edition}
+      data-city={leadArticle.city.toLowerCase()}
+    >
       <FcArt
         id={leadArticle.id}
         slug={leadArticle.slug}

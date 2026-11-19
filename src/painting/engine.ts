@@ -29,6 +29,8 @@ export const HOTSPOT_SHARE = 0.62;
 export const SEED_HEAD_START = 0.55;
 /** Under reduced motion, keep repainting this many seconds after a click/poke. */
 export const INTERACTION_GRACE = 4;
+/** Under reduced motion the underpainting lands in a few frames; cap each frame's main-thread slice. */
+const REDUCED_MOTION_BUDGET_MS = 10;
 
 /** Painters per scene, most recent last. Only the most recent one steps the (shared) scene. */
 const owners = new WeakMap<Scene, Painter[]>();
@@ -85,8 +87,13 @@ export class Painter {
   height = 0;
   fine = 0;
   failed = false;
+  /** Device-pixel ratio the canvases were last sized for. */
+  dpr = 1;
+  reducedMotion: boolean;
 
   private washed = false;
+  private liveDirty = false;
+  private revision = 0;
   private readonly transparent: boolean;
   private readonly fineFraction: number;
   private readonly minFine: number;
@@ -95,7 +102,6 @@ export class Painter {
   private readonly buildSeconds: number | null;
   private readonly coarse: number;
   private readonly maxBuildTarget: number;
-  private readonly reducedMotion: boolean;
   private readonly rand: Rand;
 
   constructor(
@@ -130,6 +136,7 @@ export class Painter {
     if (width <= 0 || height <= 0) return;
     this.width = width;
     this.height = height;
+    this.guard(() => this.scene.resize?.(width, height));
     this.fine = Math.max(this.minFine, width * this.fineFraction);
     const rawTarget = Math.round(((width * height) / (this.fine * this.fine)) * 1.25);
     this.buildTarget = Math.min(this.maxBuildTarget, Math.max(1200, rawTarget));
@@ -161,6 +168,7 @@ export class Painter {
     });
     if (this.live) {
       this.live.clearRect(0, 0, this.width, this.height);
+      this.liveDirty = false;
     }
     this.resize(this.width, this.height, null);
   }
@@ -171,8 +179,10 @@ export class Painter {
 
   pointer(kind: PointerKind, u: number, v: number, t: number): void {
     if (this.failed) return;
-    if (kind === 'down') this.play(t);
-    this.guard(() => this.scene.pointer?.(kind, u, v, t));
+    this.guard(() => {
+      const changed = this.scene.pointer?.(kind, u, v, t);
+      if (kind === 'down' || changed) this.play(t);
+    });
   }
 
   step(t: number, dt: number): void {
@@ -185,6 +195,13 @@ export class Painter {
         reducedMotion: this.reducedMotion,
       });
 
+      // Source pixels changed (late image load): restart the underpainting from them
+      const revision = scene.revision?.() ?? 0;
+      if (revision !== this.revision) {
+        this.revision = revision;
+        this.resize(this.width, this.height, null);
+      }
+
       const isReady = !scene.ready || scene.ready();
       if (isReady) {
         if (!this.washed && !this.transparent) {
@@ -192,14 +209,19 @@ export class Painter {
         }
         if (this.built < this.buildTarget) {
           this.underpaint(t, dt);
-        } else if (!this.reducedMotion || t - this.lastPlayed < INTERACTION_GRACE) {
+        } else if (
+          !this.reducedMotion ||
+          t - this.lastPlayed < INTERACTION_GRACE ||
+          scene.busy?.()
+        ) {
           this.maintain(t);
         }
       }
 
-      if (this.live) {
-        this.live.clearRect(0, 0, this.width, this.height);
-        scene.live?.(this.live, this.width, this.height, t);
+      if (this.live && scene.live) {
+        // Only clear when the previous frame drew something; idle frames cost nothing
+        if (this.liveDirty) this.live.clearRect(0, 0, this.width, this.height);
+        this.liveDirty = scene.live(this.live, this.width, this.height, t, this.dpr);
       }
     });
   }
@@ -222,6 +244,7 @@ export class Painter {
 
   private underpaint(t: number, dt: number): void {
     const remaining = this.buildTarget - this.built;
+    const deadline = this.reducedMotion ? performance.now() + REDUCED_MOTION_BUDGET_MS : Infinity;
     const n = this.reducedMotion
       ? remaining
       : this.buildSeconds
@@ -245,6 +268,11 @@ export class Painter {
         this.dabAt(u, v, baseSize * (h.detail ?? 0.65), t);
       } else {
         this.dabAt(this.rand(), this.rand(), baseSize, t);
+      }
+      // Reduced motion: no visible build animation, but never one giant main-thread task
+      if ((i & 255) === 255 && performance.now() > deadline) {
+        this.built++;
+        break;
       }
     }
   }

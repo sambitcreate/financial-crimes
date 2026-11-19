@@ -90,9 +90,16 @@ export interface Scene {
   /** Where maintenance dabs should concentrate right now. */
   hotspots?(t: number): Hotspot[];
   update?(t: number, dt: number, ctx: SceneContext): void;
-  /** Redrawn from scratch every frame on the live layer (fast-moving marks, stamps, particles). */
-  live?(g: CanvasRenderingContext2D, width: number, height: number, t: number): void;
-  pointer?(kind: PointerKind, u: number, v: number, t: number): void;
+  /** Redrawn from scratch every frame on the live layer. Returns true when anything was drawn. */
+  live?(g: CanvasRenderingContext2D, width: number, height: number, t: number, dpr: number): boolean;
+  /** Returns true when the pointer visibly changed the painting (keeps reduced-motion repainting alive). */
+  pointer?(kind: PointerKind, u: number, v: number, t: number): boolean | void;
+  /** Called with the real canvas size (device px) whenever it changes, so crops follow the CSS aspect. */
+  resize?(width: number, height: number): void;
+  /** True while any interaction effect is still animating or healing. */
+  busy?(): boolean;
+  /** Bumps when the source pixels change (e.g. a late image load); the painter then restarts. */
+  revision?(): number;
   /**
    * Hear the pointer anywhere on the page, not only over the painting.
    */

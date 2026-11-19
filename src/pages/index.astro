@@ -62,10 +62,10 @@ const remaining = [
 
 const secondaryBlurb = remaining[0];
 const wallStCompanions = remaining
-  .filter((a) => ['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition))
-  .slice(1, 3);
+  .filter((a) => a !== secondaryBlurb && ['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition))
+  .slice(0, 2);
 const globalCompanions = remaining
-  .filter((a) => !['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition))
+  .filter((a) => a !== secondaryBlurb && !['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition))
   .slice(0, 2);
 
 const ledgerGridArticles = remaining.filter(
@@ -289,8 +289,8 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
       btn.setAttribute('aria-pressed', String(active));
     });
 
-    let matchCount = 0;
-    storyCards.forEach((card) => {
+    const matchedStories = new Set<string>();
+    storyCards.forEach((card, idx) => {
       if (key === 'all') {
         card.classList.remove('fc-edition-dimmed', 'fc-edition-match');
         return;
@@ -298,7 +298,10 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
       const isMatch = matchesEdition(card, key);
       card.classList.toggle('fc-edition-match', isMatch);
       card.classList.toggle('fc-edition-dimmed', !isMatch);
-      if (isMatch) matchCount++;
+      if (isMatch) {
+        const href = card.dataset.storyHref ?? card.querySelector('a[href]')?.getAttribute('href');
+        matchedStories.add(href ?? `card-${idx}`);
+      }
     });
 
     if (notice && noticeLabel && noticeCount && noticeLink) {
@@ -306,6 +309,7 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
         notice.classList.remove('is-visible');
       } else {
         notice.classList.add('is-visible');
+        const matchCount = matchedStories.size;
         noticeLabel.textContent = `${key.replace(/-/g, ' ').toUpperCase()} BUREAU`;
         noticeCount.textContent = `${matchCount} front-page ${matchCount === 1 ? 'case' : 'cases'}`;
         noticeLink.href = `/ledger?edition=${encodeURIComponent(key)}`;

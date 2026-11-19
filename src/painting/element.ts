@@ -49,10 +49,9 @@ export class FcPaintingElement extends HTMLElement {
     const mode = parseMode(this.dataset.mode ?? config.mode);
     const aspect = config.aspect ?? parseAspect(this.dataset.aspect);
     const seed = config.seed ?? hashString(this.dataset.id || config.slug || config.refImage || 'fc');
-    const reducedMotion =
-      typeof window !== 'undefined' &&
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const motionQuery =
+      typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const reducedMotion = motionQuery?.matches ?? false;
 
     const scene = createPortraitScene(
       { ...config, mode, aspect, seed },
@@ -67,6 +66,14 @@ export class FcPaintingElement extends HTMLElement {
     );
     this.painter = painter;
 
+    if (motionQuery) {
+      const onMotion = () => {
+        painter.reducedMotion = motionQuery.matches;
+      };
+      motionQuery.addEventListener('change', onMotion);
+      this.cleanupListeners.push(() => motionQuery.removeEventListener('change', onMotion));
+    }
+
     const resize = () => {
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       const cssW = stage.clientWidth;
@@ -74,7 +81,8 @@ export class FcPaintingElement extends HTMLElement {
       const w = Math.round(cssW * dpr);
       const h = Math.round(cssH * dpr);
       if (w <= 0 || h <= 0) return;
-      if (painter.width === w && painter.height === h) return;
+      if (painter.width === w && painter.height === h && painter.dpr === dpr) return;
+      painter.dpr = dpr;
 
       groundCanvas.width = w;
       groundCanvas.height = h;
@@ -88,6 +96,21 @@ export class FcPaintingElement extends HTMLElement {
     };
 
     resize();
+
+    // ResizeObserver misses DPR-only changes (window dragged to another display)
+    let dprQuery: MediaQueryList | null = null;
+    const onDprChange = () => {
+      resize();
+      watchDpr();
+    };
+    const watchDpr = () => {
+      dprQuery?.removeEventListener('change', onDprChange);
+      if (typeof window.matchMedia !== 'function') return;
+      dprQuery = window.matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+      dprQuery.addEventListener('change', onDprChange);
+    };
+    watchDpr();
+    this.cleanupListeners.push(() => dprQuery?.removeEventListener('change', onDprChange));
 
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver(resize);
@@ -113,9 +136,7 @@ export class FcPaintingElement extends HTMLElement {
       painter.step(t, dt);
     });
 
-    const handlePointer = (kind: PointerKind) => (e: PointerEvent) => {
-      // Never intercept clicks on thumbnails inside article links
-      if (mode === 'thumb' && kind === 'down') return;
+    const send = (kind: PointerKind, e: PointerEvent) => {
       const rect = stage.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
       const u = clamp((e.clientX - rect.left) / rect.width, 0, 1);
@@ -123,15 +144,37 @@ export class FcPaintingElement extends HTMLElement {
       painter.pointer(kind, u, v, now());
     };
 
-    const onDown = handlePointer('down');
-    const onMove = handlePointer('move');
-    const onLeave = handlePointer('leave');
+    // Mouse toys fire on press. Touch/pen toys fire on lift, and only for a tap: a scroll or
+    // pinch that starts on the painting must not stamp it.
+    let tap: { id: number; x: number; y: number } | null = null;
+    const TAP_SLOP_PX = 10;
+    const onDown = (e: PointerEvent) => {
+      // Never intercept clicks on thumbnails inside article links
+      if (mode === 'thumb' || !e.isPrimary || e.button !== 0) return;
+      if (e.pointerType === 'mouse') send('down', e);
+      else tap = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    };
+    const onUp = (e: PointerEvent) => {
+      if (!tap || tap.id !== e.pointerId) return;
+      const moved = Math.hypot(e.clientX - tap.x, e.clientY - tap.y);
+      tap = null;
+      if (moved <= TAP_SLOP_PX) send('down', e);
+    };
+    const onCancel = () => {
+      tap = null;
+    };
+    const onMove = (e: PointerEvent) => send('move', e);
+    const onLeave = (e: PointerEvent) => send('leave', e);
 
     stage.addEventListener('pointerdown', onDown);
+    stage.addEventListener('pointerup', onUp);
+    stage.addEventListener('pointercancel', onCancel);
     stage.addEventListener('pointermove', onMove, { passive: true });
     stage.addEventListener('pointerleave', onLeave);
     this.cleanupListeners.push(() => {
       stage.removeEventListener('pointerdown', onDown);
+      stage.removeEventListener('pointerup', onUp);
+      stage.removeEventListener('pointercancel', onCancel);
       stage.removeEventListener('pointermove', onMove);
       stage.removeEventListener('pointerleave', onLeave);
     });

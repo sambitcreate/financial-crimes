@@ -77,6 +77,36 @@ function parseEditorialParts(input: string): ParsedEtParts | null {
  * AP / broadsheet full date: "Nov. 19, 2026" or "March 5, 2026".
  * Never leaks raw ISO timestamps.
  */
+const USD_UNITS: [number, 'B' | 'M' | 'K'][] = [
+  [1e9, 'B'],
+  [1e6, 'M'],
+  [1e3, 'K'],
+];
+
+/**
+ * "$59.0B" / "$412M" style money. Rounds before choosing the unit so 999,950 reads "$1.0M",
+ * never "$1000K". `digits` overrides decimals per unit.
+ */
+export function formatUsdShort(
+  value: number,
+  digits: Partial<Record<'B' | 'M' | 'K', number>> = {},
+): string {
+  if (!Number.isFinite(value)) return '$0';
+  const sign = value < 0 ? '-' : '';
+  const abs = Math.abs(value);
+  const places = { B: 1, M: 1, K: 0, ...digits };
+  for (let i = 0; i < USD_UNITS.length; i++) {
+    const [size, unit] = USD_UNITS[i];
+    const scaled = Number((abs / size).toFixed(places[unit]));
+    if (scaled >= 1000 && i > 0) {
+      const [biggerSize, biggerUnit] = USD_UNITS[i - 1];
+      return `${sign}$${(abs / biggerSize).toFixed(places[biggerUnit])}${biggerUnit}`;
+    }
+    if (scaled >= 1) return `${sign}$${scaled.toFixed(places[unit])}${unit}`;
+  }
+  return `${sign}$${Math.round(abs).toLocaleString('en-US')}`;
+}
+
 export function formatBroadsheetDate(iso: string): string {
   const parts = parseEditorialParts(iso);
   if (!parts) return iso;
@@ -151,12 +181,9 @@ export function formatGuiltAdmission(
     return 'YES (GUILTY PLEA)';
   }
 
-  if (stage === 'conviction' || stage === 'convicted') {
-    return 'YES (CRIMINAL CONVICTION)';
-  }
-
-  if (stage === 'sentenced') {
-    return admitted === true ? 'YES (GUILTY PLEA)' : 'YES (CRIMINAL CONVICTION)';
+  // A conviction is not an admission: only a plea counts as admitting guilt.
+  if (stage === 'conviction' || stage === 'convicted' || stage === 'sentenced') {
+    return admitted === true ? 'YES (GUILTY PLEA)' : 'NO (CONVICTED AT TRIAL)';
   }
 
   if (stage === 'settlement') {

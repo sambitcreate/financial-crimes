@@ -145,6 +145,39 @@ const RollupStatsSchema = z.object({
   regions: z.record(z.string(), RegionalRollupSchema),
 });
 
+const ALLOWED_BODY_TAGS = new Set([
+  'p', 'h2', 'h3', 'h4', 'span', 'strong', 'em', 'b', 'i', 'a', 'ul', 'ol', 'li',
+  'blockquote', 'br', 'hr', 'sup', 'sub', 'cite', 'abbr', 'small', 'code',
+  'figure', 'figcaption', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
+]);
+const ALLOWED_BODY_ATTRS = new Set(['class', 'href', 'title', 'id', 'lang', 'rel', 'target', 'cite']);
+
+/** Problems with article body markup that would be unsafe to inject with set:html. */
+function findUnsafeMarkup(html) {
+  const problems = [];
+  const tagRe = /<\s*([a-zA-Z][\w:-]*)([^>]*)>/g;
+  let m;
+  while ((m = tagRe.exec(html))) {
+    const tag = m[1].toLowerCase();
+    if (!ALLOWED_BODY_TAGS.has(tag)) {
+      problems.push(`disallowed <${tag}> tag`);
+      continue;
+    }
+    const attrRe = /([^\s=/]+)(?:\s*=\s*("[^"]*"|'[^']*'|[^\s>]+))?/g;
+    let a;
+    while ((a = attrRe.exec(m[2]))) {
+      const name = a[1].toLowerCase();
+      const value = (a[2] ?? '').replace(/^["']|["']$/g, '');
+      if (!ALLOWED_BODY_ATTRS.has(name) && !name.startsWith('data-') && !name.startsWith('aria-')) {
+        problems.push(`disallowed attribute "${name}" on <${tag}>`);
+      } else if ((name === 'href' || name === 'cite') && !/^(https?:|mailto:|\/|#)/i.test(value.trim())) {
+        problems.push(`unsafe ${name} "${value}" on <${tag}> (only http(s), mailto, / and # links)`);
+      }
+    }
+  }
+  return problems;
+}
+
 async function pathExists(target) {
   try {
     await fs.access(target);
@@ -225,6 +258,10 @@ async function main() {
       }
       if (/<script\b/i.test(html)) {
         errors.push(`${relDir}/body.html: contains forbidden <script> tag`);
+      }
+      // body.html is rendered with set:html, so allow-list markup rather than block-list it
+      for (const problem of findUnsafeMarkup(html)) {
+        errors.push(`${relDir}/body.html: ${problem}`);
       }
     }
   }
