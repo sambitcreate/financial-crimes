@@ -158,24 +158,10 @@ a:hover .fc-painting-shell[data-mode='thumb'] .fc-painting-stage,
 }
 
 @media (max-width: 760px) {
-  .fc-lead-center .fc-art-frame {
-    position: relative;
+  .fc-lead-center .fc-art-frame,
+  .fc-lead-center fc-painting {
     width: 100%;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    border: 1px solid rgba(18, 18, 18, 0.24);
-    background: var(--fc-bg-newsprint, #f6f3ec);
-  }
-
-  .fc-lead-center .fc-art-frame .fc-painting-shell {
-    border: 0;
-    margin-top: -2%;
-  }
-
-  /* Keep the subtle repaint control anchored inside the visible 4:3 mobile crop */
-  .fc-lead-center .fc-art-frame .fc-painting-repaint {
-    top: calc(61.6% - 42px);
-    bottom: auto;
+    aspect-ratio: 4 / 3 !important;
   }
 
   .fc-art-credit {

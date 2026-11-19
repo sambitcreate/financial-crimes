@@ -2818,9 +2818,11 @@ dialog.fc-dialog--receipt {
   }
 
   .fc-printer-close {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    font-size: 20px;
   }
 
   .fc-printer-actions {

@@ -182,6 +182,16 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
 
       let lastAnnouncedIndex = 0;
       let scrollTimer: number | null = null;
+      let pendingIndex: number | null = null;
+      let pendingTimer: number | null = null;
+
+      function clearPending() {
+        pendingIndex = null;
+        if (pendingTimer !== null) {
+          window.clearTimeout(pendingTimer);
+          pendingTimer = null;
+        }
+      }
 
       function getLayout() {
         const trackWidth = track!.clientWidth;
@@ -210,12 +220,17 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
         return bestIdx;
       }
 
-      function syncUI(announce: boolean) {
+      function syncUI(announce: boolean, overrideIndex?: number) {
         const { visibleCount, maxIndex, maxScroll } = getLayout();
-        const activeIndex = getActiveIndex();
-        const atStart = activeIndex <= 0 || track!.scrollLeft <= 2;
-        const atEnd =
-          activeIndex >= maxIndex || (maxScroll > 0 && track!.scrollLeft >= maxScroll - 2);
+        const useTarget = overrideIndex !== undefined || pendingIndex !== null;
+        const activeIndex = Math.max(
+          0,
+          Math.min(maxIndex, overrideIndex ?? pendingIndex ?? getActiveIndex())
+        );
+        const atStart = useTarget ? activeIndex <= 0 : activeIndex <= 0 || track!.scrollLeft <= 2;
+        const atEnd = useTarget
+          ? activeIndex >= maxIndex
+          : activeIndex >= maxIndex || (maxScroll > 0 && track!.scrollLeft >= maxScroll - 2);
 
         if (prevBtn) {
           if (atStart && document.activeElement === prevBtn && nextBtn && !atEnd) {
@@ -264,42 +279,63 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
         const clamped = Math.max(0, Math.min(maxIndex, targetIdx));
         const targetLeft =
           clamped === maxIndex ? maxScroll : Math.min(slides[clamped].offsetLeft, maxScroll);
+
+        clearPending();
+        pendingIndex = clamped;
+        syncUI(false, clamped);
+
         track!.scrollTo({ left: targetLeft, behavior: 'auto' });
 
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          syncUI(true);
+          clearPending();
+          syncUI(true, clamped);
+        } else {
+          pendingTimer = window.setTimeout(() => {
+            clearPending();
+            syncUI(true);
+          }, 650);
         }
       }
 
       prevBtn?.addEventListener('click', () => {
         const { visibleCount } = getLayout();
-        scrollToIndex(getActiveIndex() - visibleCount);
+        const baseIndex = pendingIndex ?? getActiveIndex();
+        scrollToIndex(baseIndex - visibleCount);
       });
 
       nextBtn?.addEventListener('click', () => {
         const { visibleCount } = getLayout();
-        scrollToIndex(getActiveIndex() + visibleCount);
+        const baseIndex = pendingIndex ?? getActiveIndex();
+        scrollToIndex(baseIndex + visibleCount);
       });
 
       dots.forEach((dot, idx) => {
         dot.addEventListener('click', () => scrollToIndex(idx));
       });
 
+      track.addEventListener('pointerdown', clearPending, { passive: true });
+      track.addEventListener('touchstart', clearPending, { passive: true });
+      track.addEventListener('wheel', clearPending, { passive: true });
+
       track.addEventListener('scrollend', () => {
         if (scrollTimer !== null) {
           window.clearTimeout(scrollTimer);
           scrollTimer = null;
         }
+        clearPending();
         syncUI(true);
       });
 
       track.addEventListener(
         'scroll',
         () => {
-          syncUI(false);
+          if (pendingIndex === null) {
+            syncUI(false);
+          }
           if (scrollTimer !== null) window.clearTimeout(scrollTimer);
           scrollTimer = window.setTimeout(() => {
             scrollTimer = null;
+            clearPending();
             syncUI(true);
           }, 160);
         },
@@ -307,7 +343,10 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
       );
 
       if (typeof ResizeObserver !== 'undefined') {
-        const ro = new ResizeObserver(() => syncUI(false));
+        const ro = new ResizeObserver(() => {
+          clearPending();
+          syncUI(false);
+        });
         ro.observe(track);
       }
 
