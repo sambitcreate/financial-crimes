@@ -108,24 +108,6 @@ button {
   margin: 0;
 }
 
-.fc-rule-strong {
-  border: 0;
-  border-top: 1px solid var(--fc-rule-strong);
-  margin: 0;
-}
-
-.fc-rule-column {
-  border: 0;
-  border-top: 1px solid var(--fc-rule-column);
-  margin: 0;
-}
-
-.fc-rule-light {
-  border: 0;
-  border-top: 1px solid var(--fc-rule-light);
-  margin: 0;
-}
-
 /* Typography Helpers */
 .fc-headline-link {
   transition: color 0.12s ease;
@@ -171,21 +153,6 @@ button {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fc-ink-muted);
-}
-
-.fc-comment-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--fc-font-sans);
-  font-size: 11px;
-  color: var(--fc-ink-muted);
-}
-
-.fc-comment-pill svg {
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
 }
 
 /* Buttons — NYT Flat Print Style */
@@ -465,13 +432,6 @@ button {
   color: var(--fc-accent-green);
 }
 
-.fc-ticker-hint {
-  font-family: var(--fc-font-sans);
-  font-size: 9.5px;
-  color: var(--fc-ink-subtle);
-  letter-spacing: 0.03em;
-}
-
 /* Section Navigation Bar */
 .fc-section-nav {
   border-top: 1px solid var(--fc-rule-light);
@@ -504,12 +464,6 @@ button {
 .fc-section-nav-link:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
-}
-
-.fc-section-nav-link svg {
-  width: 9px;
-  height: 9px;
-  color: var(--fc-ink-muted);
 }
 
 .fc-section-nav-divider {
@@ -632,66 +586,6 @@ button {
   color: var(--fc-ink-primary);
 }
 
-/* Mobile / Compact Section Menu Drawer */
-.fc-nav-drawer {
-  position: fixed;
-  inset: 0;
-  z-index: var(--fc-z-drawer);
-  display: none;
-}
-
-.fc-nav-drawer.is-open {
-  display: block;
-}
-
-.fc-nav-drawer-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(18, 18, 18, 0.45);
-}
-
-.fc-nav-drawer-panel {
-  position: relative;
-  width: min(300px, 86vw);
-  height: 100%;
-  background: #ffffff;
-  border-right: 1px solid var(--fc-rule-strong);
-  padding: 18px 20px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.fc-nav-drawer-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--fc-rule-strong);
-}
-
-.fc-nav-drawer-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.fc-nav-drawer-list a {
-  display: block;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--fc-rule-light);
-  font-family: var(--fc-font-sans);
-  font-size: 13.5px;
-  font-weight: 600;
-}
-
-.fc-nav-drawer-list a:hover {
-  color: var(--fc-accent-slate-dark);
-}
-
 /* ==========================================================================
    HOMEPAGE ASYMMETRIC GRID (70% Main Well / 30% Right Rail)
    ========================================================================== */
@@ -723,18 +617,6 @@ button {
   padding: 14px 18px 16px;
   background: #ffffff;
   margin-bottom: 22px;
-}
-
-.fc-lead-banner {
-  text-align: center;
-  font-family: var(--fc-font-sans);
-  font-size: 12.5px;
-  color: var(--fc-ink-primary);
-  margin: 0 0 14px;
-}
-
-.fc-lead-banner strong {
-  font-weight: 700;
 }
 
 .fc-lead-upper {
@@ -879,14 +761,6 @@ button {
   border-bottom: 1px solid var(--fc-rule-light);
 }
 
-.fc-crime-ticker-title {
-  font-family: var(--fc-font-sans);
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--fc-ink-primary);
-  margin: 0 0 4px;
-}
-
 .fc-crime-ticker-row {
   display: flex;
   align-items: baseline;
@@ -909,13 +783,6 @@ button {
   color: var(--fc-accent-crimson);
   background: #fdecec;
   padding: 1px 5px;
-}
-
-.fc-crime-ticker-time {
-  font-family: var(--fc-font-sans);
-  font-size: 10px;
-  color: var(--fc-ink-subtle);
-  margin-left: auto;
 }
 
 .fc-crime-ticker-sub {
@@ -947,14 +814,6 @@ button {
   margin-top: 16px;
   padding-top: 12px;
   border-top: 1px solid var(--fc-rule-column);
-}
-
-.fc-lead-more-heading {
-  font-family: var(--fc-font-sans);
-  font-size: 11.5px;
-  font-weight: 700;
-  margin: 0 0 12px;
-  color: var(--fc-ink-primary);
 }
 
 .fc-lead-grid-2x2 {
@@ -1144,27 +1003,6 @@ button {
   margin-bottom: 18px;
 }
 
-.fc-rail-collage {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
-  margin-bottom: 6px;
-}
-
-.fc-rail-collage-cell {
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  background: var(--fc-bg-newsprint);
-}
-
-.fc-rail-credit {
-  text-align: right;
-  font-family: var(--fc-font-sans);
-  font-size: 9.5px;
-  color: var(--fc-ink-subtle);
-  margin: 0 0 8px;
-}
-
 .fc-rail-feature-art {
   display: block;
   margin-bottom: 10px;
@@ -1194,12 +1032,6 @@ button {
   padding-bottom: 16px;
   border-bottom: 1px solid var(--fc-rule-strong);
   margin-bottom: 14px;
-}
-
-.fc-rail-mini-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
 }
 
 .fc-rail-mini-card {
@@ -1461,33 +1293,6 @@ button {
   color: var(--fc-ink-muted);
   display: block;
   margin-top: 2px;
-}
-
-/* Inline $0/week Docket Strip (mirrors Screenshot 4 search strip) */
-.fc-inline-promo {
-  max-width: var(--fc-article-width);
-  margin: 0 auto 28px;
-  padding: 13px 0;
-  border-top: 1px solid var(--fc-rule-light);
-  border-bottom: 1px solid var(--fc-rule-light);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  font-family: var(--fc-font-sans);
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.fc-inline-promo strong {
-  display: block;
-  font-weight: 700;
-  color: var(--fc-ink-primary);
-}
-
-.fc-inline-promo span {
-  color: var(--fc-ink-muted);
-  font-size: 12.5px;
 }
 
 /* Article Case Metadata Strip */
@@ -1776,13 +1581,6 @@ button {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin: 0 0 4px;
-}
-
-.fc-sources-subtitle {
-  font-family: var(--fc-font-sans);
-  font-size: 12px;
-  color: var(--fc-ink-muted);
-  margin: 0 0 12px;
 }
 
 .fc-sources-list {

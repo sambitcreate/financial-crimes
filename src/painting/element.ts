@@ -22,7 +22,6 @@ function parseMode(modeAttr: string | null | undefined): PaintMode {
 }
 
 export class FcPaintingElement extends HTMLElement {
-  private painter: Painter | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private intersectionObserver: IntersectionObserver | null = null;
   private stopTick: (() => void) | null = null;
@@ -64,7 +63,6 @@ export class FcPaintingElement extends HTMLElement {
       mode === 'thumb' ? null : live,
       painterOptionsForMode(mode, reducedMotion, mulberry32(seed)),
     );
-    this.painter = painter;
 
     if (motionQuery) {
       const onMotion = () => {
@@ -206,13 +204,6 @@ export class FcPaintingElement extends HTMLElement {
     this.intersectionObserver = null;
     for (const cleanup of this.cleanupListeners) cleanup();
     this.cleanupListeners = [];
-    this.painter?.dispose();
-    this.painter = null;
-  }
-
-  /** Programmatic repaint hook if needed by page scripts. */
-  repaint(): void {
-    this.painter?.repaint();
   }
 
   private readConfig(): PaintRefConfig {

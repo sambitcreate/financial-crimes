@@ -5,6 +5,7 @@ import LeadPackage from '../components/LeadPackage.astro';
 import SectionPackage from '../components/SectionPackage.astro';
 import RightRail from '../components/RightRail.astro';
 import { loadAllArticles, loadEdition, loadRollupStats } from '../loaders/articles';
+import { resolvePaintRef } from '../painting/refs-loader';
 import type { ArticleRecord } from '../schemas/article';
 
 const [allArticles, edition, rollup] = await Promise.all([
@@ -36,6 +37,11 @@ const leadHero = pickOne(edition?.slots.lead_hero, 'lead-hero', 0);
 const leadLive = pickOne(edition?.slots.lead_live, 'lead-live', 1);
 const leadRight = pickOne(edition?.slots.lead_right, 'lead-right', 2);
 const leadGrid = pickMany(edition?.slots.lead_grid, 'lead-grid');
+const leadHeroRef = await resolvePaintRef({
+  id: leadHero.id,
+  slug: leadHero.slug,
+  caption: leadHero.interactive_art_spec?.caption,
+});
 const secondary1 = pickOne(edition?.slots.secondary_1, 'secondary-1', 3);
 const secondary2 = pickOne(edition?.slots.secondary_2, 'secondary-2', 4);
 const railFeature = pickOne(edition?.slots.rail_feature, 'rail-feature', 5);
@@ -84,6 +90,7 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
 <BaseLayout
   title="The Financial Crimes — All the Crimes Fit to Fine"
   description="Daily broadsheet tracking global white-collar crime, regulatory fines, and prison time."
+  preloadImage={leadHeroRef.entry?.refImage}
 >
   <Masthead slot="header" displayDate={displayDate} editionDate={editionDate} rollup={rollup} />
 

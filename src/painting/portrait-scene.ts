@@ -457,7 +457,7 @@ export function createPortraitScene(
   const toySubtext = (config.toySubtext || '').toUpperCase();
   const interactive = config.mode !== 'thumb';
 
-  const baseSeed = config.seed ?? hashString(config.slug || config.refImage || config.alt || 'fc-portrait');
+  const baseSeed = config.seed ?? hashString(config.slug || config.refImage || 'fc-portrait');
   const rand: Rand = options.random ?? mulberry32(baseSeed);
   const loadFn = options.load ?? ((url: string) => loadPixels(url, SAMPLE_WIDTH));
 
@@ -680,6 +680,8 @@ export function createPortraitScene(
 
   /** Apply live wet-oil surface transformations directly into the portrait's impasto dabs. */
   function applySurfacePigmentEffects(u: number, v: number, t: number, base: Sample): Sample {
+    // Hot path: with no live effects every base sample (always carrying jitter & monochrome) passes through
+    if (waves.length === 0 && goldPatches.length === 0 && stamps.length === 0) return base;
     let color = base.color;
     let isMono = Boolean(base.monochrome);
     let jitter = base.jitter ?? 0.72;
@@ -848,12 +850,13 @@ export function createPortraitScene(
     const b = pixels.data[p4 + 2];
 
     const edgeStrength = pixels.strength[idx] * (1 - wingFade);
-    const contourAngle = pixels.angles[idx];
-    const flowAngle = (fbm(u * 2.4 + 7.3, v * 2.4 + 1.9) - 0.5) * 1.4;
 
     // Curve oil brushstrokes organically along cheekbones, hairlines, lapels & facades
     const contourWeight = edgeStrength > 0.12 ? clamp((edgeStrength - 0.12) * 1.15, 0, 0.94) : 0;
-    const angle = contourWeight > 0 ? blendAngle(flowAngle, contourAngle, contourWeight) : undefined;
+    const angle =
+      contourWeight > 0
+        ? blendAngle((fbm(u * 2.4 + 7.3, v * 2.4 + 1.9) - 0.5) * 1.4, pixels.angles[idx], contourWeight)
+        : undefined;
 
     // Subtle radial editorial vignette toward frame corners
     const distFromFocal = Math.hypot((u - crop.canvasFocalU) * 1.12, (v - crop.canvasFocalV) * 1.05);
@@ -1997,12 +2000,6 @@ export function createPortraitScene(
   }
 
   return {
-    aspect,
-    alt:
-      config.alt ||
-      (config.subject
-        ? `Impressionist oil painting of ${config.subject}`
-        : 'Impressionist editorial oil painting by The Financial Crimes'),
     ready: () => status === 'ready' || status === 'failed',
     revision: () => pixelRevision,
     resize(width: number, height: number) {

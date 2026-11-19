@@ -158,11 +158,6 @@ export async function loadAllArticles(): Promise<ArticleRecord[]> {
   });
 }
 
-export async function loadArticleBySlug(slug: string): Promise<ArticleRecord | null> {
-  const all = await loadAllArticles();
-  return all.find((article) => article.slug === slug) ?? null;
-}
-
 export async function loadEdition(date?: string): Promise<EditionManifest | null> {
   if (!(await pathExists(EDITIONS_ROOT))) {
     return null;

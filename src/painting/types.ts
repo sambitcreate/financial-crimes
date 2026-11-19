@@ -22,9 +22,6 @@ export interface Hotspot {
 }
 
 export interface SceneContext {
-  visible: boolean;
-  /** Loop-clock seconds when the viewer last poked this painting; -Infinity if never. */
-  lastPlayed: number;
   reducedMotion: boolean;
 }
 
@@ -65,7 +62,6 @@ export interface PaintRefManifestEntry {
 export interface PaintRefConfig {
   slug?: string;
   refImage?: string;
-  subject?: string;
   isPortrait?: boolean;
   focalPoint?: { u: number; v: number };
   paletteMood?: PaletteMood;
@@ -75,16 +71,11 @@ export interface PaintRefConfig {
   monochrome?: boolean;
   aspect?: number;
   mode?: PaintMode;
-  alt?: string;
   seed?: number;
 }
 
 /** Describes a painting as colour fields. The painter keeps sampling it, so changes get painted in. */
 export interface Scene {
-  /** width / height */
-  aspect: number;
-  /** Accessible description of the painting. */
-  alt: string;
   /** Colour at (u, v) in 0..1 at loop time t, or null for "leave this spot unpainted". */
   sample(u: number, v: number, t: number): Sample | null;
   /** Where maintenance dabs should concentrate right now. */
@@ -100,10 +91,6 @@ export interface Scene {
   busy?(): boolean;
   /** Bumps when the source pixels change (e.g. a late image load); the painter then restarts. */
   revision?(): number;
-  /**
-   * Hear the pointer anywhere on the page, not only over the painting.
-   */
-  pointerEverywhere?: boolean;
   /** When defined, the painter waits for true before painting (image-based scenes). */
   ready?(): boolean;
   /** Optional reset hook when the viewer clicks Repaint. */

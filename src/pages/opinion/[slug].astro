@@ -5,6 +5,7 @@ import FcArt from '../../components/FcArt.astro';
 import CompareStreetCrime from '../../components/CompareStreetCrime.astro';
 import CrimeReceiptModal from '../../components/CrimeReceiptModal.astro';
 import { loadAllArticles } from '../../loaders/articles';
+import { resolvePaintRef } from '../../painting/refs-loader';
 import type { ArticleRecord } from '../../schemas/article';
 import { formatBroadsheetDate } from '../../utils/format';
 
@@ -32,6 +33,12 @@ const monoSpec = {
   theme: 'monochrome' as const,
 };
 
+const heroRef = await resolvePaintRef({
+  id: `${article.id}-mono`,
+  slug: article.slug,
+  caption: monoSpec.caption,
+});
+
 const related = allArticles
   .filter((a) => a.slug !== article.slug)
   .sort((a, b) => (b.template === 'opinion' ? 1 : 0) - (a.template === 'opinion' ? 1 : 0))
@@ -42,6 +49,7 @@ const related = allArticles
   title={`Opinion | ${article.headline} — The Financial Crimes`}
   description={article.deck}
   ogType="article"
+  preloadImage={heroRef.entry?.refImage}
 >
   <CompactHeader slot="header" showTopicBar={false} />
 
@@ -85,7 +93,6 @@ const related = allArticles
         spec={monoSpec}
         mode="hero"
         aspect="16/10"
-        showChrome={false}
         showCaption={true}
       />
     </div>
@@ -129,7 +136,6 @@ const related = allArticles
                   spec={rel.template === 'opinion' ? { ...rel.interactive_art_spec, theme: 'monochrome' } : rel.interactive_art_spec}
                   mode="thumb"
                   aspect="16/10"
-                  showChrome={false}
                   showCaption={false}
                 />
               </a>

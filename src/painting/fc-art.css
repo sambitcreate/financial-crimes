@@ -136,11 +136,6 @@ a:hover .fc-painting-shell[data-mode='thumb'] .fc-painting-stage,
   animation: fcPaintingSpin 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Micro-hint overlay removed so the impasto oil canvas breathes 100% pure */
-.fc-painting-hint {
-  display: none !important;
-}
-
 /* Clean broadsheet editorial figcaption below the frame */
 .fc-art-figcaption {
   margin-top: 8px;
@@ -183,8 +178,7 @@ a:hover .fc-painting-shell[data-mode='thumb'] .fc-painting-stage,
 
 @media (prefers-reduced-motion: reduce) {
   .fc-painting-shell[data-mode='thumb'] .fc-painting-stage,
-  .fc-painting-repaint,
-  .fc-painting-hint {
+  .fc-painting-repaint {
     transition: none;
   }
   .fc-painting-repaint.is-spinning {

@@ -227,8 +227,3 @@ export function formatFineRatio(pct: number | null, fallback = 'Pending'): strin
   if (pct === null || Number.isNaN(pct)) return fallback;
   return `${pct.toFixed(2)}%`;
 }
-
-export function formatComments(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
-  return String(n);
-}

@@ -1,5 +1,4 @@
 ---
-import '../art/runtime/fc-art.css';
 import { accentToMood } from '../painting/palette';
 import { resolvePaintRef } from '../painting/refs-loader';
 import type { PaintMode, PaintRefConfig, ToyKind } from '../painting/types';
@@ -17,9 +16,6 @@ export interface Props {
   };
   mode?: 'hero' | 'inline' | 'thumb';
   aspect?: '4/5' | '16/9' | '16/10' | '1/1' | '4/3';
-  dateline?: string;
-  dateLabel?: string;
-  showChrome?: boolean;
   showCaption?: boolean;
   alt?: string;
 }
@@ -70,10 +66,10 @@ const resolvedAlt =
     ? `Impressionist oil painting of ${entry.subject}`
     : spec?.caption || 'Impressionist editorial oil painting by The Financial Crimes');
 
+// Only what the client reads (alt lives on the stage's aria-label; mode/aspect also on data-*)
 const paintingConfig: PaintRefConfig = {
   slug: resolvedSlug,
   refImage: entry?.refImage,
-  subject: entry?.subject,
   isPortrait: entry?.isPortrait ?? true,
   focalPoint: entry?.focalPoint,
   paletteMood,
@@ -83,7 +79,6 @@ const paintingConfig: PaintRefConfig = {
   monochrome: isMonochrome,
   aspect: ASPECT_RATIO_MAP[safeAspect],
   mode: safeMode,
-  alt: resolvedAlt,
 };
 
 const serializedConfig = JSON.stringify(paintingConfig).replace(/</g, '\\u003c');
@@ -95,16 +90,6 @@ const creditText =
     ? spec.credit
     : 'Oil Study · The Financial Crimes';
 const renderCaption = showCaption ?? (safeMode !== 'thumb' && Boolean(captionText));
-
-const HINTS: Record<ToyKind, string> = {
-  stamp: 'Click to stamp · Hover to sharpen',
-  coins: 'Click to scatter · Hover to sharpen',
-  redaction: 'Click to redact · Hover to reveal',
-  'crash-line': 'Click to crash · Hover to sharpen',
-  envelopes: 'Click to serve · Hover to sharpen',
-  'gavel-ripple': 'Click to strike · Hover to sharpen',
-};
-const microHint = HINTS[toyKind] ?? 'Click to poke · Hover to sharpen';
 ---
 
 <figure
@@ -129,18 +114,15 @@ const microHint = HINTS[toyKind] ?? 'Click to poke · Hover to sharpen';
 
     {
       isInteractive && (
-        <>
-          <span class="fc-painting-hint" aria-hidden="true">{microHint}</span>
-          <button
-            type="button"
-            class="fc-painting-repaint"
-            data-fc-repaint
-            aria-label="Repaint portrait"
-            title="Repaint portrait"
-          >
-            ↻
-          </button>
-        </>
+        <button
+          type="button"
+          class="fc-painting-repaint"
+          data-fc-repaint
+          aria-label="Repaint portrait"
+          title="Repaint portrait"
+        >
+          ↻
+        </button>
       )
     }
 

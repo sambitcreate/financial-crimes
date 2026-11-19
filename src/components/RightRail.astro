@@ -26,7 +26,6 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
         spec={featureArticle.interactive_art_spec}
         mode="inline"
         aspect="4/3"
-        showChrome={false}
         showCaption={false}
       />
     </div>
@@ -68,7 +67,6 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
                 spec={item.interactive_art_spec}
                 mode="thumb"
                 aspect="1/1"
-                showChrome={false}
                 showCaption={false}
               />
             </a>
@@ -153,7 +151,6 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
                 spec={{ ...op.interactive_art_spec, theme: 'monochrome' }}
                 mode="thumb"
                 aspect="16/10"
-                showChrome={false}
                 showCaption={false}
               />
             </a>

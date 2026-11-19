@@ -4,16 +4,12 @@ import { clamp, hslCss, lerp } from './color';
 import { paintDab } from './brush';
 
 export interface PainterOptions {
-  /** Skip the opaque base wash. */
-  transparent?: boolean;
   /** Fine dab size as a fraction of canvas width. */
   fineFraction?: number;
   /** Smallest fine dab in device pixels. */
   minFine?: number;
   /** Dabs per frame once the underpainting is done. */
   maintenance?: number;
-  /** Dabs per frame while underpainting (used when buildSeconds is omitted). */
-  buildPerFrame?: number;
   /** Finish the underpainting in this many seconds (paces by dt). */
   buildSeconds?: number;
   /** First underpainting dabs are this many times the fine size (easing down to 1). */
@@ -25,15 +21,10 @@ export interface PainterOptions {
 }
 
 export const HOTSPOT_SHARE = 0.62;
-/** An opened painting seeded from a smaller copy starts this far through its underpainting. */
-export const SEED_HEAD_START = 0.55;
 /** Under reduced motion, keep repainting this many seconds after a click/poke. */
 export const INTERACTION_GRACE = 4;
 /** Under reduced motion the underpainting lands in a few frames; cap each frame's main-thread slice. */
 const REDUCED_MOTION_BUDGET_MS = 10;
-
-/** Painters per scene, most recent last. Only the most recent one steps the (shared) scene. */
-const owners = new WeakMap<Scene, Painter[]>();
 
 /** Tuned presets so hero portraits shine at fine detail while 20+ thumbs glide at 60fps. */
 export function painterOptionsForMode(
@@ -94,12 +85,10 @@ export class Painter {
   private washed = false;
   private liveDirty = false;
   private revision = 0;
-  private readonly transparent: boolean;
   private readonly fineFraction: number;
   private readonly minFine: number;
   private readonly maintenance: number;
-  private readonly buildPerFrame: number;
-  private readonly buildSeconds: number | null;
+  private readonly buildSeconds: number;
   private readonly coarse: number;
   private readonly maxBuildTarget: number;
   private readonly rand: Rand;
@@ -110,29 +99,18 @@ export class Painter {
     private readonly live: CanvasRenderingContext2D | null,
     options: PainterOptions = {},
   ) {
-    this.transparent = options.transparent ?? false;
     this.fineFraction = options.fineFraction ?? 0.0054;
     this.minFine = options.minFine ?? 2;
     this.maintenance = options.maintenance ?? 220;
-    this.buildPerFrame = options.buildPerFrame ?? 1200;
-    this.buildSeconds = options.buildSeconds ?? null;
+    this.buildSeconds = options.buildSeconds ?? 1.35;
     this.coarse = options.coarse ?? 4.0;
     this.maxBuildTarget = options.maxBuildTarget ?? 24000;
     this.reducedMotion = options.reducedMotion ?? false;
     this.rand = options.random ?? Math.random;
-
-    const list = owners.get(scene) ?? [];
-    list.push(this);
-    owners.set(scene, list);
-  }
-
-  get isOwner(): boolean {
-    const list = owners.get(this.scene);
-    return !!list && list[list.length - 1] === this;
   }
 
   /** Reallocate for a new canvas size (device px) and restart the underpainting. */
-  resize(width: number, height: number, seed?: CanvasImageSource | null): void {
+  resize(width: number, height: number): void {
     if (width <= 0 || height <= 0) return;
     this.width = width;
     this.height = height;
@@ -145,18 +123,9 @@ export class Painter {
 
     const g = this.ground;
     g.clearRect(0, 0, width, height);
-    if (!this.transparent) {
-      // Warm archival linen ground before the first oil stroke lands
-      g.fillStyle = '#f6f3ec';
-      g.fillRect(0, 0, width, height);
-    }
-
-    const seedSize = seed as { width?: number; height?: number } | null | undefined;
-    if (seed && (seedSize?.width ?? 0) > 0 && (seedSize?.height ?? 0) > 0) {
-      g.drawImage(seed, 0, 0, width, height);
-      this.built = Math.round(this.buildTarget * SEED_HEAD_START);
-      this.washed = true;
-    }
+    // Warm archival linen ground before the first oil stroke lands
+    g.fillStyle = '#f6f3ec';
+    g.fillRect(0, 0, width, height);
   }
 
   /** Wipe and freshly repaint the portrait from coarse wash to fine brushstrokes. */
@@ -170,7 +139,7 @@ export class Painter {
       this.live.clearRect(0, 0, this.width, this.height);
       this.liveDirty = false;
     }
-    this.resize(this.width, this.height, null);
+    this.resize(this.width, this.height);
   }
 
   play(t: number): void {
@@ -186,25 +155,21 @@ export class Painter {
   }
 
   step(t: number, dt: number): void {
-    if (this.failed || !this.visible || this.width === 0 || !this.isOwner) return;
+    if (this.failed || !this.visible || this.width === 0) return;
     this.guard(() => {
       const { scene } = this;
-      scene.update?.(t, dt, {
-        visible: this.visible,
-        lastPlayed: this.lastPlayed,
-        reducedMotion: this.reducedMotion,
-      });
+      scene.update?.(t, dt, { reducedMotion: this.reducedMotion });
 
       // Source pixels changed (late image load): restart the underpainting from them
       const revision = scene.revision?.() ?? 0;
       if (revision !== this.revision) {
         this.revision = revision;
-        this.resize(this.width, this.height, null);
+        this.resize(this.width, this.height);
       }
 
       const isReady = !scene.ready || scene.ready();
       if (isReady) {
-        if (!this.washed && !this.transparent) {
+        if (!this.washed) {
           this.applyBaseWash(t);
         }
         if (this.built < this.buildTarget) {
@@ -226,13 +191,6 @@ export class Painter {
     });
   }
 
-  dispose(): void {
-    const list = owners.get(this.scene);
-    if (!list) return;
-    const i = list.indexOf(this);
-    if (i >= 0) list.splice(i, 1);
-  }
-
   private applyBaseWash(t: number): void {
     this.washed = true;
     const base = this.scene.sample(0.5, 0.5, t);
@@ -247,12 +205,11 @@ export class Painter {
     const deadline = this.reducedMotion ? performance.now() + REDUCED_MOTION_BUDGET_MS : Infinity;
     const n = this.reducedMotion
       ? remaining
-      : this.buildSeconds
-        ? Math.max(24, Math.ceil((this.buildTarget * Math.max(dt, 1 / 120)) / this.buildSeconds))
-        : this.buildPerFrame;
+      : Math.max(24, Math.ceil((this.buildTarget * Math.max(dt, 1 / 120)) / this.buildSeconds));
 
     const hot: Hotspot[] = this.scene.hotspots?.(t) ?? [];
     const aspect = this.width / this.height;
+    this.ground.lineCap = 'round';
 
     for (let i = 0; i < n && this.built < this.buildTarget; i++, this.built++) {
       const p = this.built / this.buildTarget;
@@ -280,6 +237,7 @@ export class Painter {
   private maintain(t: number): void {
     const hot: Hotspot[] = this.scene.hotspots?.(t) ?? [];
     const aspect = this.width / this.height;
+    this.ground.lineCap = 'round';
 
     for (let i = 0; i < this.maintenance; i++) {
       if (hot.length > 0 && this.rand() < HOTSPOT_SHARE) {
@@ -298,14 +256,9 @@ export class Painter {
   private dabAt(u: number, v: number, size: number, t: number): void {
     const sample = this.scene.sample(u, v, t);
     if (!sample) return;
-    paintDab(this.ground, {
-      x: u * this.width,
-      y: v * this.height,
-      size,
-      sample,
-      rand: this.rand,
-      flowAngle: (fbm(u * 2.2 + 11, v * 2.2) - 0.5) * 1.6,
-    });
+    // The flow field only steers strokes whose sample carries no contour angle
+    const flowAngle = sample.angle === undefined ? (fbm(u * 2.2 + 11, v * 2.2) - 0.5) * 1.6 : 0;
+    paintDab(this.ground, u * this.width, v * this.height, size, sample, flowAngle, this.rand);
   }
 
   private guard(fn: () => void): void {
