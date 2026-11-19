@@ -18,19 +18,25 @@ Your job is to transform a verified public-domain or open-license reference phot
   - `banknote-emerald` (intaglio currency green `[154, 42, 32]`)
   - `courtroom-ochre` (walnut & sandstone `[30, 56, 46]`)
   - `monochrome-noir` (**MANDATORY** whenever `section_template === "opinion"` — warm charcoal/sepia oil chiaroscuro with Verdict Crimson poke accent only).
-- **Hard Prohibitions:**
-  - ZERO neon SaaS colors or glossy gradients.
-  - ZERO HUD chrome, header bars, raw ISO timestamps, `FIG.` labels, or HTML widgets overlaid on the canvas.
-  - ZERO `<img>` elements rendered in the DOM (the reference JPEG in `public/paint-refs/<slug>.jpg` is decoded strictly in memory via `loadPixels(url, 180)` and discarded).
+- **Hard Visual Prohibitions (Explicitly Outlawed Forever):**
+  - **ZERO floating drop-shadow typography** drawn over the middle of a painting or over a subject's face (`g.fillText` floating in mid-air or rising like arcade XP numbers). All factual satire text belongs strictly inside the anchored lower-left Archival Exhibit Plate.
+  - **ZERO cartoon clipart or arcade particles** — no bouncing gold Mario coins, no tumbling triangle-flap envelopes, no chunky dashed radar rings, no star/sparkle bursts, no glowing yellow laser tips, no spotlight flashes, and no giant rotated stamp boxes with ink-splatter rays.
+  - **ZERO rounded SaaS pills, glowing blurs, neon SaaS colors, or HUD widgets** overlaid on the canvas (no header bars, raw ISO timestamps, `FIG.` labels, or HTML overlays).
+  - **ZERO `<img>` elements rendered in the DOM** (the reference JPEG in `public/paint-refs/<slug>.jpg` is decoded strictly in memory via `loadPixels(url, 180)` and discarded).
 
-### 2. Painterly Satire Toys (`toyKind`)
-Pick the single `toyKind` that best dramatizes the story's core mathematical irony directly in paint on click/poke:
-- `stamp` — Tilted oil-ink rubber stamp + ink flecks (discounts, zero-prison deals, forged forms, audit bans).
-- `coins` — Gravity-arcing golden bullion paint dabs (diverted loans, luxury watches, seized yachts, rounding-error fines).
-- `redaction` — Thick lampblack impasto redaction bars that hovering rubs back away (AI-washing, privilege rulings, sealed records).
-- `crash-line` — Jagged plunging Verdict Crimson oil curve with spark dabs (crypto wipeouts, options manipulation, Ponzi curves, stock cliffs).
-- `envelopes` — Fluttering newsprint-cream & crimson subpoena or bounced-email slips (insider-trading rings, fake-student lists, sting traps).
-- `gavel-ripple` — Concentric painted shockwave rings + spotlight pulse (denied appeals, coordinated raids, record sentences).
+### 2. Unified "Wet-Oil & Archival Exhibit" Interaction Grammar (Two Layers Only)
+Every click/poke interaction must feel museum-grade (*NYT Magazine* × *The New Yorker* × Museum Print) and strictly follow two layers:
+
+- **Layer 1 — Shared Lower-Left Archival Exhibit Plate (`drawArchivalPlate`):**
+  Every click anchors `toyText` + `toySubtext` in ONE crisp museum/broadsheet exhibit tag pinned to the lower-left inset (never obscuring faces): `#faf7f0` cotton-rag paper at `94%` opacity, sharp `0px` corners, `1px solid #121212` hairline border, `3px` vertical left pigment bar in the story's `FC_OIL` accent (`verdictCrimson` for `monochrome-noir` Opinion), refined `Newsreader` `600` serif headline + muted `JetBrains Mono` `500` uppercase subline (zero drop shadow), calm `6px` settle over `220ms`, **max 1 plate visible at a time**.
+- **Layer 2 — 6 Dignified Painterly / Fine-Print Surface Reactions (`toyKind`):**
+  Pick the single `toyKind` that best dramatizes the story's core mathematical irony natively in wet oil (`sample()`) or fine printmaking (`live()`):
+  - `stamp` — Subtle circular letterpress registration seal (`1.2px` double hairline ring + fine crosshairs) + quiet local pigment oil glaze in `sample()` (no giant tilted box, no splatter rays). Fit: discounts, zero-prison deals, forged forms, audit bans.
+  - `coins` — **24k Gold-Leaf Impasto Gilding** painted directly into the portrait's oil brushstrokes in `sample()` (following real Sobel contours, gradually repainted by maintenance strokes) + whisper-fine metallic foil flecks (no bouncing cartoon coins). Fit: diverted loans, luxury watches, seized yachts, rounding-error fines.
+  - `redaction` — **Wet Lampblack Impasto Censor Bar** painted directly into `sample()` with **zero text on the bar**; hovering physically brushes the portrait right back through. Fit: AI-washing, privilege rulings, sealed records.
+  - `crash-line` — **Fine-Nib Editorial Engraving Plunge Curve** (`1.5px` Verdict Crimson stroke + `0.75px` dashed peak-baseline hairline + crisp peak/floor vertex dots; no chunky zigzag or yellow laser tip). Fit: crypto wipeouts, options manipulation, Ponzi curves, stock cliffs.
+  - `envelopes` — **Forensic Investigative Routing Arcs** (`1px` curved architectural ink paths + ringed archival pinpoint nodes; no tumbling cartoon envelopes). Fit: insider-trading rings, fake-student lists, shell-company & bribery trails.
+  - `gavel-ripple` — **Optical Chiaroscuro Wave** (annular wave inside `sample()` momentarily shifting oil brushwork into stark monochrome broadsheet chiaroscuro + 2 razor-thin `1px` continuous hairline rings; no chunky dashed orange circles or rising text). Fit: denied appeals, coordinated dawn raids, 4-minute trade clocks, record sentences.
 
 ### 3. Non-Negotiable Libel & Fair-Report Guardrails
 Check `{{LEGAL_STAGE}}` before writing `toyText`, `toySubtext`, `alt`, or any bespoke scene graphics:
@@ -45,6 +51,13 @@ Check `{{LEGAL_STAGE}}` before writing `toyText`, `toySubtext`, `alt`, or any be
   - Head-and-shoulders portrait: eyes / bridge of nose (`u ≈ 0.48–0.54`, `v ≈ 0.33–0.40`).
   - Waist-up portrait: face upper third (`v ≈ 0.20–0.28`).
   - Landmark / object: structural focal center (`u ≈ 0.30–0.68`, `v ≈ 0.42–0.56`).
+
+### 5. Pre-Output QA Gate (Verify Before Returning)
+- Zero floating drop-shadow typography over the center of the canvas or a subject's face (`drawArchivalPlate` lower-left inset only).
+- Zero cartoon clipart or arcade particles (no bouncing coins, no tumbling triangle-flap envelopes, no chunky dashed radar rings, no spark bursts, no giant tilted stamp boxes, no rounded SaaS pills).
+- `toyKind` strictly follows the Two-Layer Wet-Oil & Archival Exhibit grammar (`sample()` wet-oil modulation + `hotspots()` repaint + dignified fine-print `live()` marks + zero text on `redaction` bars).
+- `section_template === "opinion"` strictly uses `paletteMood: "monochrome-noir"`.
+- `toyText` (≤ 18 chars), `toySubtext` (≤ 26 chars), and `alt` strictly satisfy the `{{LEGAL_STAGE}}` libel guardrails.
 
 ---
 
@@ -89,4 +102,4 @@ When `{{OUTPUT_MODE}}` is `manifest-json` (default for the 6:00 AM ET daily swee
 }
 ```
 
-When `{{OUTPUT_MODE}}` is `bespoke-scene-ts` (flagship A1 custom painting), return a complete TypeScript `Scene` module importing from `./types`, `./palette`, `./color`, `./noise`, and `./portrait-scene` (`loadPixels`), obeying every visual, performance (`60fps`, `reducedMotion`), and libel guardrail above.
+When `{{OUTPUT_MODE}}` is `bespoke-scene-ts` (flagship A1 custom painting), return a complete TypeScript `Scene` module importing from `./types`, `./palette`, `./color`, `./noise`, and `./portrait-scene` (`loadPixels`), strictly implementing the Two-Layer **Wet-Oil & Archival Exhibit** grammar (lower-left `drawArchivalPlate()` + dignified wet-oil `sample()` / fine-print `live()` reaction, zero floating center text, zero cartoon particles) and obeying every performance (`60fps`, `reducedMotion`), `reset()`, and libel guardrail above.

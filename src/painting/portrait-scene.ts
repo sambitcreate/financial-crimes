@@ -9,7 +9,7 @@ import type {
   ToyKind,
 } from './types';
 import { fbm, hashString, mulberry32, type Rand } from './noise';
-import { clamp, hslCss, lerp, mixHslShortest, rgbToHsl } from './color';
+import { clamp, hslCss, hslToRgb, lerp, mixHslShortest, rgbToHsl } from './color';
 import { FC_OIL, resolveMoodProfile } from './palette';
 
 const TAU = Math.PI * 2;
@@ -174,38 +174,44 @@ export function loadPixels(url: string, sampleWidth = SAMPLE_WIDTH): Promise<Pix
 }
 
 /* ============================================================================
-   Interactive Painterly Toy State Types
+   Wet-Oil & Archival Exhibit Interaction State Types
    ============================================================================ */
 
-interface StampMark {
+interface ArchivalPlate {
+  t0: number;
+  title: string;
+  subtitle: string;
+  accent: HSL;
+}
+
+interface RegistrationStamp {
   u: number;
   v: number;
   t0: number;
-  tilt: number;
-  text: string;
-  subtext: string;
-  splatters: { angle: number; dist: number; size: number; len: number }[];
+  seed: number;
+  accent: HSL;
 }
 
-interface CoinParticle {
+interface GoldLeafPatch {
+  u: number;
+  v: number;
+  t0: number;
+  seed: number;
+}
+
+interface GoldFoilFleck {
   u: number;
   v: number;
   vu: number;
   vv: number;
-  r: number;
-  spin: number;
+  w: number;
+  h: number;
+  rot: number;
+  vrot: number;
   phase: number;
   t0: number;
   life: number;
-  tone: HSL;
-}
-
-interface ShimmerArc {
-  u: number;
-  v: number;
-  r: number;
-  t0: number;
-  angle0: number;
+  pale: boolean;
 }
 
 interface RedactionBar {
@@ -216,40 +222,37 @@ interface RedactionBar {
   tilt: number;
   t0: number;
   seed: number;
-  /** Per-segment ink coverage (1 = solid black redaction, 0 = scratched clean back to portrait). */
+  /** Per-segment ink coverage (1 = solid lampblack glaze, 0 = rubbed clean back to portrait). */
   cells: Float32Array;
 }
 
-interface CrashStroke {
+interface EngravingPlunge {
   t0: number;
   points: { u: number; v: number }[];
-  sparks: { seg: number; du: number; dv: number; size: number; tone: HSL }[];
-  label: string;
+  peakIndex: number;
 }
 
-interface EnvelopeParticle {
-  u: number;
-  v: number;
-  vu: number;
-  vv: number;
-  w: number;
-  h: number;
-  rot: number;
-  vrot: number;
-  swayFreq: number;
-  swayAmp: number;
-  phase: number;
-  t0: number;
-  life: number;
-  hasText: boolean;
+interface RoutingArc {
+  x0: number;
+  y0: number;
+  cx: number;
+  cy: number;
+  x1: number;
+  y1: number;
+  delay: number;
 }
 
-interface GavelRipple {
+interface ForensicRoute {
   u: number;
   v: number;
   t0: number;
-  seed: number;
-  label: string;
+  arcs: RoutingArc[];
+}
+
+interface ChiaroscuroWave {
+  u: number;
+  v: number;
+  t0: number;
 }
 
 /* ============================================================================
@@ -346,37 +349,84 @@ function blendAngle(flow: number, contour: number, weight: number): number {
   return flow + diff * weight;
 }
 
-/** Draw a rough painterly line with subtle bristle offset for the live canvas layer. */
-function drawImpastoLine(
+function easeOutCubic(p: number): number {
+  const c = clamp(p, 0, 1);
+  return 1 - Math.pow(1 - c, 3);
+}
+
+/** Pigment-accurate sRGB color mixing so blue + 24k gold yields warm antique bronze, never neon green. */
+function mixHslViaRgb(a: HSL, b: HSL, t: number): HSL {
+  const f = clamp(t, 0, 1);
+  const [ar, ag, ab] = hslToRgb(a);
+  const [br, bg, bb] = hslToRgb(b);
+  return rgbToHsl(lerp(ar, br, f), lerp(ag, bg, f), lerp(ab, bb, f));
+}
+
+/** Measure editorial tracked text cleanly across Unicode symbols (₹, €, ≈, ·). */
+function measureTrackedText(
+  g: CanvasRenderingContext2D,
+  text: string,
+  trackingPx: number,
+): number {
+  if (!text) return 0;
+  if (trackingPx <= 0) return g.measureText(text).width;
+  const chars = Array.from(text);
+  let total = 0;
+  for (let i = 0; i < chars.length; i++) {
+    total += g.measureText(chars[i]).width;
+    if (i < chars.length - 1) total += trackingPx;
+  }
+  return total;
+}
+
+/** Render left-aligned tracked editorial typography with crisp letter spacing. */
+function fillTrackedText(
+  g: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  trackingPx: number,
+): void {
+  if (!text) return;
+  if (trackingPx <= 0) {
+    g.fillText(text, x, y);
+    return;
+  }
+  const chars = Array.from(text);
+  let cursor = x;
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
+    g.fillText(ch, cursor, y);
+    cursor += g.measureText(ch).width + trackingPx;
+  }
+}
+
+/** Brief flat-bristle lampblack oil sweep for the first 0.24s of a redaction mark. */
+function drawWetLampblackSweep(
   g: CanvasRenderingContext2D,
   x0: number,
   y0: number,
   x1: number,
   y1: number,
   width: number,
-  color: HSL,
   alpha: number,
 ): void {
-  g.lineCap = 'round';
+  g.save();
+  g.lineCap = 'butt';
   g.lineWidth = width;
-  g.strokeStyle = hslCss(color[0], color[1], color[2] - 16, alpha * 0.45);
-  g.beginPath();
-  g.moveTo(x0 + width * 0.22, y0 + width * 0.3);
-  g.lineTo(x1 + width * 0.22, y1 + width * 0.3);
-  g.stroke();
-
-  g.strokeStyle = hslCss(color[0], color[1], color[2], alpha);
+  g.strokeStyle = hslCss(FC_OIL.pressBlack[0], FC_OIL.pressBlack[1], FC_OIL.pressBlack[2], alpha * 0.9);
   g.beginPath();
   g.moveTo(x0, y0);
   g.lineTo(x1, y1);
   g.stroke();
 
-  g.lineWidth = Math.max(1, width * 0.34);
-  g.strokeStyle = hslCss(color[0], color[1] * 0.6, Math.min(96, color[2] + 16), alpha * 0.55);
+  g.lineWidth = Math.max(1, width * 0.22);
+  g.strokeStyle = hslCss(FC_OIL.pressBlack[0], FC_OIL.pressBlack[1], FC_OIL.pressBlack[2] + 9, alpha * 0.35);
   g.beginPath();
-  g.moveTo(x0 - width * 0.14, y0 - width * 0.16);
-  g.lineTo(x1 - width * 0.14, y1 - width * 0.16);
+  g.moveTo(x0, y0 - width * 0.18);
+  g.lineTo(x1, y1 - width * 0.18);
   g.stroke();
+  g.restore();
 }
 
 /* ============================================================================
@@ -437,14 +487,19 @@ export function createPortraitScene(
   let lastClock = 0;
   let reducedMotion = false;
 
-  // Interactive toy states
-  const stamps: StampMark[] = [];
-  const coins: CoinParticle[] = [];
-  const shimmerArcs: ShimmerArc[] = [];
+  const accentPigment: HSL = monochrome ? FC_OIL.verdictCrimson : mood.accent;
+
+  // Shared lower-left archival exhibit plate (strictly 1 active plate at a time)
+  let activePlate: ArchivalPlate | null = null;
+
+  // Wet-oil & editorial-engraving interaction states
+  const stamps: RegistrationStamp[] = [];
+  const goldPatches: GoldLeafPatch[] = [];
+  const foilFlecks: GoldFoilFleck[] = [];
   const redactions: RedactionBar[] = [];
-  const crashes: CrashStroke[] = [];
-  const envelopes: EnvelopeParticle[] = [];
-  const ripples: GavelRipple[] = [];
+  let activeCrash: EngravingPlunge | null = null;
+  let activeRoute: ForensicRoute | null = null;
+  const waves: ChiaroscuroWave[] = [];
   const scratchHotspots: { u: number; v: number; t0: number }[] = [];
 
   const startLoad = () => {
@@ -618,6 +673,125 @@ export function createPortraitScene(
     return null;
   }
 
+  /** Apply live wet-oil surface transformations directly into the portrait's impasto dabs. */
+  function applySurfacePigmentEffects(u: number, v: number, t: number, base: Sample): Sample {
+    let color = base.color;
+    let isMono = Boolean(base.monochrome);
+    let jitter = base.jitter ?? 0.72;
+
+    // 1. Optical Chiaroscuro Wave (gavel-ripple): expanding annular charcoal band in real oil strokes
+    if (waves.length > 0) {
+      for (let i = waves.length - 1; i >= 0; i--) {
+        const wv = waves[i];
+        const age = t - wv.t0;
+        if (age < 0 || age > 2.6) continue;
+        const d = Math.hypot((u - wv.u) * aspect, v - wv.v);
+
+        if (reducedMotion) {
+          if (d < 0.145) {
+            const fade = age < 1.6 ? 1 : clamp(1 - (age - 1.6) / 1.0, 0, 1);
+            const mask = clamp((0.145 - d) / 0.05, 0, 1) * fade;
+            if (mask > 0.02) {
+              const cl = clamp(oilContrast(color[2] / 100, 0.42) * 100, 8, 94);
+              color = mixHslShortest(color, [32, 8, cl], mask * 0.88);
+              if (mask > 0.4) isMono = true;
+            }
+          }
+          continue;
+        }
+
+        const p = clamp(age / 2.2, 0, 1);
+        const waveRadius = lerp(0.03, 0.68, 1 - Math.pow(1 - p, 2.1));
+        const bandWidth = lerp(0.085, 0.125, p);
+        const distFromBand = Math.abs(d - waveRadius);
+        if (distFromBand < bandWidth) {
+          const bell = Math.cos((distFromBand / bandWidth) * (Math.PI * 0.5));
+          const fade = age < 1.85 ? 1 : clamp(1 - (age - 1.85) / 0.75, 0, 1);
+          const intensity = bell * bell * fade;
+          if (intensity > 0.02) {
+            if (!isMono) {
+              const cl = clamp(oilContrast(color[2] / 100, 0.44) * 100, 7, 94);
+              color = mixHslShortest(color, [32, 8, cl], intensity * 0.94);
+              if (intensity > 0.35) isMono = true;
+            } else {
+              // On monochrome Opinion portraits, shift crest into stark high-contrast charcoal chiaroscuro
+              const cl = clamp(oilContrast(color[2] / 100, 0.58) * 100, 6, 95);
+              color = [30, 10, lerp(color[2], cl, intensity * 0.85)];
+            }
+            jitter *= lerp(1, 0.8, intensity);
+          }
+        }
+      }
+    }
+
+    // 2. 24k Gold-Leaf Impasto Gilding (coins): Klimt-style organic fbm gold leaf along Sobel contours
+    if (goldPatches.length > 0) {
+      for (let i = goldPatches.length - 1; i >= 0; i--) {
+        const patch = goldPatches[i];
+        const age = t - patch.t0;
+        if (age < 0 || age > 6.5) continue;
+        const d = Math.hypot((u - patch.u) * aspect, v - patch.v);
+        if (d > 0.24) continue;
+
+        const edgeNoise = fbm(u * 13 + patch.seed, v * 13 + patch.seed * 0.6);
+        const organicR = 0.165 + (edgeNoise - 0.5) * 0.088;
+        if (d < organicR) {
+          const bloom = reducedMotion ? 1 : clamp(age / 0.22, 0, 1);
+          const decay = age < 4.0 ? 1 : clamp(1 - (age - 4.0) / 2.5, 0, 1);
+          const edgeMask = clamp((organicR - d) / 0.045, 0, 1);
+          const gildWeight = bloom * decay * edgeMask * 0.92;
+          if (gildWeight > 0.02) {
+            const lum01 = clamp(color[2] / 100, 0, 1);
+            const sheen = (fbm(u * 32 - patch.seed, v * 32 + 4.1) - 0.5) * 12;
+            const ochreShadow: HSL = [34, 62, 24];
+            const bullionMid: HSL = [40, 72, 48];
+            const leafHighlight: HSL = [45, 76, 68];
+            const baseGold =
+              lum01 < 0.5
+                ? mixHslShortest(ochreShadow, bullionMid, lum01 * 2)
+                : mixHslShortest(bullionMid, leafHighlight, (lum01 - 0.5) * 2);
+            const sculptedGold: HSL = [
+              baseGold[0],
+              baseGold[1],
+              clamp(baseGold[2] + sheen, 20, 76),
+            ];
+            color = mixHslViaRgb(color, sculptedGold, gildWeight);
+            isMono = false;
+            jitter *= lerp(1, 0.72, gildWeight);
+          }
+        }
+      }
+    }
+
+    // 3. Local Oil Wax-Seal Glaze (stamp): compact tactile pigment wash painted into impasto brushwork
+    if (stamps.length > 0) {
+      for (let i = stamps.length - 1; i >= 0; i--) {
+        const st = stamps[i];
+        const age = t - st.t0;
+        if (age < 0 || age > 5.6) continue;
+        const d = Math.hypot((u - st.u) * aspect, v - st.v);
+        if (d > 0.105) continue;
+
+        const edge = 0.075 + (fbm(u * 24 + st.seed, v * 24) - 0.5) * 0.02;
+        if (d < edge) {
+          const washFade = age < 3.6 ? 1 : clamp(1 - (age - 3.6) / 2.0, 0, 1);
+          const soft = clamp((edge - d) / 0.032, 0, 1);
+          const glaze = soft * washFade * 0.44;
+          if (glaze > 0.02) {
+            const mixed = mixHslViaRgb(color, st.accent, glaze);
+            // Respect underlying portrait luminance so the glaze reads as translucent oil pigment
+            const preservedL = lerp(mixed[2], color[2], 0.28);
+            color = [mixed[0], mixed[1], clamp(preservedL, 12, 84)];
+            isMono = false;
+            jitter *= lerp(1, 0.78, glaze);
+          }
+        }
+      }
+    }
+
+    return { color, angle: base.angle, jitter, monochrome: isMono };
+  }
+
   function sample(u: number, v: number, t: number): Sample | null {
     // 1. Check painted redaction oil bars on the ground layer first
     if (redactions.length > 0) {
@@ -628,7 +802,7 @@ export function createPortraitScene(
     // 2. Graceful procedural impressionist portrait fallback if image failed or absent
     if (!pixels) {
       if (status === 'failed') {
-        return sampleFallbackPortrait(u, v, t);
+        return applySurfacePigmentEffects(u, v, t, sampleFallbackPortrait(u, v, t));
       }
       return { color: FC_OIL.newsprintCream, jitter: 0.45, monochrome };
     }
@@ -721,162 +895,177 @@ export function createPortraitScene(
       }
     }
 
-    // Subtle golden oil glint on ground strokes immediately after a coin burst
-    if (toyKind === 'coins' && shimmerArcs.length > 0) {
-      const latest = shimmerArcs[shimmerArcs.length - 1];
-      const age = t - latest.t0;
-      if (age >= 0 && age < 1.3) {
-        const d = Math.hypot((u - latest.u) * aspect, v - latest.v);
-        if (d < 0.14) {
-          const glow = (1 - age / 1.3) * (1 - d / 0.14) * 0.42;
-          graded = mixHslShortest(graded, FC_OIL.bullionGold, glow);
-          return { color: graded, angle, jitter: jitter * 0.85, monochrome: false };
-        }
-      }
-    }
-
-    return { color: graded, angle, jitter, monochrome };
+    return applySurfacePigmentEffects(u, v, t, { color: graded, angle, jitter, monochrome });
   }
 
   /* ============================================================================
-     Interactive Toy Triggers (Click / Poke)
+     Wet-Oil & Archival Exhibit Interaction Triggers
      ============================================================================ */
 
+  function triggerPlate(t: number, title: string, subtitle: string): void {
+    activePlate = {
+      t0: t,
+      title: title.trim().toUpperCase(),
+      subtitle: subtitle.trim().toUpperCase(),
+      accent: accentPigment,
+    };
+  }
+
   function triggerStamp(u: number, v: number, t: number): void {
-    const safeU = clamp(u, 0.24, 0.76);
-    const safeV = clamp(v, 0.22, 0.78);
-    const tilt = (stamps.length % 2 === 0 ? -1 : 1) * (0.09 + rand() * 0.08) - 0.05;
-    const splatters: StampMark['splatters'] = [];
-    for (let i = 0; i < 16; i++) {
-      splatters.push({
-        angle: (i / 16) * TAU + (rand() - 0.5) * 0.35,
-        dist: 0.72 + rand() * 0.58,
-        size: 1.8 + rand() * 3.8,
-        len: 3 + rand() * 9,
-      });
-    }
-    stamps.push({ u: safeU, v: safeV, t0: t, tilt, text: toyText, subtext: toySubtext, splatters });
-    if (stamps.length > 3) stamps.shift();
+    const safeU = clamp(u, 0.12, 0.88);
+    const safeV = clamp(v, 0.12, 0.84);
+    stamps.push({
+      u: safeU,
+      v: safeV,
+      t0: t,
+      seed: rand() * 80,
+      accent: accentPigment,
+    });
+    if (stamps.length > 2) stamps.shift();
+    triggerPlate(t, toyText, toySubtext);
   }
 
   function triggerCoins(u: number, v: number, t: number): void {
-    const count = 18;
-    for (let i = 0; i < count; i++) {
-      const a = -Math.PI * 0.92 + rand() * Math.PI * 0.84;
-      const speed = 0.28 + rand() * 0.52;
-      const tone: HSL =
-        rand() < 0.25
-          ? [46, 86, 62]
-          : rand() < 0.65
-            ? FC_OIL.bullionGold
-            : [36, 70, 44];
-      coins.push({
-        u,
-        v,
-        vu: (Math.cos(a) * speed) / Math.max(0.7, aspect),
-        vv: Math.sin(a) * speed - 0.22,
-        r: 0.015 + rand() * 0.014,
-        spin: (rand() < 0.5 ? -1 : 1) * (5 + rand() * 7),
-        phase: rand() * TAU,
-        t0: t,
-        life: 2.3 + rand() * 1.1,
-        tone,
-      });
+    const safeU = clamp(u, 0.08, 0.92);
+    const safeV = clamp(v, 0.08, 0.92);
+    goldPatches.push({
+      u: safeU,
+      v: safeV,
+      t0: t,
+      seed: rand() * 90,
+    });
+    if (goldPatches.length > 2) goldPatches.shift();
+
+    if (!reducedMotion) {
+      const count = 5 + Math.floor(rand() * 3); // 5-7 delicate gold-leaf foil flecks
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * TAU + (rand() - 0.5) * 0.7;
+        const speed = 0.028 + rand() * 0.042;
+        foilFlecks.push({
+          u: safeU + (rand() - 0.5) * 0.03,
+          v: safeV + (rand() - 0.5) * 0.03,
+          vu: (Math.cos(angle) * speed) / Math.max(0.75, aspect),
+          vv: Math.sin(angle) * speed - 0.018,
+          w: 4.2 + rand() * 2.8,
+          h: 2.2 + rand() * 1.8,
+          rot: rand() * TAU,
+          vrot: (rand() - 0.5) * 1.4,
+          phase: rand() * TAU,
+          t0: t,
+          life: 1.9 + rand() * 0.9,
+          pale: rand() < 0.38,
+        });
+      }
+      if (foilFlecks.length > 14) {
+        foilFlecks.splice(0, foilFlecks.length - 14);
+      }
     }
-    if (coins.length > 72) coins.splice(0, coins.length - 72);
-    shimmerArcs.push({ u, v, r: 0.04, t0: t, angle0: rand() * TAU });
-    if (shimmerArcs.length > 5) shimmerArcs.shift();
+
+    triggerPlate(t, toyText, toySubtext);
   }
 
   function triggerRedaction(u: number, v: number, t: number): void {
-    const span = 0.52 + rand() * 0.2;
-    const centerU = clamp(u, 0.3, 0.7);
-    const u0 = clamp(centerU - span * 0.5, 0.05, 0.45);
-    const u1 = clamp(u0 + span, 0.55, 0.95);
+    const span = 0.46 + rand() * 0.18;
+    const centerU = clamp(u, 0.28, 0.72);
+    const u0 = clamp(centerU - span * 0.5, 0.06, 0.46);
+    const u1 = clamp(u0 + span, 0.52, 0.94);
     const cells = new Float32Array(24);
     cells.fill(1);
     redactions.push({
       u0,
       u1,
-      v: clamp(v, 0.14, 0.86),
-      halfH: 0.038 + rand() * 0.014,
-      tilt: (rand() - 0.5) * 0.06,
+      v: clamp(v, 0.14, 0.76),
+      halfH: 0.034 + rand() * 0.011,
+      tilt: (rand() - 0.5) * 0.045,
       t0: t,
       seed: rand() * 90,
       cells,
     });
-    if (redactions.length > 4) redactions.shift();
+    if (redactions.length > 3) redactions.shift();
+    triggerPlate(t, toyText, 'HOVER BAR TO REVEAL');
   }
 
-  function triggerCrashLine(u: number, v: number, t: number): void {
-    const startU = clamp(u * 0.35 + 0.06, 0.06, 0.22);
-    const startV = clamp(v * 0.55 + 0.12, 0.14, 0.36);
-    const endU = 0.92;
-    const endV = 0.86;
-    const steps = 11;
-    const points: { u: number; v: number }[] = [{ u: startU, v: startV }];
+  function triggerCrashLine(_u: number, v: number, t: number): void {
+    // Anchor smoothly in the lower portion of the canvas, staying cleanly below faces on portraits
+    const peakV = isPortrait
+      ? clamp(0.61 + (v - 0.5) * 0.08, 0.58, 0.65)
+      : clamp(0.49 + (v - 0.5) * 0.12, 0.47, 0.56);
+    const floorV = 0.87;
+    const j = () => (rand() - 0.5) * 0.014;
 
-    for (let i = 1; i < steps; i++) {
-      const f = i / steps;
-      // Early hubris plateau, then steep cliff with a brief dead-cat bounce
-      const curve = f < 0.24 ? Math.pow(f / 0.24, 1.5) * 0.06 - 0.03 : Math.pow((f - 0.2) / 0.8, 1.35);
-      const bounce = i === 6 ? -0.09 : (rand() - 0.5) * 0.1;
-      points.push({
-        u: lerp(startU, endU, f) + (rand() - 0.5) * 0.025,
-        v: clamp(lerp(startV, endV, curve) + bounce, 0.1, 0.9),
-      });
-    }
-    points.push({ u: endU, v: endV });
+    const points: { u: number; v: number }[] = [
+      { u: 0.08, v: clamp(peakV + 0.042 + j(), peakV + 0.01, 0.72) },
+      { u: 0.19, v: clamp(peakV + 0.018 + j(), peakV, 0.7) },
+      { u: 0.30, v: peakV }, // Peak (index 2)
+      { u: 0.39, v: clamp(peakV + 0.034 + j(), peakV + 0.012, 0.73) },
+      { u: 0.50, v: clamp(lerp(peakV, floorV, 0.42) + j(), peakV + 0.04, 0.8) },
+      { u: 0.59, v: clamp(lerp(peakV, floorV, 0.30) + j(), peakV + 0.02, 0.77) }, // Brief dead-cat bounce
+      { u: 0.71, v: clamp(lerp(peakV, floorV, 0.74) + j(), peakV + 0.1, 0.85) },
+      { u: 0.82, v: clamp(lerp(peakV, floorV, 0.91) + j(), peakV + 0.14, 0.88) },
+      { u: 0.92, v: floorV }, // Floor
+    ];
 
-    const sparks: CrashStroke['sparks'] = [];
-    for (let i = 0; i < 18; i++) {
-      sparks.push({
-        seg: Math.floor(rand() * (points.length - 1)),
-        du: (rand() - 0.5) * 0.06,
-        dv: (rand() - 0.5) * 0.07,
-        size: 1.5 + rand() * 3.2,
-        tone: rand() < 0.35 ? FC_OIL.bullionGold : FC_OIL.verdictCrimson,
-      });
-    }
-
-    crashes.push({ t0: t, points, sparks, label: toyText });
-    if (crashes.length > 2) crashes.shift();
+    activeCrash = { t0: t, points, peakIndex: 2 };
+    triggerPlate(t, toyText, toySubtext);
   }
 
   function triggerEnvelopes(u: number, v: number, t: number): void {
-    const count = 8;
-    for (let i = 0; i < count; i++) {
-      const a = -Math.PI * 0.95 + rand() * Math.PI * 0.9;
-      const speed = 0.14 + rand() * 0.26;
-      envelopes.push({
-        u,
-        v,
-        vu: (Math.cos(a) * speed) / Math.max(0.75, aspect),
-        vv: Math.sin(a) * speed - 0.12,
-        w: 0.072 + rand() * 0.026,
-        h: 0.048 + rand() * 0.016,
-        rot: (rand() - 0.5) * 0.7,
-        vrot: (rand() - 0.5) * 2.2,
-        swayFreq: 2.6 + rand() * 2.4,
-        swayAmp: 0.06 + rand() * 0.08,
-        phase: rand() * TAU,
-        t0: t,
-        life: 3.4 + rand() * 1.4,
-        hasText: i === 0,
-      });
-    }
-    if (envelopes.length > 28) envelopes.splice(0, envelopes.length - 28);
+    const ox = clamp(u, 0.14, 0.86);
+    const oy = clamp(v, 0.14, 0.70);
+
+    // Candidate archival pinpoint zones distributed across the canvas (avoiding lower-left exhibit plate)
+    const zones: { u0: number; u1: number; v0: number; v1: number }[] = [
+      { u0: 0.14, u1: 0.34, v0: 0.14, v1: 0.34 }, // Upper-left
+      { u0: 0.68, u1: 0.88, v0: 0.14, v1: 0.36 }, // Upper-right
+      { u0: 0.68, u1: 0.88, v0: 0.52, v1: 0.78 }, // Lower-right
+      { u0: 0.44, u1: 0.64, v0: 0.14, v1: 0.30 }, // Upper-center
+      { u0: 0.14, u1: 0.30, v0: 0.42, v1: 0.58 }, // Mid-left
+      { u0: 0.52, u1: 0.68, v0: 0.60, v1: 0.80 }, // Lower-mid-right
+    ];
+
+    // Pick 3 zones farthest from the click point so the routing arcs always fan out gracefully
+    const scored = zones
+      .map((z) => {
+        const zu = lerp(z.u0, z.u1, 0.25 + rand() * 0.5);
+        const zv = lerp(z.v0, z.v1, 0.25 + rand() * 0.5);
+        const dist = Math.hypot((zu - ox) * aspect, zv - oy);
+        return { zu, zv, dist };
+      })
+      .sort((a, b) => b.dist - a.dist)
+      .slice(0, 3);
+
+    const arcs: RoutingArc[] = scored.map((target, idx) => {
+      const mx = (ox + target.zu) * 0.5;
+      const my = (oy + target.zv) * 0.5;
+      const dx = target.zu - ox;
+      const dy = target.zv - oy;
+      const len = Math.max(0.001, Math.hypot(dx, dy));
+      const nx = -dy / len;
+      const ny = dx / len;
+      const bow = (idx % 2 === 0 ? -1 : 1) * (0.08 + rand() * 0.055);
+      return {
+        x0: ox,
+        y0: oy,
+        cx: clamp(mx + nx * bow, 0.06, 0.94),
+        cy: clamp(my + ny * bow, 0.06, 0.88),
+        x1: target.zu,
+        y1: target.zv,
+        delay: idx * 0.1,
+      };
+    });
+
+    activeRoute = { u: ox, v: oy, t0: t, arcs };
+    triggerPlate(t, toyText, toySubtext);
   }
 
   function triggerGavelRipple(u: number, v: number, t: number): void {
-    ripples.push({
+    waves.push({
       u: clamp(u, 0.08, 0.92),
-      v: clamp(v, 0.1, 0.9),
+      v: clamp(v, 0.08, 0.88),
       t0: t,
-      seed: rand() * 100,
-      label: toyText,
     });
-    if (ripples.length > 4) ripples.shift();
+    if (waves.length > 2) waves.shift();
+    triggerPlate(t, toyText, toySubtext);
   }
 
   function scratchRedactionsAt(u: number, v: number, t: number): void {
@@ -919,406 +1108,581 @@ export function createPortraitScene(
   }
 
   /* ============================================================================
-     Live Layer Rendering (6 Tactile Painterly Toys)
+     Rule 1: Shared Lower-Left Archival Exhibit Plate (Museum / Broadsheet Print)
      ============================================================================ */
 
-  function renderStamps(g: CanvasRenderingContext2D, w: number, h: number, t: number): void {
-    const unit = Math.min(w, h);
-    const ink: HSL = monochrome ? FC_OIL.verdictCrimson : mood.accent;
+  function drawArchivalPlate(g: CanvasRenderingContext2D, cw: number, ch: number, t: number): void {
+    if (!activePlate) return;
+    const age = t - activePlate.t0;
+    const fadeInDur = 0.22;
+    const holdDur = 5.2;
+    const fadeOutDur = 1.1;
+    const totalDur = fadeInDur + holdDur + fadeOutDur;
+
+    if (age < 0 || age >= totalDur) {
+      activePlate = null;
+      return;
+    }
+
+    let alpha = 1;
+    let glideY = 0;
+    if (age < fadeInDur) {
+      const ease = reducedMotion ? 1 : easeOutCubic(age / fadeInDur);
+      alpha = reducedMotion ? 1 : ease;
+      glideY = reducedMotion ? 0 : (1 - ease) * 6;
+    } else if (age > fadeInDur + holdDur) {
+      const outP = clamp((age - fadeInDur - holdDur) / fadeOutDur, 0, 1);
+      alpha = 1 - outP * outP;
+    }
+
+    if (alpha <= 0.01) return;
+
+    const unit = Math.min(cw, ch);
+    const margin = Math.round(clamp(unit * 0.04, 12, 22));
+    const accentBarW = 3;
+    // Leave clean room on the right for the quiet hover Repaint button
+    const maxPlateW = Math.max(140, Math.min(cw - margin * 2 - 40, cw * 0.82));
+
+    let mainSize = clamp(unit * 0.038, 12, 20);
+    let subSize = clamp(unit * 0.023, 9, 12);
+    const padLeft = Math.round(clamp(unit * 0.032, 11, 15));
+    const padRight = Math.round(clamp(unit * 0.038, 13, 18));
+    const padY = Math.round(clamp(unit * 0.022, 8, 11));
+
+    const measureFonts = () => {
+      const mainTrack = mainSize * 0.042;
+      const subTrack = subSize * 0.065;
+      g.font = `600 ${mainSize.toFixed(1)}px "Newsreader", Georgia, "Times New Roman", serif`;
+      const mainW = measureTrackedText(g, activePlate!.title, mainTrack);
+      let subW = 0;
+      if (activePlate!.subtitle) {
+        g.font = `500 ${subSize.toFixed(1)}px "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
+        subW = measureTrackedText(g, activePlate!.subtitle, subTrack);
+      }
+      return { mainW, subW, mainTrack, subTrack };
+    };
+
+    let metrics = measureFonts();
+    const rawW = accentBarW + padLeft + Math.max(metrics.mainW, metrics.subW) + padRight;
+    if (rawW > maxPlateW) {
+      const fit = Math.max(0.72, (maxPlateW - accentBarW - padLeft - padRight) / Math.max(1, Math.max(metrics.mainW, metrics.subW)));
+      mainSize = Math.max(10.5, mainSize * fit);
+      subSize = Math.max(8, subSize * fit);
+      metrics = measureFonts();
+    }
+
+    const plateW = Math.round(
+      Math.min(maxPlateW, accentBarW + padLeft + Math.max(metrics.mainW, metrics.subW) + padRight),
+    );
+    const lineGap = activePlate.subtitle ? Math.round(clamp(mainSize * 0.34, 4, 6)) : 0;
+    const plateH = Math.round(padY * 2 + mainSize + (activePlate.subtitle ? lineGap + subSize : 0));
+
+    const plateX = margin;
+    const plateY = Math.round(ch - margin - plateH + glideY);
+
+    g.save();
+    g.globalAlpha = alpha;
+
+    // Warm cotton-rag paper surface (sharp flat 0px corners, zero drop shadow)
+    g.fillStyle = 'rgba(250, 247, 240, 0.94)';
+    g.fillRect(plateX, plateY, plateW, plateH);
+
+    // 3px vertical left accent bar in the story's pigment
+    const [ah, as, al] = activePlate.accent;
+    g.fillStyle = hslCss(ah, as, al, 1);
+    g.fillRect(plateX, plateY, accentBarW, plateH);
+
+    // Crisp 1px outer hairline border
+    g.strokeStyle = 'rgba(18, 18, 18, 0.88)';
+    g.lineWidth = 1;
+    g.strokeRect(plateX + 0.5, plateY + 0.5, plateW - 1, plateH - 1);
+
+    // Subtle museum / press-proof corner registration tick at top-right
+    const tickX = plateX + plateW - 6.5;
+    const tickY = plateY + 6.5;
+    g.strokeStyle = 'rgba(18, 18, 18, 0.34)';
+    g.lineWidth = 0.75;
+    g.beginPath();
+    g.moveTo(tickX - 2.5, tickY);
+    g.lineTo(tickX + 2.5, tickY);
+    g.moveTo(tickX, tickY - 2.5);
+    g.lineTo(tickX, tickY + 2.5);
+    g.stroke();
+
+    // Refined editorial serif headline (zero drop shadow)
+    const textX = plateX + accentBarW + padLeft;
+    g.textAlign = 'left';
+    g.textBaseline = 'top';
+    g.font = `600 ${mainSize.toFixed(1)}px "Newsreader", Georgia, "Times New Roman", serif`;
+    g.fillStyle = '#121212';
+    fillTrackedText(g, activePlate.title, textX, plateY + padY, metrics.mainTrack);
+
+    // Archival monospace sub-line
+    if (activePlate.subtitle) {
+      g.font = `500 ${subSize.toFixed(1)}px "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
+      g.fillStyle = '#4a4843';
+      fillTrackedText(
+        g,
+        activePlate.subtitle,
+        textX,
+        plateY + padY + mainSize + lineGap,
+        metrics.subTrack,
+      );
+    }
+
+    g.restore();
+  }
+
+  /* ============================================================================
+     Rule 2: 6 Dignified Surface Interactions (Zero Cartoon Clipart)
+     ============================================================================ */
+
+  /** 1. gavel-ripple: Razor-thin architectural hairline rings + tiny 3px ink origin dot. */
+  function renderChiaroscuroWaves(g: CanvasRenderingContext2D, cw: number, ch: number, t: number): void {
+    const unit = Math.min(cw, ch);
+    const echoColor: HSL = monochrome ? FC_OIL.verdictCrimson : mood.accent;
+
+    for (let i = waves.length - 1; i >= 0; i--) {
+      const wv = waves[i];
+      const age = t - wv.t0;
+      const maxAge = reducedMotion ? 5.6 : 2.1;
+      if (age < 0 || age > maxAge) {
+        if (age > 5.6) waves.splice(i, 1);
+        continue;
+      }
+
+      const cx = wv.u * cw;
+      const cy = wv.v * ch;
+
+      g.save();
+      g.setLineDash([]);
+
+      if (reducedMotion) {
+        const fade = age < 4.5 ? 1 : clamp(1 - (age - 4.5) / 1.1, 0, 1);
+        const rad = clamp(unit * 0.11, 28, 52);
+        g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.58).toFixed(3)})`;
+        g.lineWidth = 1;
+        g.beginPath();
+        g.arc(cx, cy, rad, 0, TAU);
+        g.stroke();
+
+        g.fillStyle = `rgba(18, 18, 18, ${(fade * 0.85).toFixed(3)})`;
+        g.beginPath();
+        g.arc(cx, cy, 1.8, 0, TAU);
+        g.fill();
+        g.restore();
+        continue;
+      }
+
+      // Ring 1: Primary smooth continuous 1px press-black architectural hairline
+      if (age <= 1.7) {
+        const p1 = clamp(age / 1.7, 0, 1);
+        const r1 = lerp(5, unit * 0.44, easeOutCubic(p1));
+        const a1 = (1 - p1) * 0.72;
+        g.strokeStyle = `rgba(18, 18, 18, ${a1.toFixed(3)})`;
+        g.lineWidth = 1;
+        g.beginPath();
+        g.arc(cx, cy, r1, 0, TAU);
+        g.stroke();
+      }
+
+      // Ring 2: Delayed smooth continuous 1px accent/gold echo hairline
+      const age2 = age - 0.14;
+      if (age2 > 0 && age2 <= 1.8) {
+        const p2 = clamp(age2 / 1.8, 0, 1);
+        const r2 = lerp(5, unit * 0.38, easeOutCubic(p2));
+        const a2 = (1 - p2) * 0.52;
+        g.strokeStyle = hslCss(echoColor[0], echoColor[1], echoColor[2], a2);
+        g.lineWidth = 1;
+        g.beginPath();
+        g.arc(cx, cy, r2, 0, TAU);
+        g.stroke();
+      }
+
+      // Tiny 3px ink origin dot (radius 1.6px = ~3.2px diameter) with whisper cream rim
+      if (age <= 1.75) {
+        const dotFade = age < 1.1 ? 1 : clamp(1 - (age - 1.1) / 0.65, 0, 1);
+        g.fillStyle = `rgba(18, 18, 18, ${(dotFade * 0.86).toFixed(3)})`;
+        g.strokeStyle = `rgba(250, 247, 240, ${(dotFade * 0.62).toFixed(3)})`;
+        g.lineWidth = 0.75;
+        g.beginPath();
+        g.arc(cx, cy, 1.8, 0, TAU);
+        g.fill();
+        g.stroke();
+      }
+
+      g.restore();
+    }
+  }
+
+  /** 2. stamp: Compact circular letterpress registration seal (FC / 2026) at calm ink opacity. */
+  function renderStampSeals(g: CanvasRenderingContext2D, cw: number, ch: number, t: number): void {
+    const unit = Math.min(cw, ch);
 
     for (let i = stamps.length - 1; i >= 0; i--) {
       const st = stamps[i];
       const age = t - st.t0;
-      if (age > 11) {
+      if (age > 6.5) {
         stamps.splice(i, 1);
         continue;
       }
 
-      const fade = age < 7.5 ? 1 : clamp(1 - (age - 7.5) / 3.5, 0, 1);
-      const slam = age < 0.16 ? lerp(1.24, 1, Math.sin((age / 0.16) * (Math.PI / 2))) : 1;
+      const fade = age < 5.2 ? 1 : clamp(1 - (age - 5.2) / 1.3, 0, 1);
+      const settle = reducedMotion
+        ? 1
+        : age < 0.16
+          ? lerp(1.04, 1, easeOutCubic(age / 0.16))
+          : 1;
 
-      const cx = st.u * w;
-      const cy = st.v * h;
-
-      const fontSize = Math.max(12, Math.round(unit * 0.068));
-      const subSize = Math.max(9, Math.round(unit * 0.036));
+      const cx = st.u * cw;
+      const cy = st.v * ch;
+      const r = clamp(unit * 0.068, 22, 36);
+      const inkL = Math.min(st.accent[2], 42);
+      const inkAlpha = fade * 0.76;
 
       g.save();
       g.translate(cx, cy);
-      g.rotate(st.tilt);
-      g.scale(slam, slam);
+      g.scale(settle, settle);
 
-      g.font = `800 ${fontSize}px "Libre Franklin", system-ui, sans-serif`;
-      const mainMetrics = g.measureText(st.text);
-      let subW = 0;
-      if (st.subtext) {
-        g.font = `700 ${subSize}px "JetBrains Mono", ui-monospace, monospace`;
-        subW = g.measureText(st.subtext).width;
-      }
+      // Translucent rag-paper wash inside seal so hairlines read crisply over both dark suits and light walls
+      g.fillStyle = `rgba(250, 247, 240, ${(fade * 0.32).toFixed(3)})`;
+      g.beginPath();
+      g.arc(0, 0, r, 0, TAU);
+      g.fill();
 
-      const maxBoxW = w * 0.72;
-      const padX = unit * 0.045;
-      const padY = unit * 0.026;
-      const rawW = Math.max(mainMetrics.width, subW) + padX * 2;
-      const scaleFit = rawW > maxBoxW ? maxBoxW / rawW : 1;
-      const boxW = rawW * scaleFit;
-      const boxH = (fontSize + (st.subtext ? subSize + padY * 0.65 : 0) + padY * 2) * scaleFit;
+      // Double concentric hairline rings
+      g.strokeStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha);
+      g.lineWidth = 1.2;
+      g.beginPath();
+      g.arc(0, 0, r, 0, TAU);
+      g.stroke();
 
-      // Soft parchment-ink backing wash so stamp reads crisply over busy oil brushwork
-      g.fillStyle = hslCss(FC_OIL.newsprintCream[0], FC_OIL.newsprintCream[1], FC_OIL.newsprintCream[2], fade * 0.76);
-      g.fillRect(-boxW / 2, -boxH / 2, boxW, boxH);
+      g.lineWidth = 0.75;
+      g.strokeStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha * 0.78);
+      g.beginPath();
+      g.arc(0, 0, r * 0.78, 0, TAU);
+      g.stroke();
 
-      // Rough double-bordered hand-stamped impasto frame
-      const bw = Math.max(2, unit * 0.0085);
-      const hw = boxW / 2;
-      const hh = boxH / 2;
-      drawImpastoLine(g, -hw, -hh, hw, -hh, bw, ink, fade * 0.92);
-      drawImpastoLine(g, hw, -hh, hw, hh, bw, ink, fade * 0.92);
-      drawImpastoLine(g, hw, hh, -hw, hh, bw, ink, fade * 0.92);
-      drawImpastoLine(g, -hw, hh, -hw, -hh, bw, ink, fade * 0.92);
+      // Subtle cardinal registration crosshairs
+      const tickIn = r * 0.72;
+      const tickOut = r * 1.12;
+      g.lineWidth = 0.8;
+      g.strokeStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha * 0.72);
+      g.beginPath();
+      g.moveTo(0, -tickOut);
+      g.lineTo(0, -tickIn);
+      g.moveTo(0, tickIn);
+      g.lineTo(0, tickOut);
+      g.moveTo(-tickOut, 0);
+      g.lineTo(-tickIn, 0);
+      g.moveTo(tickIn, 0);
+      g.lineTo(tickOut, 0);
+      g.stroke();
 
-      // Inner hairline border
-      const inset = Math.max(4, unit * 0.015);
-      g.strokeStyle = hslCss(ink[0], ink[1], ink[2], fade * 0.65);
-      g.lineWidth = Math.max(1, bw * 0.42);
-      g.strokeRect(-hw + inset, -hh + inset, boxW - inset * 2, boxH - inset * 2);
-
-      // Stamp text with slight ink offset shadow for tactile press depth
+      // Tiny letterpress editorial monogram ("FC" / hairline / "2026")
+      const monoSize = Math.max(8, Math.round(r * 0.36));
+      const yearSize = Math.max(6.5, Math.round(r * 0.22));
       g.textAlign = 'center';
       g.textBaseline = 'middle';
-      const scaledFont = Math.max(10, fontSize * scaleFit);
-      const scaledSub = Math.max(8, subSize * scaleFit);
-      const mainY = st.subtext ? -scaledSub * 0.56 : 0;
+      g.fillStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha);
+      g.font = `600 ${monoSize}px "Newsreader", Georgia, serif`;
+      g.fillText('FC', 0, -r * 0.18);
 
-      g.font = `800 ${scaledFont}px "Libre Franklin", system-ui, sans-serif`;
-      g.fillStyle = hslCss(ink[0], ink[1], ink[2] - 14, fade * 0.45);
-      g.fillText(st.text, 1.4, mainY + 1.4);
-      g.fillStyle = hslCss(ink[0], ink[1], ink[2], fade * 0.94);
-      g.fillText(st.text, 0, mainY);
+      g.strokeStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha * 0.55);
+      g.lineWidth = 0.65;
+      g.beginPath();
+      g.moveTo(-r * 0.3, r * 0.04);
+      g.lineTo(r * 0.3, r * 0.04);
+      g.stroke();
 
-      if (st.subtext) {
-        const subY = scaledFont * 0.52;
-        g.font = `700 ${scaledSub}px "JetBrains Mono", ui-monospace, monospace`;
-        g.fillStyle = hslCss(FC_OIL.pressBlack[0], FC_OIL.pressBlack[1], FC_OIL.pressBlack[2], fade * 0.85);
-        g.fillText(st.subtext, 0, subY);
-      }
-
-      // Ink-splatter oil flecks bursting outward from stamp impact
-      const splatGrow = clamp(age / 0.14, 0, 1);
-      for (const sp of st.splatters) {
-        const rx = Math.cos(sp.angle) * (hw * 0.82 + sp.dist * unit * 0.08 * splatGrow);
-        const ry = Math.sin(sp.angle) * (hh * 0.82 + sp.dist * unit * 0.08 * splatGrow);
-        const ex = rx + Math.cos(sp.angle) * sp.len * (unit / 420);
-        const ey = ry + Math.sin(sp.angle) * sp.len * (unit / 420);
-        g.strokeStyle = hslCss(ink[0], ink[1], ink[2], fade * 0.72);
-        g.lineWidth = Math.max(1.2, sp.size * (unit / 420));
-        g.lineCap = 'round';
-        g.beginPath();
-        g.moveTo(rx, ry);
-        g.lineTo(ex, ey);
-        g.stroke();
-      }
+      g.font = `500 ${yearSize}px "JetBrains Mono", ui-monospace, monospace`;
+      g.fillText('2026', 0, r * 0.26);
 
       g.restore();
     }
   }
 
-  function renderCoins(g: CanvasRenderingContext2D, w: number, h: number, t: number): void {
-    const unit = Math.min(w, h);
+  /** 3. coins: Whisper 1px gold hairline ring + 5-7 delicate flat rectangular gold-leaf foil flecks. */
+  function renderGoldLeafLive(g: CanvasRenderingContext2D, cw: number, ch: number, t: number): void {
+    const unit = Math.min(cw, ch);
 
-    // Expanding golden impasto shimmer arcs
-    for (let i = shimmerArcs.length - 1; i >= 0; i--) {
-      const arc = shimmerArcs[i];
-      const age = t - arc.t0;
-      if (age > 0.9) {
-        shimmerArcs.splice(i, 1);
+    // Whisper-subtle expanding 1px gold hairline ring (0.6s)
+    for (let i = goldPatches.length - 1; i >= 0; i--) {
+      const patch = goldPatches[i];
+      const age = t - patch.t0;
+      if (age > 8.8) {
+        goldPatches.splice(i, 1);
         continue;
       }
-      const f = age / 0.9;
-      const rad = (0.04 + f * 0.24) * unit;
-      const alpha = (1 - f) * 0.7;
-      g.lineCap = 'round';
-      for (let s = 0; s < 10; s++) {
-        const a = arc.angle0 + (s / 10) * TAU + f * 0.8;
-        g.strokeStyle = hslCss(FC_OIL.bullionGold[0], 86, 60, alpha);
-        g.lineWidth = Math.max(1.5, (1 - f) * unit * 0.011);
+      if (age >= 0 && age <= 0.62) {
+        const p = reducedMotion ? 0.5 : clamp(age / 0.62, 0, 1);
+        const rad = lerp(6, unit * 0.18, easeOutCubic(p));
+        const alpha = (reducedMotion ? 0.48 : (1 - p) * 0.66);
+        g.save();
+        g.strokeStyle = hslCss(FC_OIL.bullionGold[0], 78, 56, alpha);
+        g.lineWidth = 1;
         g.beginPath();
-        g.arc(arc.u * w, arc.v * h, rad, a, a + 0.26);
+        g.arc(patch.u * cw, patch.v * ch, rad, 0, TAU);
         g.stroke();
+        g.restore();
       }
     }
 
-    // Tumbling golden bullion coins
-    for (const c of coins) {
-      const age = t - c.t0;
-      const fade = age > c.life * 0.7 ? clamp(1 - (age - c.life * 0.7) / (c.life * 0.3), 0, 1) : 1;
-      const x = c.u * w;
-      const y = c.v * h;
-      const rad = Math.max(3.5, c.r * unit);
-      const squash = Math.max(0.24, Math.abs(Math.cos(c.phase + age * c.spin)));
+    if (reducedMotion || foilFlecks.length === 0) return;
+
+    // Delicate rectangular metallic gold-leaf foil flecks drifting gently (zero bouncing coins!)
+    for (const f of foilFlecks) {
+      const age = t - f.t0;
+      if (age < 0 || age > f.life) continue;
+      const inFade = clamp(age / 0.12, 0, 1);
+      const outFade = age > f.life * 0.55 ? clamp(1 - (age - f.life * 0.55) / (f.life * 0.45), 0, 1) : 1;
+      const alpha = inFade * outFade * 0.84;
+      if (alpha <= 0.02) continue;
 
       g.save();
-      g.translate(x, y);
-      g.rotate(c.vu * 1.4);
-
-      // Impasto drop shadow
-      g.fillStyle = hslCss(32, 42, 16, fade * 0.42);
-      g.beginPath();
-      g.ellipse(rad * 0.22, rad * 0.3, rad, rad * squash, 0, 0, TAU);
-      g.fill();
-
-      // Thick metallic gold body
-      g.fillStyle = hslCss(c.tone[0], c.tone[1], c.tone[2], fade * 0.95);
-      g.beginPath();
-      g.ellipse(0, 0, rad, rad * squash, 0, 0, TAU);
-      g.fill();
-
-      // Burnished rim
-      g.strokeStyle = hslCss(34, 65, 32, fade * 0.8);
-      g.lineWidth = Math.max(1, rad * 0.2);
-      g.stroke();
-
-      // Specular impasto gold highlight arc
-      g.strokeStyle = hslCss(48, 92, 86, fade * 0.82);
-      g.lineWidth = Math.max(1, rad * 0.24);
-      g.beginPath();
-      g.ellipse(-rad * 0.14, -rad * 0.12 * squash, rad * 0.56, rad * 0.56 * squash, 0, Math.PI * 1.1, Math.PI * 1.75);
-      g.stroke();
-
+      g.translate(f.u * cw, f.v * ch);
+      g.rotate(f.rot);
+      const shimmer = 0.5 + 0.5 * Math.cos(f.phase + age * 3.2);
+      const l = f.pale ? lerp(64, 78, shimmer) : lerp(46, 62, shimmer);
+      g.fillStyle = hslCss(43, 80, l, alpha);
+      g.fillRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
+      g.strokeStyle = hslCss(38, 66, 32, alpha * 0.45);
+      g.lineWidth = 0.5;
+      g.strokeRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
       g.restore();
     }
   }
 
-  function renderRedactionLive(g: CanvasRenderingContext2D, w: number, h: number, t: number): void {
-    const unit = Math.min(w, h);
+  /** 4. redaction: Pure wet-lampblack initial brush sweep (zero floating text on the bar). */
+  function renderRedactionLive(g: CanvasRenderingContext2D, cw: number, ch: number, t: number): void {
+    if (reducedMotion) return;
     for (const bar of redactions) {
       const age = t - bar.t0;
-      // Wet ink brush sweep animation during the first 0.26s
-      if (age < 0.28) {
-        const p = clamp(age / 0.26, 0, 1);
-        const x0 = bar.u0 * w;
-        const x1 = lerp(bar.u0, bar.u1, p) * w;
-        const y0 = (bar.v - ((bar.u1 - bar.u0) * 0.5) * bar.tilt) * h;
-        const y1 = (bar.v + (lerp(bar.u0, bar.u1, p) - (bar.u0 + bar.u1) * 0.5) * bar.tilt) * h;
-        drawImpastoLine(g, x0, y0, x1, y1, Math.max(8, bar.halfH * 2 * h), FC_OIL.pressBlack, 0.92);
-      }
-
-      // Faint chalk-crimson [REDACTED] hint on intact center segments
-      const midCell = bar.cells[Math.floor(bar.cells.length / 2)];
-      if (midCell > 0.55) {
-        const cx = ((bar.u0 + bar.u1) * 0.5) * w;
-        const cy = bar.v * h;
-        g.save();
-        g.translate(cx, cy);
-        g.rotate(bar.tilt);
-        g.font = `700 ${Math.max(9, Math.round(unit * 0.032))}px "JetBrains Mono", ui-monospace, monospace`;
-        g.textAlign = 'center';
-        g.textBaseline = 'middle';
-        g.fillStyle = hslCss(FC_OIL.newsprintCream[0], 30, 88, midCell * 0.55);
-        g.fillText(toyText.length <= 22 ? toyText : 'REDACTED · HOVER TO REVEAL', 0, 0);
-        g.restore();
+      if (age >= 0 && age < 0.24) {
+        const p = easeOutCubic(clamp(age / 0.22, 0, 1));
+        const x0 = bar.u0 * cw;
+        const x1 = lerp(bar.u0, bar.u1, p) * cw;
+        const y0 = (bar.v - ((bar.u1 - bar.u0) * 0.5) * bar.tilt) * ch;
+        const y1 = (bar.v + (lerp(bar.u0, bar.u1, p) - (bar.u0 + bar.u1) * 0.5) * bar.tilt) * ch;
+        drawWetLampblackSweep(g, x0, y0, x1, y1, Math.max(7, bar.halfH * 2 * ch), 0.92);
       }
     }
   }
 
-  function renderCrashLines(g: CanvasRenderingContext2D, w: number, h: number, t: number): void {
-    const unit = Math.min(w, h);
-    const strokeW = Math.max(3, unit * 0.014);
-
-    for (let i = crashes.length - 1; i >= 0; i--) {
-      const cr = crashes[i];
-      const age = t - cr.t0;
-      if (age > 9) {
-        crashes.splice(i, 1);
-        continue;
-      }
-
-      const fade = age < 6.4 ? 1 : clamp(1 - (age - 6.4) / 2.6, 0, 1);
-      const progress = clamp(age / 0.72, 0, 1);
-      const totalSegs = cr.points.length - 1;
-      const drawnFloat = progress * totalSegs;
-      const fullSegs = Math.floor(drawnFloat);
-      const segFrac = drawnFloat - fullSegs;
-
-      let headX = cr.points[0].u * w;
-      let headY = cr.points[0].v * h;
-
-      for (let s = 0; s < fullSegs; s++) {
-        const a = cr.points[s];
-        const b = cr.points[s + 1];
-        drawImpastoLine(g, a.u * w, a.v * h, b.u * w, b.v * h, strokeW, FC_OIL.verdictCrimson, fade * 0.94);
-        headX = b.u * w;
-        headY = b.v * h;
-      }
-
-      if (fullSegs < totalSegs && segFrac > 0) {
-        const a = cr.points[fullSegs];
-        const b = cr.points[fullSegs + 1];
-        headX = lerp(a.u, b.u, segFrac) * w;
-        headY = lerp(a.v, b.v, segFrac) * h;
-        drawImpastoLine(g, a.u * w, a.v * h, headX, headY, strokeW, FC_OIL.verdictCrimson, fade * 0.96);
-      }
-
-      // Hot oil sparks flying off segments as they break downward
-      for (const sp of cr.sparks) {
-        if (sp.seg > fullSegs) continue;
-        const p = cr.points[sp.seg + 1];
-        const segAge = clamp(age - (sp.seg / totalSegs) * 0.72, 0, 1.2);
-        const spAlpha = clamp(1 - segAge / 1.2, 0, 1) * fade;
-        if (spAlpha <= 0.02) continue;
-        const sx = (p.u + sp.du * (0.4 + segAge * 1.4)) * w;
-        const sy = (p.v + sp.dv * (0.4 + segAge * 1.4) + segAge * segAge * 0.06) * h;
-        g.fillStyle = hslCss(sp.tone[0], sp.tone[1], sp.tone[2] + 10, spAlpha * 0.9);
-        g.beginPath();
-        g.arc(sx, sy, Math.max(1.5, sp.size * (unit / 420)), 0, TAU);
-        g.fill();
-      }
-
-      // Glowing brush tip during draw
-      if (progress < 1) {
-        g.fillStyle = hslCss(FC_OIL.bullionGold[0], 92, 68, 0.95);
-        g.beginPath();
-        g.arc(headX, headY, strokeW * 0.85, 0, TAU);
-        g.fill();
-      } else {
-        // Landed painted callout at the bottom of the plunge
-        const last = cr.points[cr.points.length - 1];
-        const lx = clamp(last.u * w - unit * 0.14, unit * 0.22, w - unit * 0.18);
-        const ly = clamp(last.v * h - unit * 0.06, unit * 0.14, h - unit * 0.08);
-        const fontSize = Math.max(10, Math.round(unit * 0.044));
-        g.font = `800 ${fontSize}px "JetBrains Mono", ui-monospace, monospace`;
-        const tw = g.measureText(cr.label).width + 14;
-        const th = fontSize + 10;
-        g.fillStyle = hslCss(FC_OIL.verdictCrimson[0], FC_OIL.verdictCrimson[1], FC_OIL.verdictCrimson[2], fade * 0.92);
-        g.fillRect(lx - tw / 2, ly - th / 2, tw, th);
-        g.fillStyle = hslCss(FC_OIL.newsprintCream[0], 32, 95, fade * 0.96);
-        g.textAlign = 'center';
-        g.textBaseline = 'middle';
-        g.fillText(cr.label, lx, ly + 0.5);
-      }
+  /** 5. crash-line: Fine-nib NYT editorial engraving plunge curve across the lower canvas. */
+  function renderEngravingPlunge(g: CanvasRenderingContext2D, cw: number, ch: number, t: number): void {
+    if (!activeCrash) return;
+    const age = t - activeCrash.t0;
+    const totalDur = 6.52;
+    if (age < 0 || age >= totalDur) {
+      activeCrash = null;
+      return;
     }
-  }
 
-  function renderEnvelopes(g: CanvasRenderingContext2D, w: number, h: number, t: number): void {
-    const unit = Math.min(w, h);
-    for (const env of envelopes) {
-      const age = t - env.t0;
-      const fade = age > env.life * 0.72 ? clamp(1 - (age - env.life * 0.72) / (env.life * 0.28), 0, 1) : 1;
-      const ew = Math.max(18, env.w * unit);
-      const eh = Math.max(12, env.h * unit);
+    const fade = age < 5.42 ? 1 : clamp(1 - (age - 5.42) / 1.1, 0, 1);
+    const progress = reducedMotion ? 1 : easeOutCubic(clamp(age / 0.65, 0, 1));
+    const pts = activeCrash.points;
+    const peakPt = pts[activeCrash.peakIndex];
+    const floorPt = pts[pts.length - 1];
+    const peakY = Math.round(peakPt.v * ch) + 0.5;
+    const startX = pts[0].u * cw;
+    const endX = floorPt.u * cw;
 
-      g.save();
-      g.translate(env.u * w, env.v * h);
-      g.rotate(env.rot + Math.sin(age * env.swayFreq + env.phase) * 0.22);
+    g.save();
 
-      // Soft drop shadow
-      g.fillStyle = hslCss(FC_OIL.pressBlack[0], 14, 10, fade * 0.28);
-      g.fillRect(-ew / 2 + 2.5, -eh / 2 + 3, ew, eh);
+    // Subtle 0.75px dashed cream/ink horizontal peak-baseline hairline
+    g.setLineDash([4, 4]);
+    g.lineWidth = 0.75;
+    g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.34).toFixed(3)})`;
+    g.beginPath();
+    g.moveTo(startX, peakY + 0.75);
+    g.lineTo(endX, peakY + 0.75);
+    g.stroke();
 
-      // Painted newsprint cream paper body
-      g.fillStyle = hslCss(FC_OIL.newsprintCream[0], 36, 93, fade * 0.96);
-      g.fillRect(-ew / 2, -eh / 2, ew, eh);
+    g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.68).toFixed(3)})`;
+    g.beginPath();
+    g.moveTo(startX, peakY);
+    g.lineTo(endX, peakY);
+    g.stroke();
 
-      // Hand-inked charcoal envelope border & triangular flap
-      g.strokeStyle = hslCss(FC_OIL.pressBlack[0], 14, 18, fade * 0.85);
-      g.lineWidth = Math.max(1.2, unit * 0.004);
-      g.strokeRect(-ew / 2, -eh / 2, ew, eh);
+    // Faint vertical drop tick at floor once curve lands
+    if (progress >= 0.99) {
+      const fx = Math.round(floorPt.u * cw) + 0.5;
+      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.42).toFixed(3)})`;
       g.beginPath();
-      g.moveTo(-ew / 2, -eh / 2);
-      g.lineTo(0, eh * 0.14);
-      g.lineTo(ew / 2, -eh / 2);
+      g.moveTo(fx, peakY);
+      g.lineTo(fx, floorPt.v * ch);
       g.stroke();
-
-      // Verdict-crimson wax seal impasto dab
-      const sealR = Math.max(2.6, eh * 0.17);
-      g.fillStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 42, fade * 0.94);
-      g.beginPath();
-      g.arc(0, eh * 0.12, sealR, 0, TAU);
-      g.fill();
-      g.fillStyle = hslCss(FC_OIL.scandalRose[0], 64, 68, fade * 0.7);
-      g.beginPath();
-      g.arc(-sealR * 0.25, eh * 0.12 - sealR * 0.25, sealR * 0.36, 0, TAU);
-      g.fill();
-
-      if (env.hasText && toyText.length <= 18) {
-        g.font = `700 ${Math.max(8, Math.round(unit * 0.026))}px "JetBrains Mono", ui-monospace, monospace`;
-        g.textAlign = 'center';
-        g.textBaseline = 'bottom';
-        g.fillStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 38, fade * 0.9);
-        g.fillText(toyText, 0, -eh / 2 - 4);
-      }
-
-      g.restore();
     }
+
+    g.setLineDash([]);
+
+    // Build progressive fine-nib polyline path
+    const totalSegs = pts.length - 1;
+    const drawnFloat = progress * totalSegs;
+    const fullSegs = Math.floor(drawnFloat);
+    const segFrac = drawnFloat - fullSegs;
+
+    const tracePath = () => {
+      g.beginPath();
+      g.moveTo(pts[0].u * cw, pts[0].v * ch);
+      for (let s = 1; s <= fullSegs; s++) {
+        g.lineTo(pts[s].u * cw, pts[s].v * ch);
+      }
+      if (fullSegs < totalSegs && segFrac > 0) {
+        const a = pts[fullSegs];
+        const b = pts[fullSegs + 1];
+        g.lineTo(lerp(a.u, b.u, segFrac) * cw, lerp(a.v, b.v, segFrac) * ch);
+      }
+    };
+
+    g.lineCap = 'round';
+    g.lineJoin = 'round';
+
+    // Ultra-delicate parchment contrast whisper so the 1.5px nib reads over dark impasto
+    g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.32).toFixed(3)})`;
+    g.lineWidth = 2.6;
+    tracePath();
+    g.stroke();
+
+    // Main razor-sharp 1.5px Verdict Crimson engraving stroke
+    g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 42, fade * 0.96);
+    g.lineWidth = 1.5;
+    tracePath();
+    g.stroke();
+
+    // Tiny 3.5px solid crimson circles at peak & floor
+    const drawPin = (px: number, py: number) => {
+      g.fillStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 42, fade * 0.96);
+      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.88).toFixed(3)})`;
+      g.lineWidth = 1;
+      g.beginPath();
+      g.arc(px, py, 3.5, 0, TAU);
+      g.fill();
+      g.stroke();
+    };
+
+    if (drawnFloat >= activeCrash.peakIndex) {
+      drawPin(peakPt.u * cw, peakPt.v * ch);
+    }
+    if (progress >= 0.99) {
+      drawPin(floorPt.u * cw, floorPt.v * ch);
+    }
+
+    g.restore();
   }
 
-  function renderGavelRipples(g: CanvasRenderingContext2D, w: number, h: number, t: number): void {
-    const unit = Math.min(w, h);
-    const ringInk: HSL = monochrome ? FC_OIL.verdictCrimson : mood.accent;
+  /** 6. envelopes: 3 delicate curved architectural ink routing arcs & ringed archival pinpoint nodes. */
+  function renderForensicRoute(g: CanvasRenderingContext2D, cw: number, ch: number, t: number): void {
+    if (!activeRoute) return;
+    const age = t - activeRoute.t0;
+    const totalDur = 6.52;
+    if (age < 0 || age >= totalDur) {
+      activeRoute = null;
+      return;
+    }
 
-    for (let i = ripples.length - 1; i >= 0; i--) {
-      const rp = ripples[i];
-      const age = t - rp.t0;
-      if (age > 2.2) {
-        ripples.splice(i, 1);
-        continue;
-      }
+    const fade = age < 5.42 ? 1 : clamp(1 - (age - 5.42) / 1.1, 0, 1);
+    const ox = activeRoute.u * cw;
+    const oy = activeRoute.v * ch;
 
-      const cx = rp.u * w;
-      const cy = rp.v * h;
+    g.save();
 
-      // Brief courtroom spotlight impact flash
-      if (age < 0.24) {
-        const flashAlpha = (1 - age / 0.24) * 0.45;
-        const grad = g.createRadialGradient(cx, cy, 0, cx, cy, unit * 0.22);
-        grad.addColorStop(0, hslCss(FC_OIL.newsprintCream[0], 50, 96, flashAlpha));
-        grad.addColorStop(1, hslCss(FC_OIL.bullionGold[0], 70, 56, 0));
-        g.fillStyle = grad;
+    // 3 curved architectural ink routing arcs (De Casteljau quadratic Bezier subdivision)
+    for (const arc of activeRoute.arcs) {
+      const localAge = age - arc.delay;
+      if (localAge <= 0 && !reducedMotion) continue;
+      const p = reducedMotion ? 1 : easeOutCubic(clamp(localAge / 0.56, 0, 1));
+      if (p <= 0.01) continue;
+
+      const x0 = arc.x0 * cw;
+      const y0 = arc.y0 * ch;
+      const cx = arc.cx * cw;
+      const cy = arc.cy * ch;
+      const x1 = arc.x1 * cw;
+      const y1 = arc.y1 * ch;
+
+      // Exact quadratic Bezier sub-curve for parameter [0, p]
+      const q0x = lerp(x0, cx, p);
+      const q0y = lerp(y0, cy, p);
+      const q1x = lerp(cx, x1, p);
+      const q1y = lerp(cy, y1, p);
+      const bx = lerp(q0x, q1x, p);
+      const by = lerp(q0y, q1y, p);
+
+      const strokeArc = () => {
         g.beginPath();
-        g.arc(cx, cy, unit * 0.22, 0, TAU);
+        g.moveTo(x0, y0);
+        g.quadraticCurveTo(q0x, q0y, bx, by);
+        g.stroke();
+      };
+
+      // Subtle parchment whisper so fine 1px ink reads cleanly over dark oil shadows
+      g.setLineDash([]);
+      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.36).toFixed(3)})`;
+      g.lineWidth = 2.2;
+      strokeArc();
+
+      // 1px press-black architectural hairline
+      g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.74).toFixed(3)})`;
+      g.lineWidth = 1;
+      strokeArc();
+
+      // Hairline Verdict Crimson dashed overlay
+      g.setLineDash([5, 5]);
+      g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 42, fade * 0.88);
+      g.lineWidth = 1;
+      strokeArc();
+      g.setLineDash([]);
+
+      // Ringed archival pinpoint node on arrival
+      if (p >= 0.98) {
+        g.fillStyle = `rgba(250, 247, 240, ${(fade * 0.96).toFixed(3)})`;
+        g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 42, fade * 0.94);
+        g.lineWidth = 1.2;
+        g.beginPath();
+        g.arc(x1, y1, 3.5, 0, TAU);
         g.fill();
-      }
+        g.stroke();
 
-      // 3 concentric broken impasto ink shockwave rings
-      g.lineCap = 'round';
-      for (let rIdx = 0; rIdx < 3; rIdx++) {
-        const localAge = age - rIdx * 0.14;
-        if (localAge <= 0 || localAge > 1.7) continue;
-        const f = localAge / 1.7;
-        const rad = (0.03 + Math.pow(f, 0.72) * 0.44) * unit;
-        const alpha = (1 - f) * (rIdx === 0 ? 0.85 : 0.65);
-        const col = rIdx === 1 ? FC_OIL.bullionGold : ringInk;
-        const segments = 16;
+        // Tiny press-black center pinhole
+        g.fillStyle = `rgba(18, 18, 18, ${(fade * 0.85).toFixed(3)})`;
+        g.beginPath();
+        g.arc(x1, y1, 1, 0, TAU);
+        g.fill();
 
-        g.lineWidth = Math.max(1.8, (1 - f * 0.65) * unit * 0.013);
-        g.strokeStyle = hslCss(col[0], col[1], col[2], alpha);
-
-        for (let s = 0; s < segments; s++) {
-          const a = (s / segments) * TAU + rp.seed + localAge * (rIdx % 2 === 0 ? 0.45 : -0.35);
-          g.beginPath();
-          g.arc(cx, cy, rad, a, a + 0.23);
-          g.stroke();
-        }
-      }
-
-      // Rising painted verdict echo text
-      if (age < 1.85) {
-        const textFade = age < 1.1 ? 1 : clamp(1 - (age - 1.1) / 0.75, 0, 1);
-        const rise = age * unit * 0.045;
-        const fontSize = Math.max(11, Math.round(unit * 0.048));
-        g.save();
-        g.font = `800 ${fontSize}px "Libre Franklin", system-ui, sans-serif`;
-        g.textAlign = 'center';
-        g.textBaseline = 'middle';
-        const tx = clamp(cx, unit * 0.24, w - unit * 0.24);
-        const ty = clamp(cy - rise, unit * 0.12, h - unit * 0.12);
-        g.fillStyle = hslCss(FC_OIL.pressBlack[0], 14, 12, textFade * 0.55);
-        g.fillText(rp.label, tx + 1.5, ty + 1.5);
-        g.fillStyle = hslCss(ringInk[0], ringInk[1], Math.min(62, ringInk[2] + 8), textFade * 0.96);
-        g.fillText(rp.label, tx, ty);
-        g.restore();
+        // Delicate cardinal registration ticks
+        g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.42).toFixed(3)})`;
+        g.lineWidth = 0.75;
+        g.beginPath();
+        g.moveTo(x1 - 6.5, y1);
+        g.lineTo(x1 - 4.5, y1);
+        g.moveTo(x1 + 4.5, y1);
+        g.lineTo(x1 + 6.5, y1);
+        g.moveTo(x1, y1 - 6.5);
+        g.lineTo(x1, y1 - 4.5);
+        g.moveTo(x1, y1 + 4.5);
+        g.lineTo(x1, y1 + 6.5);
+        g.stroke();
       }
     }
+
+    // Crisp origin pinpoint + registration halo
+    g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.42).toFixed(3)})`;
+    g.lineWidth = 0.75;
+    g.beginPath();
+    g.arc(ox, oy, 7, 0, TAU);
+    g.stroke();
+
+    g.fillStyle = `rgba(18, 18, 18, ${(fade * 0.9).toFixed(3)})`;
+    g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.85).toFixed(3)})`;
+    g.lineWidth = 1;
+    g.beginPath();
+    g.arc(ox, oy, 2.5, 0, TAU);
+    g.fill();
+    g.stroke();
+
+    g.restore();
   }
 
   return {
@@ -1341,7 +1705,58 @@ export function createPortraitScene(
         spots.push({ u: crop.canvasFocalU, v: crop.canvasFocalV, r: 0.16, detail: 0.58 });
       }
 
-      // Focus extra brushwork over fresh redaction bars or recently scratched areas
+      // Concentrate fine brushwork on active chiaroscuro wave crests + trailing color restoration
+      for (const wv of waves) {
+        const age = t - wv.t0;
+        if (age >= 0 && age < 2.4 && !reducedMotion) {
+          const p = clamp(age / 2.2, 0, 1);
+          const waveRadius = lerp(0.03, 0.68, 1 - Math.pow(1 - p, 2.1));
+          const bandWidth = lerp(0.085, 0.125, p);
+          const count = 6;
+          for (let k = 0; k < count; k++) {
+            const a = (k / count) * TAU + age * 0.65;
+            spots.push({
+              u: clamp(wv.u + Math.cos(a) * (waveRadius / aspect), 0.02, 0.98),
+              v: clamp(wv.v + Math.sin(a) * waveRadius, 0.02, 0.98),
+              r: bandWidth / aspect,
+              detail: 0.64,
+            });
+          }
+          // Trailing restoration inside the wave so rich oil color repaints right behind it
+          const trailR = Math.max(0.02, waveRadius - bandWidth * 1.15);
+          spots.push({
+            u: wv.u,
+            v: wv.v,
+            r: Math.min(0.28, trailR / aspect),
+            detail: 0.68,
+          });
+        } else if (age >= 0 && age < 5.2) {
+          // Gentle post-wave restoration pass
+          spots.push({ u: wv.u, v: wv.v, r: 0.28, detail: 0.68 });
+        }
+      }
+
+      // Concentrate brushwork on 24k gold-leaf gilding bloom & natural repaint restoration
+      for (const patch of goldPatches) {
+        const age = t - patch.t0;
+        if (age >= 0 && age < 2.2) {
+          spots.push({ u: patch.u, v: patch.v, r: 0.19 / aspect, detail: 0.52 });
+        } else if (age >= 4.0 && age < 8.6) {
+          spots.push({ u: patch.u, v: patch.v, r: 0.21 / aspect, detail: 0.58 });
+        }
+      }
+
+      // Concentrate brushwork on local stamp wax-seal glaze & smooth healing
+      for (const st of stamps) {
+        const age = t - st.t0;
+        if (age >= 0 && age < 1.8) {
+          spots.push({ u: st.u, v: st.v, r: 0.1 / aspect, detail: 0.52 });
+        } else if (age >= 3.6 && age < 7.2) {
+          spots.push({ u: st.u, v: st.v, r: 0.11 / aspect, detail: 0.56 });
+        }
+      }
+
+      // Focus extra brushwork over fresh redaction bars or recently rubbed-clean areas
       for (const bar of redactions) {
         if (t - bar.t0 < 1.8) {
           spots.push({ u: (bar.u0 + bar.u1) * 0.5, v: bar.v, r: 0.22, detail: 0.72 });
@@ -1373,49 +1788,60 @@ export function createPortraitScene(
       focus.u += (goal.u - focus.u) * k;
       focus.v += (goal.v - focus.v) * k;
 
-      // Advance coin physics
-      for (let i = coins.length - 1; i >= 0; i--) {
-        const c = coins[i];
-        if (t - c.t0 > c.life) {
-          coins.splice(i, 1);
+      // Advance delicate drifting gold-leaf foil flecks (buoyant gentle air drift, zero bounce)
+      for (let i = foilFlecks.length - 1; i >= 0; i--) {
+        const f = foilFlecks[i];
+        const age = t - f.t0;
+        if (age > f.life || f.v > 1.08) {
+          foilFlecks.splice(i, 1);
           continue;
         }
-        c.vv += 1.65 * dt;
-        c.u += c.vu * dt;
-        c.v += c.vv * dt;
-        if (c.v > 0.94 && c.vv > 0) {
-          c.v = 0.94;
-          c.vv *= -0.44;
-          c.vu *= 0.82;
-        }
+        const drag = Math.exp(-dt * 1.15);
+        f.vu *= drag;
+        f.vv = f.vv * drag + 0.032 * dt;
+        f.u += (f.vu + Math.sin(age * 2.1 + f.phase) * 0.008) * dt;
+        f.v += f.vv * dt;
+        f.rot += f.vrot * dt;
       }
 
-      // Advance fluttering subpoena / bounced-email envelopes
-      for (let i = envelopes.length - 1; i >= 0; i--) {
-        const env = envelopes[i];
-        const age = t - env.t0;
-        if (age > env.life || env.v > 1.15) {
-          envelopes.splice(i, 1);
-          continue;
-        }
-        env.vv = Math.min(0.28, env.vv + 0.32 * dt);
-        env.u += (env.vu + Math.sin(age * env.swayFreq + env.phase) * env.swayAmp) * dt;
-        env.v += env.vv * dt;
-        env.rot += env.vrot * dt * 0.35;
-        env.vu *= Math.exp(-dt * 0.8);
+      // Prune completed chiaroscuro waves after their repaint tail finishes
+      for (let i = waves.length - 1; i >= 0; i--) {
+        if (t - waves[i].t0 > 5.8) waves.splice(i, 1);
       }
     },
     live(g, width, height, t) {
-      // Even under reduced motion, show active interactive stamps/marks if the viewer explicitly clicked!
-      if (reducedMotion && stamps.length === 0 && redactions.length === 0 && crashes.length === 0 && ripples.length === 0) {
+      if (
+        !activePlate &&
+        stamps.length === 0 &&
+        goldPatches.length === 0 &&
+        foilFlecks.length === 0 &&
+        redactions.length === 0 &&
+        !activeCrash &&
+        !activeRoute &&
+        waves.length === 0
+      ) {
         return;
       }
-      if (stamps.length > 0) renderStamps(g, width, height, t);
-      if (coins.length > 0 || shimmerArcs.length > 0) renderCoins(g, width, height, t);
-      if (redactions.length > 0) renderRedactionLive(g, width, height, t);
-      if (crashes.length > 0) renderCrashLines(g, width, height, t);
-      if (envelopes.length > 0) renderEnvelopes(g, width, height, t);
-      if (ripples.length > 0) renderGavelRipples(g, width, height, t);
+
+      // Normalize to logical CSS pixels so 1px hairlines & typography are razor-sharp at 1x and 2x DPR
+      const dpr = typeof window !== 'undefined' ? Math.min(2, window.devicePixelRatio || 1) : 1;
+      const cw = width / dpr;
+      const ch = height / dpr;
+
+      g.save();
+      g.scale(dpr, dpr);
+
+      if (waves.length > 0) renderChiaroscuroWaves(g, cw, ch, t);
+      if (stamps.length > 0) renderStampSeals(g, cw, ch, t);
+      if (goldPatches.length > 0 || foilFlecks.length > 0) renderGoldLeafLive(g, cw, ch, t);
+      if (redactions.length > 0) renderRedactionLive(g, cw, ch, t);
+      if (activeCrash) renderEngravingPlunge(g, cw, ch, t);
+      if (activeRoute) renderForensicRoute(g, cw, ch, t);
+
+      // Shared bottom-left Archival Exhibit Plate always renders crisply last
+      if (activePlate) drawArchivalPlate(g, cw, ch, t);
+
+      g.restore();
     },
     pointer(kind: PointerKind, u: number, v: number, t: number) {
       const at = Number.isFinite(t) ? t : lastClock;
@@ -1454,13 +1880,14 @@ export function createPortraitScene(
       }
     },
     reset() {
+      activePlate = null;
       stamps.length = 0;
-      coins.length = 0;
-      shimmerArcs.length = 0;
+      goldPatches.length = 0;
+      foilFlecks.length = 0;
       redactions.length = 0;
-      crashes.length = 0;
-      envelopes.length = 0;
-      ripples.length = 0;
+      activeCrash = null;
+      activeRoute = null;
+      waves.length = 0;
       scratchHotspots.length = 0;
       pointerTarget = null;
       if (status === 'failed' && config.refImage) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * The Financial Crimes — Daily Remote Sweep & Auto-Publish Orchestrator (v1.2)
+ * The Financial Crimes — Daily Remote Sweep & Auto-Publish Orchestrator (v1.3)
  *
  * Schedule (America/New_York, DST-safe):
  *   - 6:00 AM ET (`--mode sweep`):   Global white-collar feed sweep -> Gemini 4 Hydrogen
@@ -13,8 +13,10 @@
  *                                    to GitHub + Cloudflare CI/CD.
  *
  * AI Engine: Gemini API / Antigravity managed remote agent running `gemini-4-hydrogen`.
- * Painting Architecture: `sambitbiswas.com`-style Canvas 2D impasto engine (`src/painting/`),
- *   sampling normalized JPEGs strictly in memory via `loadPixels()` (zero `<img>` in DOM).
+ * Painting Architecture: `sambitbiswas.com`-style Canvas 2D impasto engine (`src/painting/`)
+ *   following the v1.3 "Wet-Oil & Archival Exhibit" interaction standard (shared lower-left
+ *   Archival Exhibit Plate + 6 dignified wet-oil/fine-print surface reactions; zero floating
+ *   center text, zero cartoon particles, zero `<img>` in DOM).
  * Note: Newsletter delivery (Cloudflare Email Service GA) is deferred to Phase 3.
  */
 
@@ -58,9 +60,12 @@ export const IMPASTO_TOY_KINDS = [
   'gavel-ripple',
 ];
 
+export const INTERACTION_AESTHETIC = 'wet-oil-archival-exhibit-v1.3';
+
 /**
- * Load the reusable Gemini 4 Hydrogen impasto painting prompt template and interpolate
- * story dossier placeholders for either `manifest-json` or `bespoke-scene-ts` output.
+ * Load the reusable Gemini 4 Hydrogen impasto painting prompt template (v1.3 Wet-Oil &
+ * Archival Exhibit standard) and interpolate story dossier placeholders for either
+ * `manifest-json` or `bespoke-scene-ts` output.
  */
 export async function buildPaintingPrompt(vars = {}) {
   const template = await fs.readFile(PAINTING_PROMPT_PATH, 'utf8');
@@ -82,6 +87,29 @@ export async function buildPaintingPrompt(vars = {}) {
   };
   const merged = { ...defaults, ...vars };
   return template.replace(/\{\{([A-Z0-9_]+)\}\}/g, (_, key) => String(merged[key] ?? ''));
+}
+
+/**
+ * Verify that `pipeline/prompts/js-painting-prompt.md` loads cleanly, codifies the v1.3
+ * Wet-Oil & Archival Exhibit guardrails, and interpolates with zero leftover tokens.
+ */
+async function auditPaintingPrompt() {
+  try {
+    const rendered = await buildPaintingPrompt({
+      ARTICLE_SLUG: 'dry-run-check',
+      ARTICLE_HEADLINE: 'Dry Run Check',
+    });
+    const unresolved = rendered.match(/\{\{[A-Z0-9_]+\}\}/g) ?? [];
+    const hasArchivalPlate = rendered.includes('drawArchivalPlate');
+    const hasNoFloatingBan = rendered.includes('ZERO floating drop-shadow typography');
+    const issues = [];
+    if (unresolved.length > 0) issues.push(`unresolved placeholders: ${unresolved.join(', ')}`);
+    if (!hasArchivalPlate) issues.push('missing drawArchivalPlate specification');
+    if (!hasNoFloatingBan) issues.push('missing floating-text prohibition');
+    return { ready: issues.length === 0, bytes: Buffer.byteLength(rendered, 'utf8'), issues };
+  } catch (err) {
+    return { ready: false, bytes: 0, issues: [err.message] };
+  }
 }
 
 /**
@@ -139,10 +167,7 @@ async function runSweepBlueprint({ mode, date }) {
     process.env.ANTIGRAVITY_AGENT_ENDPOINT && process.env.ANTIGRAVITY_AGENT_TOKEN
   );
 
-  const promptExists = await fs
-    .access(PAINTING_PROMPT_PATH)
-    .then(() => true)
-    .catch(() => false);
+  const promptAudit = await auditPaintingPrompt();
   const paintAudit = await auditPaintRefs().catch((err) => ({
     total: 0,
     portraits: 0,
@@ -150,16 +175,23 @@ async function runSweepBlueprint({ mode, date }) {
   }));
 
   console.log('====================================================================');
-  console.log(' The Financial Crimes — Remote Sweep Pipeline (v1.2 Impasto Ready)  ');
+  console.log(' The Financial Crimes — Remote Sweep Pipeline (v1.3 Wet-Oil Ready)  ');
   console.log('====================================================================');
   console.log(`Mode:            ${mode}`);
   console.log(`Edition Date:    ${date} (America/New_York)`);
   console.log(`AI Model:        ${DEFAULT_MODEL} (Research/Drafting + Canvas 2D Impasto Art)`);
   console.log(`Auth Status:     GEMINI_API_KEY=${hasGeminiKey ? 'configured' : 'unset'} | ANTIGRAVITY_REMOTE=${hasAntigravityAgent ? 'configured' : 'unset'}`);
   console.log(`Feeds Queued:    ${GLOBAL_REGULATOR_FEEDS.length} official regulator & court feeds`);
-  console.log(`Painting Prompt: ${promptExists ? 'READY' : 'MISSING'} (${path.relative(process.cwd(), PAINTING_PROMPT_PATH)})`);
+  console.log(`Painting Prompt: ${promptAudit.ready ? 'READY' : 'INVALID'} (${path.relative(process.cwd(), PAINTING_PROMPT_PATH)}, ${promptAudit.bytes}B)`);
   console.log(`Paint Refs Pool: ${paintAudit.total} entries (${paintAudit.portraits} portraits, ${paintAudit.total - paintAudit.portraits} landmarks/objects)`);
-  console.log(`Engine Palette:  ${IMPASTO_PALETTE_MOODS.length} FC_OIL moods | ${IMPASTO_TOY_KINDS.length} painterly toys | zero <img> in DOM`);
+  console.log(`Engine Palette:  ${IMPASTO_PALETTE_MOODS.length} FC_OIL moods | ${IMPASTO_TOY_KINDS.length} wet-oil interactions | ${INTERACTION_AESTHETIC}`);
+
+  if (promptAudit.issues.length > 0) {
+    console.error('\n[painting-prompt] Audit issues detected:');
+    for (const issue of promptAudit.issues) console.error(`  - ${issue}`);
+    process.exitCode = 1;
+    return;
+  }
 
   if (paintAudit.issues.length > 0) {
     console.error('\n[paint-refs] Audit issues detected:');

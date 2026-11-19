@@ -19,6 +19,7 @@ Our painting engine inherits the living Canvas 2D impasto architecture of `sambi
 | **Core Pigments** | Poppy `sky`, `sun`, `pink`, `tangerine`, `violet`, `leaf` | Rich high-conviction editorial oils (`FC_OIL` in `src/painting/palette.ts`) |
 | **Lighting & Value** | High-key sunlit washes | Dramatic chiaroscuro shadows, warm skin/stone midtones, controlled edge vignette into mood pigment |
 | **Opinion Pages** | Same colour system | **`monochrome-noir`** — warm charcoal & sepia oil chiaroscuro on newsprint cream, punctuated *only* by a single Verdict Crimson mark when poked |
+| **Interaction Aesthetic** | Playful studio shelf pokes | **Unified "Wet-Oil & Archival Exhibit" System** (*NYT Magazine* × *The New Yorker* × Museum Print) — two disciplined layers only: a single lower-left cotton-rag Archival Exhibit Plate + dignified wet-oil / fine-print surface reactions |
 | **Frame Chrome** | Pure edge-to-edge canvas | **Zero cluttered HUD bars.** No dateline pills, no raw ISO timestamps, no `FIG. VIII` stamps, no opaque caption boxes covering the paint, no 3-button clusters—only the 3 stacked `<canvas>` layers and a whisper-quiet hover-only repaint glyph (`↻`) |
 
 ### The Financial Crimes Oil Palette (`FC_OIL`)
@@ -28,21 +29,23 @@ Every scene and mood grade derives exclusively from these pigments (`src/paintin
 | Token | HSL (`[h, s, l]`) | Editorial Role |
 | :--- | :--- | :--- |
 | `verdictCrimson` | `[355, 68, 41]` | Legal carmine — enforcement headlines, stamps, plunging charts, Opinion poke accent |
-| `bullionGold` | `[41, 74, 50]` | Sovereign gold — yachts, luxury watches, corporate treasury loot, coin bursts |
+| `bullionGold` | `[41, 74, 50]` | Sovereign gold — yachts, luxury watches, corporate treasury loot, 24k gold-leaf impasto gilding |
 | `subpoenaCobalt` | `[213, 52, 37]` | Prussian courthouse blue — federal filings, AI-washing, European prosecutors, aviation steel |
 | `banknoteEmerald` | `[154, 42, 32]` | Intaglio currency green — offshore banking hubs, green-finance loans, MAS/ESG ironies |
-| `courtroomOchre` | `[30, 56, 46]` | Mahogany & sandstone — parliamentary halls, Southwark brick, DOJ corridors, gavel ripples |
-| `pressBlack` | `[28, 12, 11]` | Warm printer's lampblack — redaction bars, monochrome darks, deep suit lapels |
-| `newsprintCream` | `[39, 34, 93]` | Cotton-rag broadsheet paper — ground wash, subpoena envelopes, highlight glazes |
+| `courtroomOchre` | `[30, 56, 46]` | Mahogany & sandstone — parliamentary halls, Southwark brick, DOJ corridors, chiaroscuro accents |
+| `pressBlack` | `[28, 12, 11]` | Warm printer's lampblack — wet oil redaction bars, engraving hairlines, monochrome darks, deep suit lapels |
+| `newsprintCream` | `[39, 34, 93]` | Cotton-rag broadsheet paper — ground wash, lower-left Archival Exhibit Plate paper (`#faf7f0`), highlight glazes |
 | `charcoalShadow` | `[218, 16, 17]` | Cool shadow glaze — slate vignettes and evening skylines |
 | `scandalRose` | `[348, 48, 56]` | Muted editorial blush — warm portrait midtone bridge |
 | `editorialSlate` | `[210, 26, 44]` | Institutional stone — steel, glass towers, monochrome midtones |
 
-### Hard Visual Prohibitions
-1. **ZERO neon SaaS colors** (no electric cyan `#00ffff`, no hot magenta, no purple-blue AI gradients, no glowing glassmorphism).
-2. **ZERO cluttered chrome over the painting** (never draw top header bars, raw ISO timestamps like `2026-11-19T06:00:00-05:00`, fake telemetry tickers, or HTML button bars overlapping the artwork).
-3. **ZERO `<img>` tags in the DOM** — the reference photograph is fetched purely in memory via `loadPixels()` into an offscreen pixel buffer and discarded; the reader sees *only* living oil brushstrokes painted onto `<canvas>`.
-4. **ZERO flat vector charts masquerading as paintings** — every interactive mark must look *painted* (rough impasto edges, rounded caps, organic jitter, oil shadow/highlight passes).
+### Hard Visual Prohibitions (Explicitly Outlawed Forever)
+1. **ZERO floating drop-shadow typography** drawn over the middle of a painting or over a subject's face (`g.fillText` floating in mid-air, slapped across architecture/portraits, or rising like arcade XP numbers). Every word of factual satire lives exclusively inside the anchored lower-left Archival Exhibit Plate.
+2. **ZERO cartoon clipart or arcade particles** — no bouncing gold Mario coins, no tumbling triangle-flap envelopes, no chunky dashed radar rings, no star/sparkle bursts, no laser tips, no spotlight flashes, and no giant rotated stamp boxes with ink-splatter rays.
+3. **ZERO rounded SaaS pills, glowing blurs, or HUD widgets** overlaid on the canvas — never draw top header bars, raw ISO timestamps like `2026-11-19T06:00:00-05:00`, `FIG.` badges, fake telemetry tickers, or HTML button bars overlapping the artwork.
+4. **ZERO neon SaaS colors** (no electric cyan `#00ffff`, no hot magenta, no purple-blue AI gradients, no glowing glassmorphism).
+5. **ZERO `<img>` tags in the DOM** — the reference photograph is fetched purely in memory via `loadPixels()` into an offscreen pixel buffer and discarded; the reader sees *only* living oil brushstrokes painted onto `<canvas>`.
+6. **ZERO flat vector charts masquerading as paintings** — every interactive mark must belong natively to wet oil brushwork (`sample()`) or *NYT*-grade fine-print engraving (`live()`).
 
 ---
 
@@ -51,7 +54,7 @@ Every scene and mood grade derives exclusively from these pigments (`src/paintin
 All paintings run inside our three-canvas stack inside `<fc-painting>` (`src/painting/element.ts`):
 1. **`ground` canvas** — Holds permanent cumulative oil strokes laid down by `Painter` (underpainting + continuous maintenance + focal sharpening).
 2. **`weave` canvas** — Static 180×180 procedural linen warp/weft tile (`paintWeave`, `src/painting/weave.ts`) composited via CSS `mix-blend-mode: multiply`.
-3. **`live` canvas** — Cleared and redrawn at 60fps every frame by `scene.live(g, width, height, t)` for fast interactive marks (impasto rubber stamps, tumbling gold coin dabs, plunging crimson chart lines, fluttering subpoena slips, gavel shockwaves).
+3. **`live` canvas** — Cleared and redrawn at 60fps every frame by `scene.live(g, width, height, t)` for dignified fine-print editorial marks (subtle circular letterpress registration seal, delicate flat metallic foil flecks, fine-nib engraving plunge curves, forensic architectural routing arcs, razor-thin hairline chiaroscuro rings) plus the single shared lower-left **Archival Exhibit Plate** (`drawArchivalPlate`). Never used for floating center typography or arcade particles.
 
 ### Core TypeScript Interfaces (`src/painting/types.ts`)
 
@@ -177,17 +180,31 @@ Transform sampled RGB → HSL (`rgbToHsl`) with our broadsheet oil grade:
   - `courtroom-ochre` — Political patronage, regulatory bribery traps, Crown Court / DOJ policy beats.
   - `monochrome-noir` — **Mandatory for all `template: "opinion"` columns** (charcoal/sepia oil portrait + single Verdict Crimson mark on poke).
 
-### Step 4 — Choose a Story-Specific Painterly Toy (`toyKind`)
-Every painting must reward curiosity on click/poke with tactile satire **painted directly into the canvas** (never an HTML popup):
+### Step 4 — Apply the Unified "Wet-Oil & Archival Exhibit" Interaction Grammar (`toyKind`)
 
-| `toyKind` | Painterly Visual Action on Click/Poke | Best Editorial Fit |
+Every painting rewards curiosity on click/poke using **ONE disciplined, museum-grade two-layer grammar** (*NYT Magazine* × *The New Yorker* × Museum Print). Never draw floating text over the middle of the painting or over a subject's face, and never emit cartoon particles.
+
+#### Layer 1 — Shared Lower-Left Archival Exhibit Plate (`drawArchivalPlate`)
+Whenever ANY of the 6 interactions is triggered, factual satire (`toyText` + `toySubtext`) is anchored inside ONE consistent, crisp museum/broadsheet exhibit tag pinned to the **lower-left inset** (`margin = clamp(unit * 0.04, 12, 22)` — never obscuring faces or the center of the canvas):
+- **Paper & Frame:** Warm cotton-rag paper surface `#faf7f0` at `94%` opacity (`rgba(250, 247, 240, 0.94)`), sharp `0px` corners (zero rounded SaaS pills), crisp `1px solid #121212` (`rgba(18, 18, 18, 0.88)`) hairline border, subtle corner press-proof registration tick, and a `3px` vertical left pigment bar in the story's `FC_OIL` accent (`FC_OIL.verdictCrimson` for `monochrome-noir` Opinion pieces).
+- **Editorial Typography (Zero Drop Shadow):**
+  - Headline (`toyText`): refined `Newsreader`, `Georgia`, serif at weight `600`, `#121212`, slight tracking.
+  - Subline (`toySubtext`): muted `JetBrains Mono`, `ui-monospace`, monospace at weight `500`, uppercase, `#4a4843`.
+- **Calm, Authoritative Motion:** Settles upward `6px` while fading in over `220ms` (`easeOutCubic`), holds steady for `5.2s`, and fades out cleanly over `1.1s`. **Maximum 1 plate visible at a time** (re-clicking cleanly refreshes the active plate; never stack overlapping boxes). Under `prefers-reduced-motion: reduce`, renders statically without slide/flicker.
+
+#### Layer 2 — 6 Dignified Painterly / Fine-Print Surface Reactions (ZERO Cartoon Clipart)
+Every click triggers both Layer 1 (`drawArchivalPlate`) and ONE native wet-oil (`sample()`) or fine-print (`live()`) surface reaction:
+
+| `toyKind` | Layer 2 Surface Reaction (Wet-Oil `sample()` & Fine-Print `live()`) | Best Editorial Fit |
 | :--- | :--- | :--- |
-| `stamp` | Slams a tilted, slightly distressed oil-ink rubber stamp (`toyText` + `toySubtext`) with ink-splatter flecks onto the canvas | Bundle discounts, zero-prison deals, forged forms, record fine comparisons, audit bans |
-| `coins` | Bursts thick golden bullion/coin oil dabs arcing under gravity from the click point with specular glint trails | Diverted EV loans, luxury watches, Medicare yachts, 0.915% bank fines |
-| `redaction` | Sweeps broad lampblack impasto redaction bars across the canvas on click; hovering rubs/repaints the portrait right back through | Unprivileged AI chats, `"~0% AI"` claims, sealed court filings |
-| `crash-line` | Draws a jagged, trembling Verdict Crimson oil price-collapse line plunging across the canvas with spark dabs | Crypto collapses (`$40B`), options manipulation, Ponzi promises, bank stock cliffs |
-| `envelopes` | Releases fluttering newsprint-cream & crimson subpoena/bounced-email slips tumbling across the painting | 30-person insider rings, 4M fake-student bounce tests, bribery trap envelopes |
-| `gavel-ripple` | Expands concentric painted ink shockwaves & brief chiaroscuro spotlight flash from the poke point | Denied appeals, multi-nation dawn raids, record Crown Court sentencings |
+| `stamp` | **Subtle Letterpress Registration Seal & Local Oil Glaze:** Quiet local pigment wax-seal oil wash painted in real impasto brushstrokes via `sample()` (`r ≈ 0.075`) + compact circular letterpress registration seal (`1.2px` double concentric hairline ring, fine inner crosshairs, tiny `FC` mark at low ink opacity) on `live()` — *zero giant tilted boxes, zero ink-splatter rays*. | Bundle discounts, zero-prison deals, forged forms, record fine comparisons, audit bans |
+| `coins` | **24k Gold-Leaf Impasto Gilding:** Organic fbm-masked patch around the click (`r ≈ 0.17`) painted directly into the portrait's oil brushstrokes in `sample()` (`FC_OIL.bullionGold` + warm burnished ochre, following real Sobel contours, gradually repainted by maintenance strokes over ~6.5s) + whisper-subtle `1px` gold hairline ring and 5–7 delicate flat metallic foil flecks — *zero bouncing cartoon Mario coins*. | Diverted EV loans, luxury watches, Medicare yachts, 0.915% bank fines |
+| `redaction` | **Wet Lampblack Impasto Censor Bar:** Broad lampblack oil brushstroke painted directly into `sample()` with **zero text on the bar**; hovering physically brushes/repaints the underlying portrait right back through while the lower-left Archival Exhibit Plate displays `toyText` + `HOVER BAR TO REVEAL`. | Unprivileged AI chats, `"~0% AI"` claims, sealed court filings |
+| `crash-line` | **Fine-Nib Editorial Engraving Plunge Curve:** Smooth *NYT*-graphics engraving curve across the lower canvas (`1.5px` Verdict Crimson main stroke + `0.75px` dashed peak-baseline hairline + crisp `3.5px` peak/floor vertex dots) — *zero chunky zigzags, zero glowing yellow laser tips, zero spark bursts*. | Crypto collapses (`$40B`), options manipulation, Ponzi curves, bank stock cliffs |
+| `envelopes` | **Forensic Investigative Routing Arcs:** 3 delicate `1px` curved architectural ink routing paths (`pressBlack` + hairline crimson dashed overlay) tracing from the click point to tiny ringed archival pinpoint nodes (`r = 3.5px`, cream fill + `1.2px` crimson ring) — *zero tumbling cartoon triangle-flap envelopes*. | 30-person insider rings, 4M fake-student bounce tests, shell-company & bribery trails |
+| `gavel-ripple` | **Optical Chiaroscuro Wave:** Expanding annular wave inside `sample()` momentarily shifting real oil brushwork into stark monochrome broadsheet chiaroscuro before color returns behind the wave + 2 razor-thin `1px` continuous hairline rings (`pressBlack` + faint accent echo) and a `3px` ink origin dot — *zero chunky dashed orange rings, zero rising floating text, zero spotlight flash*. | Denied appeals, multi-nation dawn raids, 4-minute insider trade clocks, record Crown Court sentencings |
+
+> **Hotspot Repaint Discipline:** Whenever a surface reaction modifies `sample()` (`stamp` local glaze, `coins` gold-leaf gilding, `redaction` lampblack bar, or `gavel-ripple` chiaroscuro wave), include that active zone in `hotspots(t)` so `Painter` concentrates fine maintenance dabs there and visibly repaints/heals the wet oil!
 
 ### Step 5 — Enforce the Zero-`<img>` DOM Guarantee
 - Never output `<img src="/paint-refs/...">` in Astro templates, article `body.html`, or client JS.
@@ -218,11 +235,24 @@ Before generating ANY `toyText`, `toySubtext`, `alt`, or bespoke visual metaphor
 SYSTEM ROLE:
 You are the Art Director & Interactive Canvas 2D Engineer for *The Financial Crimes* ("All the Crimes Fit to Fine"), a satirical-yet-100%-factually-grounded digital broadsheet modeled on classic New York Times typography and New Yorker editorial portraiture.
 
-VISUAL VOICE:
+VISUAL VOICE & INTERACTION AESTHETIC ("WET-OIL & ARCHIVAL EXHIBIT"):
 - Paint in living Canvas 2D impressionist impasto oils (sambitbiswas.com architecture: 3-pass shadow/body/specular paintDab, procedural linen weave with mix-blend-multiply, progressive coarse-to-fine underpainting, Sobel luminance-gradient contour brushstrokes, HOTSPOT_SHARE = 0.62 pointer focus).
 - Use ONLY The Financial Crimes editorial oil palette (FC_OIL: verdictCrimson, bullionGold, subpoenaCobalt, banknoteEmerald, courtroomOchre, pressBlack, newsprintCream, charcoalShadow, scandalRose, editorialSlate).
 - If {{SECTION_TEMPLATE}} is "opinion", you MUST use paletteMood: "monochrome-noir" (charcoal/sepia chiaroscuro oil portrait with Verdict Crimson poke accent only).
-- ZERO neon SaaS colors. ZERO cluttered HUD bars, raw ISO timestamps, or HTML overlays on the canvas. ZERO <img> elements in the DOM (the reference JPEG is sampled strictly in memory via loadPixels()).
+- HARD PROHIBITIONS (OUTLAWED FOREVER):
+  * ZERO floating drop-shadow typography drawn over the middle of a painting or over a subject's face (no mid-air g.fillText, no rising arcade XP text).
+  * ZERO cartoon clipart or arcade particles (no bouncing gold Mario coins, no tumbling triangle-flap envelopes, no chunky dashed radar rings, no star/sparkle bursts, no giant rotated stamp boxes with ink-splatter rays).
+  * ZERO rounded SaaS pills, glowing blurs, neon SaaS colors, HUD chrome bars, raw ISO timestamps, or HTML overlays on the canvas.
+  * ZERO <img> elements in the DOM (the reference JPEG is sampled strictly in memory via loadPixels()).
+- MANDATORY TWO-LAYER INTERACTION GRAMMAR:
+  * Layer 1 — Shared Lower-Left Archival Exhibit Plate (`drawArchivalPlate`): Anchors `toyText` + `toySubtext` in ONE crisp lower-left museum/broadsheet exhibit tag (`#faf7f0` at 94% opacity, sharp 0px corners, 1px solid `#121212` hairline border, 3px left pigment bar in the story's FC_OIL accent, Newsreader 600 serif headline + muted JetBrains Mono 500 subline, calm 6px settle over 220ms, max 1 plate visible at a time — never obscuring faces).
+  * Layer 2 — Dignified Wet-Oil / Fine-Print Surface Reaction:
+    - `stamp`: subtle circular letterpress registration seal (1.2px double hairline ring) + quiet local pigment oil glaze in `sample()`.
+    - `coins`: 24k gold-leaf impasto gilding painted directly into portrait brushstrokes in `sample()` (following Sobel contours, gradually repainted) + whisper-fine metallic foil flecks.
+    - `redaction`: wet lampblack impasto censor bar in `sample()` with ZERO text on the bar; hovering brushes the portrait back through.
+    - `crash-line`: fine-nib editorial engraving plunge curve (1.5px Verdict Crimson + 0.75px baseline hairline + crisp peak/floor vertex dots).
+    - `envelopes`: forensic investigative routing arcs (1px curved architectural ink paths + ringed archival pinpoint nodes).
+    - `gavel-ripple`: optical chiaroscuro wave inside `sample()` shifting oil brushwork into stark monochrome broadsheet chiaroscuro + 2 razor-thin 1px continuous hairline rings.
 
 LIBEL & FACTUAL SAFETY (NON-NEGOTIABLE):
 - Ground every word and number strictly in the verified facts below. Never invent a dollar figure, agency, or prison term.
@@ -267,10 +297,12 @@ Return ONLY valid JSON matching `PaintRefManifestEntry`:
 
 === MODE B: BESPOKE INTERACTIVE CANVAS 2D SCENE (FLAGSHIP ONE-OFFS) ===
 Return a single TypeScript module exporting `createScene(config: PaintRefConfig): Scene` that:
-1. Imports `loadPixels`, `paintDab` conventions, `FC_OIL`, `resolveMoodProfile`, `clamp`, `lerp`, `hslCss`, `rgbToHsl`, `fbm` from `./types`, `./palette`, `./color`, `./noise`, `./portrait-scene`.
+1. Imports `loadPixels`, `FC_OIL`, `resolveMoodProfile`, `clamp`, `lerp`, `hslCss`, `mixHslShortest`, `rgbToHsl`, `fbm` from `./types`, `./palette`, `./color`, `./noise`, `./portrait-scene`.
 2. Uses `loadPixels(config.refImage, 180)` with Sobel contour tangent angles (`field.angles[idx]`) and editorial oil HSL grading in `sample(u, v, t)`.
-3. Targets `config.focalPoint` in `hotspots(t)` (`r: 0.14`, `detail: 0.45`) and follows the reader's pointer seamlessly.
-4. Implements a story-bespoke painterly click/poke interaction in `live(g, w, h, t)` and/or `sample(u, v, t)` using ONLY painted Canvas 2D strokes (zero DOM overlays), honoring `ctx.reducedMotion` and providing `reset()`.
+3. Targets `config.focalPoint` in `hotspots(t)` (`r: 0.14`, `detail: 0.45`), follows the reader's pointer seamlessly, and concentrates maintenance dabs over any active wet-oil glaze/gilding/redaction/chiaroscuro region.
+4. Implements the Two-Layer "Wet-Oil & Archival Exhibit" interaction grammar ONLY:
+   - Layer 1: Anchors `toyText` + `toySubtext` in the lower-left `drawArchivalPlate()` cotton-rag exhibit tag (max 1 active plate, 0px corners, 1px `#121212` border, 3px left pigment bar, Newsreader 600 + JetBrains Mono 500, zero floating center/face text).
+   - Layer 2: A dignified wet-oil modulation in `sample(u, v, t)` and/or fine-print engraving mark in `live(g, w, h, t)` (zero cartoon clipart, zero arcade particles, zero DOM overlays), honoring `ctx.reducedMotion` and providing `reset()`.
 ```
 
 ---
@@ -307,12 +339,103 @@ Return a single TypeScript module exporting `createScene(config: PaintRefConfig)
 }
 ```
 
-#### Mode B Output (Condensed Bespoke `Scene` Blueprint):
+#### Mode B Output (Condensed Bespoke `Scene` Blueprint — Wet-Oil & Archival Exhibit Standard):
 ```ts
-import type { Hotspot, PaintRefConfig, PointerKind, Sample, Scene } from './types';
-import { clamp, hslCss, lerp, rgbToHsl } from './color';
+import type { HSL, Hotspot, PaintRefConfig, PointerKind, Sample, Scene, SceneContext } from './types';
+import { clamp, hslCss, lerp, mixHslShortest, rgbToHsl } from './color';
 import { FC_OIL, resolveMoodProfile } from './palette';
 import { loadPixels, type PixelField } from './portrait-scene';
+
+interface ExhibitPlate {
+  title: string;
+  subtext: string;
+  t0: number;
+}
+
+interface RegistrationSeal {
+  u: number;
+  v: number;
+  t0: number;
+}
+
+/** Layer 1: Shared lower-left Archival Exhibit Plate (zero floating center/face text). */
+function drawArchivalPlate(
+  g: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  plate: ExhibitPlate,
+  accent: HSL,
+  t: number,
+  reducedMotion: boolean,
+): void {
+  const age = t - plate.t0;
+  const totalLife = 6.52; // 0.22s settle + 5.2s hold + 1.1s fade
+  if (age < 0 || age > totalLife) return;
+
+  const enter = reducedMotion ? 1 : clamp(age / 0.22, 0, 1);
+  const eased = 1 - Math.pow(1 - enter, 3);
+  const exit = age > 5.42 ? 1 - clamp((age - 5.42) / 1.1, 0, 1) : 1;
+  const alpha = eased * exit;
+  if (alpha <= 0.01) return;
+
+  const unit = Math.min(w, h);
+  const margin = clamp(unit * 0.04, 12, 22);
+  const titlePx = Math.round(clamp(unit * 0.038, 12, 20));
+  const subPx = Math.round(clamp(unit * 0.023, 9, 12));
+  const padX = Math.round(clamp(unit * 0.032, 11, 16));
+  const padY = Math.round(clamp(unit * 0.022, 8, 12));
+  const accentW = 3;
+
+  g.save();
+  g.font = `600 ${titlePx}px "Newsreader", Georgia, serif`;
+  const titleW = g.measureText(plate.title).width;
+  g.font = `500 ${subPx}px "JetBrains Mono", ui-monospace, monospace`;
+  const subW = plate.subtext ? g.measureText(plate.subtext).width : 0;
+
+  const maxPlateW = Math.max(120, w - margin * 2);
+  const boxW = Math.min(maxPlateW, Math.ceil(Math.max(titleW, subW)) + padX * 2 + accentW + 6);
+  const gap = plate.subtext ? Math.round(subPx * 0.55) : 0;
+  const boxH = padY * 2 + titlePx + (plate.subtext ? gap + subPx : 0);
+  const rise = reducedMotion ? 0 : (1 - eased) * 6;
+  const x = Math.round(margin) + 0.5;
+  const y = Math.round(h - margin - boxH + rise) + 0.5;
+
+  // Cotton-rag paper plate (#faf7f0 @ 94%), sharp 0px corners, 1px hairline border
+  g.fillStyle = `rgba(250, 247, 240, ${(0.94 * alpha).toFixed(3)})`;
+  g.fillRect(x, y, boxW, boxH);
+
+  g.strokeStyle = `rgba(18, 18, 18, ${(0.88 * alpha).toFixed(3)})`;
+  g.lineWidth = 1;
+  g.strokeRect(x, y, boxW, boxH);
+
+  // 3px left pigment bar in the story's FC_OIL accent
+  g.fillStyle = hslCss(accent[0], accent[1], accent[2], 0.96 * alpha);
+  g.fillRect(x, y, accentW, boxH);
+
+  // Press-proof top-right hairline registration tick
+  g.strokeStyle = `rgba(18, 18, 18, ${(0.35 * alpha).toFixed(3)})`;
+  g.beginPath();
+  g.moveTo(x + boxW - 8, y + 4.5);
+  g.lineTo(x + boxW - 3.5, y + 4.5);
+  g.moveTo(x + boxW - 3.5, y + 4.5);
+  g.lineTo(x + boxW - 3.5, y + 9);
+  g.stroke();
+
+  // Dignified broadsheet typography (zero drop shadow)
+  const textX = x + accentW + padX;
+  g.textAlign = 'left';
+  g.textBaseline = 'top';
+  g.fillStyle = `rgba(18, 18, 18, ${(0.96 * alpha).toFixed(3)})`;
+  g.font = `600 ${titlePx}px "Newsreader", Georgia, serif`;
+  g.fillText(plate.title, textX, y + padY, boxW - accentW - padX * 2);
+
+  if (plate.subtext) {
+    g.fillStyle = `rgba(74, 72, 67, ${(0.92 * alpha).toFixed(3)})`;
+    g.font = `500 ${subPx}px "JetBrains Mono", ui-monospace, monospace`;
+    g.fillText(plate.subtext, textX, y + padY + titlePx + gap, boxW - accentW - padX * 2);
+  }
+  g.restore();
+}
 
 export function createBofABundleScene(config: PaintRefConfig): Scene {
   const mood = resolveMoodProfile(config.paletteMood ?? 'verdict-crimson');
@@ -320,8 +443,10 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
   let field: PixelField | null = null;
   let status: 'idle' | 'loading' | 'ready' | 'failed' = 'idle';
   let pointer: { u: number; v: number } | null = null;
+  let reducedMotion = false;
   const focus = { u: anchor.u, v: anchor.v };
-  const stamps: Array<{ u: number; v: number; rot: number; t0: number }> = [];
+  let activeSeal: RegistrationSeal | null = null;
+  let activePlate: ExhibitPlate | null = null;
 
   const start = () => {
     if (status !== 'idle' || !config.refImage) return;
@@ -336,7 +461,7 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
     aspect: config.aspect ?? 4 / 5,
     alt: config.alt ?? 'Impressionist oil portrait of Bank of America chief executive Brian Moynihan.',
     ready: () => status === 'ready' || status === 'failed',
-    sample(u, v) {
+    sample(u, v, t) {
       if (!field) return { color: FC_OIL.newsprintCream, jitter: 0.5 };
       const px = Math.min(field.width - 1, Math.max(0, Math.floor(u * field.width)));
       const py = Math.min(field.height - 1, Math.max(0, Math.floor(v * field.height)));
@@ -345,14 +470,36 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
       const [h, s, l] = rgbToHsl(field.data[o], field.data[o + 1], field.data[o + 2]);
       const edge = Math.hypot((u - 0.5) * 1.4, (v - 0.45) * 1.3);
       const vig = clamp((edge - 0.52) * mood.vignetteStrength, 0, 0.28);
+      let color: HSL = [h, clamp(s * mood.satBoost + 5, 4, 88), clamp(l * (1 - vig * 0.65) + 2, 9, 95)];
+
+      // Layer 2 (Wet-Oil): Quiet local pigment wax-seal glaze painted directly into the oil surface
+      if (activeSeal) {
+        const age = t - activeSeal.t0;
+        if (age >= 0 && age < 6.0) {
+          const dist = Math.hypot(u - activeSeal.u, v - activeSeal.v);
+          const falloff = clamp(1 - dist / 0.075, 0, 1);
+          const fade = age > 4.2 ? 1 - (age - 4.2) / 1.8 : 1;
+          if (falloff > 0) {
+            color = mixHslShortest(color, mood.accent, falloff * falloff * 0.32 * fade);
+          }
+        }
+      }
+
       return {
-        color: [h, clamp(s * mood.satBoost + 5, 4, 88), clamp(l * (1 - vig * 0.65) + 2, 9, 95)],
+        color,
         angle: field.strength[idx] > 0.12 ? field.angles[idx] : undefined,
         jitter: lerp(0.85, 0.48, field.strength[idx]),
       };
     },
-    hotspots: () => [{ u: focus.u, v: focus.v, r: 0.14, detail: 0.45 }],
-    update(t, dt) {
+    hotspots(t) {
+      const spots: Hotspot[] = [{ u: focus.u, v: focus.v, r: 0.14, detail: 0.45 }];
+      if (activeSeal && t - activeSeal.t0 < 6.5) {
+        spots.push({ u: activeSeal.u, v: activeSeal.v, r: 0.095, detail: 0.55 });
+      }
+      return spots;
+    },
+    update(t, dt, ctx: SceneContext) {
+      reducedMotion = ctx.reducedMotion;
       start();
       const goal = pointer ?? {
         u: anchor.u + Math.sin(t * 0.24) * 0.08,
@@ -363,39 +510,68 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
       focus.v += (goal.v - focus.v) * k;
     },
     live(g, w, h, t) {
-      for (const s of stamps) {
-        const age = t - s.t0;
-        if (age < 0 || age > 8) continue;
-        const alpha = age < 0.12 ? age / 0.12 : age > 6.5 ? 1 - (age - 6.5) / 1.5 : 1;
-        g.save();
-        g.translate(s.u * w, s.v * h);
-        g.rotate(s.rot);
-        g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], FC_OIL.verdictCrimson[1], FC_OIL.verdictCrimson[2], 0.88 * alpha);
-        g.fillStyle = hslCss(FC_OIL.newsprintCream[0], FC_OIL.newsprintCream[1], FC_OIL.newsprintCream[2], 0.86 * alpha);
-        g.lineWidth = Math.max(2, w * 0.006);
-        const bw = w * 0.48;
-        const bh = h * 0.13;
-        g.fillRect(-bw / 2, -bh / 2, bw, bh);
-        g.strokeRect(-bw / 2, -bh / 2, bw, bh);
-        g.fillStyle = hslCss(FC_OIL.verdictCrimson[0], FC_OIL.verdictCrimson[1], FC_OIL.verdictCrimson[2], 0.96 * alpha);
-        g.font = `700 ${Math.round(w * 0.044)}px "Libre Franklin", sans-serif`;
-        g.textAlign = 'center';
-        g.textBaseline = 'middle';
-        g.fillText(config.toyText ?? '$750M DISCOUNT', 0, -bh * 0.14);
-        g.font = `600 ${Math.round(w * 0.025)}px "JetBrains Mono", monospace`;
-        g.fillText(config.toySubtext ?? '0 EXECS CHARGED', 0, bh * 0.24);
-        g.restore();
+      // Layer 2 (Fine-Print): Compact circular letterpress registration seal (1.2px double hairline ring)
+      if (activeSeal) {
+        const age = t - activeSeal.t0;
+        if (age >= 0 && age < 5.6) {
+          const enter = reducedMotion ? 1 : clamp(age / 0.18, 0, 1);
+          const scale = reducedMotion ? 1 : lerp(1.04, 1, 1 - Math.pow(1 - enter, 3));
+          const fade = age > 4.4 ? 1 - clamp((age - 4.4) / 1.2, 0, 1) : 1;
+          const alpha = enter * fade * 0.72;
+          const r = clamp(Math.min(w, h) * 0.068, 18, 34);
+          const cx = activeSeal.u * w;
+          const cy = activeSeal.v * h;
+
+          g.save();
+          g.translate(cx, cy);
+          g.scale(scale, scale);
+          g.strokeStyle = hslCss(mood.accent[0], mood.accent[1], mood.accent[2], alpha);
+          g.lineWidth = 1.2;
+          g.beginPath();
+          g.arc(0, 0, r, 0, Math.PI * 2);
+          g.stroke();
+
+          g.lineWidth = 0.8;
+          g.beginPath();
+          g.arc(0, 0, r * 0.82, 0, Math.PI * 2);
+          g.stroke();
+
+          // Subtle letterpress registration crosshairs
+          g.beginPath();
+          g.moveTo(-r * 1.18, 0); g.lineTo(-r * 0.9, 0);
+          g.moveTo(r * 0.9, 0);   g.lineTo(r * 1.18, 0);
+          g.moveTo(0, -r * 1.18); g.lineTo(0, -r * 0.9);
+          g.moveTo(0, r * 0.9);   g.lineTo(0, r * 1.18);
+          g.stroke();
+
+          g.fillStyle = hslCss(mood.accent[0], mood.accent[1], mood.accent[2], alpha * 0.9);
+          g.font = `600 ${Math.round(r * 0.42)}px "Newsreader", Georgia, serif`;
+          g.textAlign = 'center';
+          g.textBaseline = 'middle';
+          g.fillText('FC', 0, 1);
+          g.restore();
+        }
+      }
+
+      // Layer 1: Shared lower-left Archival Exhibit Plate (max 1 visible at a time)
+      if (activePlate) {
+        drawArchivalPlate(g, w, h, activePlate, mood.accent, t, reducedMotion);
       }
     },
     pointer(kind: PointerKind, u, v, t) {
       pointer = kind === 'leave' ? null : { u, v };
       if (kind === 'down') {
-        stamps.push({ u: clamp(u, 0.24, 0.76), v: clamp(v, 0.18, 0.82), rot: -0.14 + (stamps.length % 3) * 0.07, t0: t });
-        if (stamps.length > 4) stamps.shift();
+        activeSeal = { u: clamp(u, 0.14, 0.86), v: clamp(v, 0.14, 0.78), t0: t };
+        activePlate = {
+          title: config.toyText ?? '$750M DISCOUNT',
+          subtext: config.toySubtext ?? '0 EXECS CHARGED',
+          t0: t,
+        };
       }
     },
     reset() {
-      stamps.length = 0;
+      activeSeal = null;
+      activePlate = null;
     },
   };
 }
@@ -409,11 +585,12 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
 - [ ] **2. Visual Spot Inspection:** Hero & newly added reference JPEGs are verified clean (no logos, SVG errors, watermarks, B&W negatives, or clipped foreheads).
 - [ ] **3. License Audit:** Every entry carries a verified `sourceUrl` and permissive/public-domain `sourceLicense` (`Public Domain`, `CC0`, `CC BY`, `CC BY-SA`, `OGL`, `GODL-India`).
 - [ ] **4. Zero-`<img>` DOM Audit:** `document.querySelectorAll('fc-painting img').length === 0` across homepage, article, and opinion pages.
-- [ ] **5. Clean Frame Audit:** Zero header bars, zero raw ISO timestamps, zero `FIG.` badges, and zero caption overlays covering the painting canvas.
-- [ ] **6. Sobel Contour Readability:** Portraits remain immediately recognizable at both `hero` (`4:5`) and `thumb` (`1:1`) sizes once underpainting finishes (`~1.35s` hero / `~0.7s` thumb).
-- [ ] **7. Focal-Point Accuracy:** Hovering off the portrait lets idle brush refinement sharpen the subject's eyes/face (`focalPoint`), not empty wall or sky.
-- [ ] **8. Interactive Toy Feel:** Clicking/poking triggers a tactile painterly effect (`stamp`, `coins`, `redaction`, `crash-line`, `envelopes`, or `gavel-ripple`) integrated visually into the oil surface.
-- [ ] **9. Opinion Monochrome Rule:** Every `template: "opinion"` article uses `paletteMood: "monochrome-noir"` with zero chromatic noise in the underpainting.
-- [ ] **10. Libel & Legal-Stage Lint:** Zero unconvicted/pending defendants have `"GUILTY"`, `"CONVICTED"`, prison bars, or false guilt admissions in `toyText`, `toySubtext`, or `alt`.
-- [ ] **11. Performance & CLS:** `CLS === 0.000` (aspect-ratio locked wrapper), DPR capped at `2`, offscreen canvases paused via `IntersectionObserver`, and 60fps smooth scrolling with 20+ homepage paintings mounted.
-- [ ] **12. Reduced Motion & Accessibility:** Under `prefers-reduced-motion: reduce`, each canvas completes in one static pass immediately, and carries a truthful descriptive `aria-label` / `alt`.
+- [ ] **5. Clean Frame Audit:** Zero header bars, zero raw ISO timestamps, zero `FIG.` badges, zero rounded SaaS pills, and zero HTML chrome widgets covering the painting canvas.
+- [ ] **6. Zero Floating Center Text & Zero Cartoon Clipart:** Clicking any painting NEVER draws floating drop-shadow typography over the center of the artwork or over a subject's face, and NEVER emits cartoon particles (no bouncing gold Mario coins, no tumbling triangle-flap envelopes, no chunky dashed orange rings, no spark bursts, no giant tilted stamp boxes with ink-splatter rays).
+- [ ] **7. Unified Archival Exhibit Plate & Wet-Oil Surface Grammar:** Every click renders at most 1 crisp lower-left cotton-rag `drawArchivalPlate` (`#faf7f0` @ 94%, `0px` sharp corners, `1px solid #121212` border, `3px` left `FC_OIL` pigment bar, `Newsreader` 600 serif + `JetBrains Mono` 500 mono) paired with a dignified wet-oil (`sample()`) or fine-print (`live()`) reaction (`stamp`, `coins`, `redaction`, `crash-line`, `envelopes`, or `gavel-ripple`). On `redaction`, zero text is drawn on the lampblack bar itself.
+- [ ] **8. Sobel Contour Readability:** Portraits remain immediately recognizable at both `hero` (`4:5`) and `thumb` (`1:1`) sizes once underpainting finishes (`~1.35s` hero / `~0.7s` thumb).
+- [ ] **9. Focal-Point & Wet-Oil Repaint Accuracy:** Hovering off the portrait lets idle brush refinement sharpen the subject's eyes/face (`focalPoint`), not empty wall or sky, and active wet-oil zones (`stamp` glaze, `coins` 24k gold-leaf gilding, `redaction` bar, `gavel-ripple` chiaroscuro wave) visibly repaint/heal via `hotspots()`.
+- [ ] **10. Opinion Monochrome Rule:** Every `template: "opinion"` article uses `paletteMood: "monochrome-noir"` with zero chromatic noise in the underpainting (Verdict Crimson accent on click only).
+- [ ] **11. Libel & Legal-Stage Lint:** Zero unconvicted/pending defendants have `"GUILTY"`, `"CONVICTED"`, prison bars, or false guilt admissions in `toyText`, `toySubtext`, or `alt`.
+- [ ] **12. Performance & CLS:** `CLS === 0.000` (aspect-ratio locked wrapper), DPR capped at `2`, offscreen canvases paused via `IntersectionObserver`, and 60fps smooth scrolling with 20+ homepage paintings mounted.
+- [ ] **13. Reduced Motion & Accessibility:** Under `prefers-reduced-motion: reduce`, each canvas completes in one static pass immediately, renders a calm non-flickering Archival Exhibit Plate on click, and carries a truthful descriptive `aria-label` / `alt`.
