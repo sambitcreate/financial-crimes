@@ -1,0 +1,129 @@
+{
+  "id": "fc-2026-010",
+  "slug": "tigo-scoular-fepa-foreign-bribery",
+  "publish_date": "2026-11-19T06:10:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "Miami",
+  "edition": "us",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Southern District of Florida & DOJ Fraud Section"
+  },
+  "category": "Politics",
+  "agencies": [
+    "DOJ Fraud Section",
+    "USAO-SDFL"
+  ],
+  "docket_number": "TIGO DPA Nov. 2025 / Scoular DPA July 2026 / FEPA Nov. 2026",
+  "legal_stage": "dpa",
+  "template": "news",
+  "eyebrow": "FOREIGN BRIBERY & FCPA",
+  "headline": "After Brief Moratorium on Bribery Cases, Justice Dept. Resumes Enforcement — Provided Cartels Are in the Supply Chain",
+  "deck": "Deferred prosecution deals for TIGO Guatemala ($118.2 million with a 50 percent discount) and The Scoular Company ($10.18 million) join the first criminal charge under the Foreign Extortion Prevention Act.",
+  "byline": "By The Financial Crimes Washington Bureau",
+  "dateline": "MIAMI",
+  "read_time_min": 5,
+  "comment_count": 198,
+  "layout_slot": "ledger",
+  "financials": {
+    "amount_usd": 128380000,
+    "amount_display": "$128.4M Combined Bribery Deals",
+    "fine_usd": 128380000,
+    "fine_display": "$118.2M TIGO / $10.18M Scoular",
+    "fine_ratio_pct": 50,
+    "prison_months": 0,
+    "prison_display": "0 Corporate Execs Charged (DPAs)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 75,
+  "street_crime_compare": {
+    "exec_summary": "TIGO Guatemala received a 50% discount and no compliance monitor on its $118.2M DPA; Scoular resolved Mexico border bribes for $10.18M.",
+    "street_equivalent": "Offering a $1,800 cash envelope to a local customs clerk",
+    "street_sentence": "No 50% cooperation coupon and no deferred prosecution agreement without an arrest"
+  },
+  "sources": [
+    {
+      "title": "TIGO Guatemala Deferred Prosecution Agreement ($118.2 Million)",
+      "agency": "U.S. Department of Justice Fraud Section",
+      "url": "https://www.justice.gov/criminal/criminal-fraud/foreign-corrupt-practices-act",
+      "date": "2025-11-18"
+    },
+    {
+      "title": "The Scoular Company Resolves Mexico Border Bribery Investigation ($10.18 Million DPA)",
+      "agency": "U.S. Department of Justice Fraud Section",
+      "url": "https://www.justice.gov/criminal/criminal-fraud/foreign-corrupt-practices-act",
+      "date": "2026-07-21"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "offshore-flight-map",
+    "accent": "sage",
+    "theme": "newsprint",
+    "caption": "Regional map tracing the post-moratorium FCPA and FEPA enforcement corridor across Guatemala, Mexico, Miami, and Washington.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "The Post-Moratorium Bribery Corridor",
+      "subtitle": "Click regional waypoints to inspect TIGO, Scoular, and first-ever FEPA filings",
+      "region": "americas",
+      "waypoints": [
+        {
+          "id": "gua",
+          "label": "Guatemala City",
+          "lat": 14.63,
+          "lon": -90.51,
+          "role": "TIGO Guatemala",
+          "amount": "$118.2M DPA",
+          "status": "50% Discount / No Monitor (Nov. 2025)"
+        },
+        {
+          "id": "mex",
+          "label": "Mexico Border",
+          "lat": 25.68,
+          "lon": -100.31,
+          "role": "The Scoular Co.",
+          "amount": "$10.18M DPA",
+          "status": "Border Bribery Resolution (July 2026)"
+        },
+        {
+          "id": "mia",
+          "label": "Miami (S.D. Fla.)",
+          "lat": 25.76,
+          "lon": -80.19,
+          "role": "Enforcement Venue",
+          "amount": "First FEPA Charge",
+          "status": "Filed Nov. 2026"
+        },
+        {
+          "id": "wdc",
+          "label": "Washington, D.C.",
+          "lat": 38.9,
+          "lon": -77.04,
+          "role": "DOJ Fraud Section",
+          "amount": "Cartel Priority",
+          "status": "Selective FCPA Resumption"
+        }
+      ],
+      "routes": [
+        {
+          "from": "gua",
+          "to": "mia",
+          "amount": "$118.2M",
+          "label": "Cash Bags & Cartel Link"
+        },
+        {
+          "from": "mex",
+          "to": "wdc",
+          "amount": "$10.18M",
+          "label": "Scoular DPA"
+        },
+        {
+          "from": "mia",
+          "to": "wdc",
+          "amount": "FEPA 2026",
+          "label": "First Demand-Side Charge"
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

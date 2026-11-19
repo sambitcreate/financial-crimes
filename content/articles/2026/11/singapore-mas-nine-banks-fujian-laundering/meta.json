@@ -1,0 +1,85 @@
+{
+  "id": "fc-2026-021",
+  "slug": "singapore-mas-nine-banks-fujian-laundering",
+  "publish_date": "2026-11-19T06:26:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "Singapore",
+  "edition": "global",
+  "jurisdiction": {
+    "country_iso": "SG",
+    "venue": "Monetary Authority of Singapore (MAS)"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "MAS",
+    "FATF"
+  ],
+  "docket_number": "MAS Enforcement Finalized July 4, 2025",
+  "legal_stage": "regulatory_order",
+  "template": "news",
+  "eyebrow": "ASIA-PACIFIC & BANKING",
+  "headline": "Nine Elite Banks Helped Move $2.25 Billion in Dirty Cash; Singapore Sends a $21.5 Million Bill",
+  "deck": "The Monetary Authority of Singapore fined Credit Suisse, UOB, UBS, Citi, Julius Baer, LGT and three peers a combined S$27.45 million — 0.915 percent of the S$3 billion Fujian laundering haul — prompting F.A.T.F. criticism.",
+  "byline": "By The Financial Crimes Asia Bureau",
+  "dateline": "SINGAPORE",
+  "read_time_min": 5,
+  "comment_count": 712,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 2250000000,
+    "amount_display": "S$3.0B (~$2.25B)",
+    "fine_usd": 21500000,
+    "fine_display": "S$27.45M (~$21.5M)",
+    "fine_ratio_pct": 0.915,
+    "prison_months": 0,
+    "prison_display": "0 Bank Execs Jailed",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 96,
+  "street_crime_compare": {
+    "exec_summary": "Nine financial institutions fined S$27.45M (~$21.5M) combined — exactly 0.915% of S$3.0B laundered, earning formal FATF criticism.",
+    "street_equivalent": "Laundering $1,800 in illicit cash and receiving a 0.915% civil bill",
+    "street_sentence": "At Singapore’s institutional bank rate, the penalty would be $16.47 and zero jail time"
+  },
+  "sources": [
+    {
+      "title": "MAS Takes Enforcement Actions Against Nine Financial Institutions for AML/CFT Breaches (S$27.45 Million)",
+      "agency": "Monetary Authority of Singapore (MAS)",
+      "url": "https://www.mas.gov.sg/news/media-releases",
+      "date": "2025-07-04"
+    },
+    {
+      "title": "FATF Mutual Evaluation Assessment of Singapore Anti-Money Laundering Penalties",
+      "agency": "Financial Action Task Force (FATF)",
+      "url": "https://www.fatf-gafi.org/en/publications.html",
+      "date": "2025-11-01"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "scale-of-impunity",
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "The 0.915% rounding error: interactive proportionality scale and 10,000-unit grid contrasting S$3.0 billion laundered against S$27.45 million in combined penalties across nine banks.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "The 0.915% Rounding Error",
+      "subtitle": "Nine banks moved S$3.0B in Fujian gang funds; combined MAS fines occupy less than one percent of the grid",
+      "lootLabel": "Laundered Volume (Fujian Case)",
+      "lootDisplay": "S$3.0B (~$2.25B)",
+      "lootUsd": 2250000000,
+      "fineLabel": "9-Bank Combined MAS Fines",
+      "fineDisplay": "S$27.45M (~$21.5M)",
+      "fineUsd": 21500000,
+      "ratioDisplay": "0.915% OF LOOT",
+      "stampText": "ROUNDING ERROR",
+      "gridRatioPct": 0.915,
+      "streetComparison": {
+        "label": "Equivalent 0.915% Fine on $1,800",
+        "amountDisplay": "$1,800",
+        "sentenceDisplay": "24 Mos Prison (or $16.47 at Bank Rate)",
+        "execSentenceDisplay": "0 Bank Executives Jailed"
+      }
+    }
+  },
+  "status": "published"
+}

@@ -1,0 +1,97 @@
+{
+  "id": "fc-2026-004",
+  "slug": "bradley-heppner-gwg-ai-privilege",
+  "publish_date": "2026-11-19T06:40:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "New York",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Southern District of New York (Judge Jed Rakoff)"
+  },
+  "category": "Crypto & AI",
+  "agencies": [
+    "DOJ",
+    "USAO-SDNY"
+  ],
+  "docket_number": "25-Cr.-503 (S.D.N.Y.)",
+  "legal_stage": "convicted",
+  "template": "news",
+  "eyebrow": "COURTS & ARTIFICIAL INTELLIGENCE",
+  "headline": "Executive Convicted of Looting $150 Million From Public Firm Learns Chatbot Is Not His Lawyer",
+  "deck": "A Manhattan federal jury convicted former GWG Holdings chairman Bradley Heppner on all counts after Judge Jed Rakoff ruled his Claude A.I. prompts carried no attorney-client privilege.",
+  "byline": "By The Financial Crimes Courts Desk",
+  "dateline": "NEW YORK",
+  "read_time_min": 5,
+  "comment_count": 684,
+  "layout_slot": "rail-feature",
+  "financials": {
+    "amount_usd": 150000000,
+    "amount_display": "$150M+",
+    "fine_usd": null,
+    "fine_display": "Sentencing Pending",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Convicted All Counts (Sentencing Pending)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "Convicted on all counts in SDNY (25-Cr.-503) for diverting $150M+ from bankrupt GWG L-Bond retail investors; sentencing pending.",
+    "street_equivalent": "Searching legal advice online after taking $1,800 from an employer safe",
+    "street_sentence": "Search history routinely admitted at trial without a landmark privilege dispute"
+  },
+  "sources": [
+    {
+      "title": "United States v. Bradley Heppner, Docket No. 25-Cr.-503 (S.D.N.Y.): Verdict and Privilege Ruling",
+      "agency": "U.S. District Court for the Southern District of New York",
+      "url": "https://www.courtlistener.com/",
+      "date": "2026-05-07"
+    },
+    {
+      "title": "USAO-SDNY Announcement: Former GWG Holdings Chairman Convicted on All Counts",
+      "agency": "U.S. Department of Justice (USAO-SDNY)",
+      "url": "https://www.justice.gov/usao-sdny/pr",
+      "date": "2026-05-07"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "redacted-dossier",
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "Interactive exhibit reviewing the privilege ruling in United States v. Heppner (25-Cr.-503). Hover or click redaction bars to inspect key docket findings.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "exhibitLabel": "EXHIBIT A // PRIVILEGE RULING",
+      "docketNumber": "25-CR.-503 (JSR) — S.D.N.Y.",
+      "subject": "Attorney-Client Privilege vs. Consumer A.I. Prompts",
+      "subtitle": "Scratch or click ink bars to reveal verified docket milestones",
+      "icon": "chip",
+      "stamp": "CONVICTED ALL COUNTS",
+      "excerpts": [
+        {
+          "label": "RULING — PRIVILEGE",
+          "prefix": "Judge Rakoff held that prompts entered into a commercial A.I. chatbot ",
+          "redacted": "do not enjoy attorney-client privilege or work-product protection",
+          "suffix": ".",
+          "note": "Consumer chatbot terms do not establish a confidential attorney-client relationship."
+        },
+        {
+          "label": "DOCKET — FUND FLOW",
+          "prefix": "Trial evidence established more than ",
+          "redacted": "$150 million diverted from bankrupt GWG L-Bond investors into shell entity HCLP",
+          "suffix": ".",
+          "note": "Retail L-Bond holders suffered severe losses following GWG Holdings’ bankruptcy."
+        },
+        {
+          "label": "VERDICT — MAY 7, 2026",
+          "prefix": "Manhattan federal jury returned a verdict of ",
+          "redacted": "GUILTY ON ALL COUNTS",
+          "suffix": "; sentencing remains pending.",
+          "note": "Docket 25-Cr.-503, Southern District of New York."
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

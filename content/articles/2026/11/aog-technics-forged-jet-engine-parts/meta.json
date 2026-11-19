@@ -1,0 +1,91 @@
+{
+  "id": "fc-2026-017",
+  "slug": "aog-technics-forged-jet-engine-parts",
+  "publish_date": "2026-11-19T06:22:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "London",
+  "edition": "london",
+  "jurisdiction": {
+    "country_iso": "GB",
+    "venue": "Southwark Crown Court & UK Serious Fraud Office (SFO)"
+  },
+  "category": "Courts",
+  "agencies": [
+    "UK SFO",
+    "Southwark Crown Court"
+  ],
+  "docket_number": "Southwark Crown Court Sentenced Feb. 23, 2026",
+  "legal_stage": "sentenced",
+  "template": "news",
+  "eyebrow": "LONDON & AVIATION FRAUD",
+  "headline": "From a Spare Bedroom in Surrey, a One-Man Supply Chain Grounded the World’s Jetliners",
+  "deck": "Jose Alejandro Zamora Yrala received four years and eight months in prison after admitting he fabricated airworthiness certificates for more than 60,000 jet engine parts valued at £39.3 million.",
+  "byline": "By The Financial Crimes London Bureau",
+  "dateline": "LONDON",
+  "read_time_min": 4,
+  "comment_count": 467,
+  "layout_slot": "rail-mini",
+  "financials": {
+    "amount_usd": 50000000,
+    "amount_display": "£39.3M (~$50M)",
+    "fine_usd": 0,
+    "fine_display": "4 Yrs 8 Mos Prison (Confiscation Pending)",
+    "fine_ratio_pct": 0,
+    "prison_months": 56,
+    "prison_display": "4 Years 8 Months (56 Months)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 36,
+  "street_crime_compare": {
+    "exec_summary": "56 months prison in Southwark Crown Court for forging paperwork on 60,000+ jet-engine parts worth £39.3M (~$50M).",
+    "street_equivalent": "Selling £1,400 ($1,800) in counterfeit car brake pads from a market stall",
+    "street_sentence": "18–24 months custody, without grounding commercial airliners across multiple continents"
+  },
+  "sources": [
+    {
+      "title": "AOG Technics Director Sentenced to Four Years and Eight Months After SFO Prosecution",
+      "agency": "UK Serious Fraud Office (SFO)",
+      "url": "https://www.sfo.gov.uk/news/",
+      "date": "2026-02-23"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "redacted-dossier",
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "Interactive inspection of the forged aviation airworthiness paperwork behind AOG Technics’ £39.3 million spare-bedroom operation.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "exhibitLabel": "EXHIBIT J // FORGED AIRWORTHINESS FORM",
+      "docketNumber": "SOUTHWARK CROWN COURT — UK SFO",
+      "subject": "AOG Technics Authorized Release Certificate Audit",
+      "subtitle": "Hover or click ink redactions to inspect verified SFO sentencing facts",
+      "icon": "jet",
+      "stamp": "4 YRS 8 MOS PRISON",
+      "excerpts": [
+        {
+          "label": "PARTS VOLUME",
+          "prefix": "Defendant admitted fabricating airworthiness documentation across ",
+          "redacted": "more than 60,000 commercial jet engine parts valued at £39.3 million",
+          "suffix": ".",
+          "note": "Triggered global airline inspections and aircraft groundings."
+        },
+        {
+          "label": "HEADQUARTERS",
+          "prefix": "Despite an appearance of an international aerospace supplier, AOG Technics operated from ",
+          "redacted": "a spare bedroom in Surrey with fictitious staff profiles",
+          "suffix": ".",
+          "note": "Jose Alejandro Zamora Yrala pleaded guilty in December 2025."
+        },
+        {
+          "label": "SENTENCE — FEB. 23, 2026",
+          "prefix": "Southwark Crown Court imposed a custodial sentence of ",
+          "redacted": "4 years and 8 months (56 months) imprisonment",
+          "suffix": ".",
+          "note": "Prosecuted by the UK Serious Fraud Office."
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

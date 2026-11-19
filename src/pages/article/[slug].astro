@@ -1,0 +1,364 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CompactHeader from '../../components/CompactHeader.astro';
+import FcArt from '../../components/FcArt.astro';
+import CompareStreetCrime from '../../components/CompareStreetCrime.astro';
+import CrimeReceiptModal from '../../components/CrimeReceiptModal.astro';
+import { loadAllArticles } from '../../loaders/articles';
+import type { ArticleRecord } from '../../schemas/article';
+
+export async function getStaticPaths() {
+  const articles = await loadAllArticles();
+  return articles
+    .filter((a) => a.template === 'news')
+    .map((article) => ({
+      params: { slug: article.slug },
+      props: { article, allArticles: articles },
+    }));
+}
+
+interface Props {
+  article: ArticleRecord;
+  allArticles: ArticleRecord[];
+}
+
+const { article, allArticles } = Astro.props;
+
+const related = allArticles
+  .filter((a) => a.slug !== article.slug)
+  .sort((a, b) => {
+    const aSame = a.category === article.category || a.edition === article.edition ? 1 : 0;
+    const bSame = b.category === article.category || b.edition === article.edition ? 1 : 0;
+    return bSame - aSame;
+  })
+  .slice(0, 3);
+
+// Extract reporter initials for etched SVG monogram badge
+const bylineClean = article.byline.replace(/^By\s+/i, '').trim();
+const initials = bylineClean
+  .split(/[\s,]+/)
+  .filter((w) => w.length > 0 && w.toLowerCase() !== 'and')
+  .slice(0, 2)
+  .map((w) => w[0].toUpperCase())
+  .join('');
+
+const fineRatioDisplay =
+  article.financials.fine_ratio_pct !== null
+    ? `${article.financials.fine_ratio_pct.toFixed(2)}%`
+    : 'Pending';
+
+const topicLinks = [
+  { label: 'All Dockets', href: '/ledger' },
+  { label: article.category, href: `/ledger?category=${encodeURIComponent(article.category)}`, current: true },
+  { label: `${article.city} Bureau`, href: `/ledger?edition=${encodeURIComponent(article.edition)}` },
+  { label: "Today's Docket", href: `/edition/${article.edition_date}` },
+];
+
+const audioScriptText = `${article.headline}. ${article.deck}`;
+---
+
+<BaseLayout
+  title={`${article.headline} — The Financial Crimes`}
+  description={article.deck}
+  ogType="article"
+>
+  <CompactHeader
+    slot="header"
+    showTopicBar={true}
+    topicTitle={article.eyebrow}
+    topicLinks={topicLinks}
+  />
+
+  <article class="fc-article-page" data-pagefind-body>
+    {/* 600px Headline & Deck Header */}
+    <header class="fc-article-header">
+      <div class="fc-article-eyebrow-row">
+        <span class="fc-eyebrow" data-pagefind-meta="category">{article.eyebrow}</span>
+        {article.slap_on_wrist_score !== null ? (
+          <span
+            class:list={[
+              'fc-score-badge',
+              { 'fc-score-badge--high': article.slap_on_wrist_score >= 70 },
+            ]}
+          >
+            WRIST-SLAP SCORE {article.slap_on_wrist_score}/100
+          </span>
+        ) : (
+          <span class="fc-score-badge fc-score-badge--pending">LITIGATION PENDING</span>
+        )}
+      </div>
+
+      <h1 class="fc-article-h1" data-pagefind-meta="title">{article.headline}</h1>
+      <p class="fc-article-deck">{article.deck}</p>
+
+      {/* Action Bar (matches Screenshot 3) */}
+      <div class="fc-action-bar">
+        <div class="fc-action-left">
+          <button
+            type="button"
+            class="fc-btn-pill"
+            id="fc-audio-briefing-btn"
+            data-audio-text={audioScriptText}
+          >
+            <span aria-hidden="true">&#9654;</span>
+            <span id="fc-audio-label">Listen &middot; {article.read_time_min} min</span>
+          </button>
+        </div>
+
+        <div class="fc-action-right">
+          <button type="button" class="fc-btn-pill" data-open-receipt>
+            <span aria-hidden="true">&#129534;</span>
+            <span>Crime Receipt</span>
+          </button>
+
+          <button
+            type="button"
+            class="fc-icon-circle-btn"
+            id="fc-copy-article-url"
+            title="Copy article link"
+            aria-label="Copy article link"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M6.5 9.5L9.5 6.5M5.5 11.5L4 13a2.1 2.1 0 01-3-3l1.5-1.5M10.5 4.5L12 3a2.1 2.1 0 013 3l-1.5 1.5"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="fc-icon-circle-btn"
+            id="fc-save-article-btn"
+            data-save-slug={article.slug}
+            title="Save case to browser docket"
+            aria-label="Save case"
+            aria-pressed="false"
+          >
+            <svg width="13" height="14" viewBox="0 0 14 16" fill="none" aria-hidden="true">
+              <path d="M2 1.5h10v13l-5-3.4-5 3.4v-13z" stroke="currentColor" stroke-width="1.3" />
+            </svg>
+          </button>
+
+          <span class="fc-btn-pill" aria-label={`${article.comment_count} reader comments`}>
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z" stroke="currentColor" stroke-width="1.3" />
+            </svg>
+            {article.comment_count}
+          </span>
+        </div>
+      </div>
+    </header>
+
+    {/* 945px Interactive JS Editorial Art Centerpiece */}
+    <div class="fc-article-media">
+      <FcArt
+        id={article.id}
+        spec={article.interactive_art_spec}
+        mode="hero"
+        aspect="16/10"
+        dateline={article.city}
+        dateLabel={article.publish_date}
+        showChrome={true}
+        showCaption={true}
+      />
+    </div>
+
+    {/* 600px Etched SVG Reporter Badge + Byline + Timestamp */}
+    <div class="fc-byline-block">
+      <div class="fc-reporter-badge" aria-hidden="true">
+        <svg width="36" height="36" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="16" fill="none" stroke="#121212" stroke-width="0.8" stroke-dasharray="2 1.5" />
+          <text
+            x="18"
+            y="22"
+            text-anchor="middle"
+            font-family="Newsreader, Georgia, serif"
+            font-size="13"
+            font-weight="700"
+            fill="#121212"
+          >
+            {initials || 'FC'}
+          </text>
+        </svg>
+      </div>
+
+      <div class="fc-byline-text">
+        <span class="fc-byline-name">By {bylineClean}</span>
+        <span class="fc-byline-dateline">
+          Reporting from {article.city} &middot; {article.jurisdiction.venue}
+        </span>
+        <span class="fc-byline-time">
+          Published {article.publish_date}
+          {article.docket_number && ` · Docket ${article.docket_number}`}
+          {` · ${article.agencies.join(', ')}`}
+        </span>
+      </div>
+    </div>
+
+    {/* Inline $0/week Morning Docket Strip (mirrors Screenshot 4) */}
+    <div class="fc-inline-promo">
+      <div>
+        <strong>Receive every unsealed indictment at 7:00 a.m. Eastern.</strong>
+        <span>The Morning Docket is permanently free ($0/week), with zero corporate underwriters.</span>
+      </div>
+      <button type="button" class="fc-btn-outline" data-open-subscribe>
+        Add to Inbox &rsaquo;
+      </button>
+    </div>
+
+    {/* Case Ledger Summary Strip */}
+    <div class="fc-docket-strip" aria-label="Case financial summary">
+      <div>
+        <span class="fc-docket-stat-label">Alleged Scale</span>
+        <span class="fc-docket-stat-val">{article.financials.amount_display}</span>
+      </div>
+      <div>
+        <span class="fc-docket-stat-label">Fine / Penalty</span>
+        <span class="fc-docket-stat-val">{article.financials.fine_display}</span>
+      </div>
+      <div>
+        <span class="fc-docket-stat-label">Fine / Scale Ratio</span>
+        <span class="fc-docket-stat-val" style="color: var(--fc-art-crimson);">{fineRatioDisplay}</span>
+      </div>
+      <div>
+        <span class="fc-docket-stat-label">Custody / Prison</span>
+        <span class="fc-docket-stat-val">{article.financials.prison_display}</span>
+      </div>
+    </div>
+
+    {/* 600px Source Serif 4 Body Column */}
+    <div class="fc-article-body" set:html={article.bodyHtml} />
+
+    {/* Interactive Compare to Street Crime Card */}
+    <CompareStreetCrime article={article} />
+
+    {/* "Read the Indictment" Primary Source Box */}
+    <section class="fc-sources-box" aria-label="Primary court and regulatory filings">
+      <h2 class="fc-sources-title">Read the Indictment &amp; Primary Public Filings</h2>
+      <p class="fc-sources-subtitle">
+        Fair Report Privilege Index: every factual claim in this dispatch is anchored to the official
+        government releases and court filings below.
+      </p>
+      <ul class="fc-sources-list">
+        {article.sources.map((src) => (
+          <li>
+            <div>
+              <a href={src.url} target="_blank" rel="noopener noreferrer">
+                {src.title} &nearr;
+              </a>
+              <span style="display: block; font-size: 11.5px; color: var(--fc-ink-muted);">
+                {src.agency}
+              </span>
+            </div>
+            <span class="fc-sources-meta">{src.date}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* Related Cases */}
+    {related.length > 0 && (
+      <section class="fc-related-section" aria-label="Related Cases in the Ledger">
+        <h2 class="fc-related-heading">More Cases From The Financial Crimes</h2>
+        <div class="fc-related-grid">
+          {related.map((rel) => (
+            <article class="fc-related-card">
+              <a href={rel.url} aria-label={rel.headline} style="border: 1px solid var(--fc-rule-light);">
+                <FcArt
+                  id={`${rel.id}-related`}
+                  spec={rel.interactive_art_spec}
+                  mode="thumb"
+                  aspect="16/10"
+                  showChrome={false}
+                  showCaption={false}
+                />
+              </a>
+              <span class="fc-eyebrow">{rel.city} &middot; {rel.agencies[0]}</span>
+              <h3 class="fc-related-card-title">
+                <a href={rel.url} class="fc-headline-link">{rel.headline}</a>
+              </h3>
+              <span class="fc-meta-readtime">
+                {rel.financials.amount_display} &middot; {rel.read_time_min} MIN READ
+              </span>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+
+  <CrimeReceiptModal slot="modals" article={article} />
+</BaseLayout>
+
+<script>
+  // Audio Briefing (Web Speech synthesis fallback)
+  const audioBtn = document.getElementById('fc-audio-briefing-btn');
+  const audioLabel = document.getElementById('fc-audio-label');
+  if (audioBtn && audioLabel && 'speechSynthesis' in window) {
+    let speaking = false;
+    const origLabel = audioLabel.textContent || 'Listen';
+    audioBtn.addEventListener('click', () => {
+      if (speaking) {
+        window.speechSynthesis.cancel();
+        speaking = false;
+        audioLabel.textContent = origLabel;
+        return;
+      }
+      const text = audioBtn.getAttribute('data-audio-text') || '';
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 0.98;
+      utter.onend = () => {
+        speaking = false;
+        audioLabel.textContent = origLabel;
+      };
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+      speaking = true;
+      audioLabel.textContent = 'Stop Briefing';
+    });
+  }
+
+  // Copy Link
+  const copyBtn = document.getElementById('fc-copy-article-url');
+  copyBtn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      copyBtn.style.borderColor = '#1b6b3a';
+      setTimeout(() => {
+        copyBtn.style.borderColor = '';
+      }, 1400);
+    } catch {}
+  });
+
+  // Bookmark Save Toggle
+  const saveBtn = document.getElementById('fc-save-article-btn');
+  if (saveBtn) {
+    const slug = saveBtn.getAttribute('data-save-slug') || '';
+    const key = 'fc_saved_dockets';
+    const readSaved = (): string[] => {
+      try {
+        return JSON.parse(localStorage.getItem(key) || '[]');
+      } catch {
+        return [];
+      }
+    };
+    const updateVisual = (saved: boolean) => {
+      saveBtn.setAttribute('aria-pressed', String(saved));
+      saveBtn.style.background = saved ? '#121212' : '';
+      saveBtn.style.color = saved ? '#ffffff' : '';
+    };
+    updateVisual(readSaved().includes(slug));
+    saveBtn.addEventListener('click', () => {
+      const list = readSaved();
+      const exists = list.includes(slug);
+      const next = exists ? list.filter((s) => s !== slug) : [...list, slug];
+      try {
+        localStorage.setItem(key, JSON.stringify(next));
+      } catch {}
+      updateVisual(!exists);
+    });
+  }
+</script>

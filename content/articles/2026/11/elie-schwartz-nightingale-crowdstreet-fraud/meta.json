@@ -1,0 +1,146 @@
+{
+  "id": "fc-2026-011",
+  "slug": "elie-schwartz-nightingale-crowdstreet-fraud",
+  "publish_date": "2026-11-19T06:05:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "Atlanta",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Northern District of Georgia & SEC"
+  },
+  "category": "Wall Street",
+  "agencies": [
+    "DOJ",
+    "USAO-NDGA",
+    "SEC"
+  ],
+  "docket_number": "N.D. Ga. Sentenced May 2025",
+  "legal_stage": "sentenced",
+  "template": "news",
+  "eyebrow": "COMMERCIAL REAL ESTATE",
+  "headline": "Real Estate Executive Who Bought Luxury Watches Instead of Atlanta Office Tower Gets Seven Years",
+  "deck": "Former Nightingale Properties chief Elie Schwartz received 87 months in federal prison and over $45 million in restitution after diverting $62.8 million raised from 800-plus CrowdStreet investors.",
+  "byline": "By The Financial Crimes Real Estate Desk",
+  "dateline": "ATLANTA",
+  "read_time_min": 4,
+  "comment_count": 263,
+  "layout_slot": "ledger",
+  "financials": {
+    "amount_usd": 62800000,
+    "amount_display": "$62.8M",
+    "fine_usd": 45000000,
+    "fine_display": "$45M+ Restitution",
+    "fine_ratio_pct": 71.66,
+    "prison_months": 87,
+    "prison_display": "7.25 Years (87 Months)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 19,
+  "street_crime_compare": {
+    "exec_summary": "87 months federal prison plus $45M+ restitution after pleading guilty to diverting $62.8M in real-estate crowdfunding escrow.",
+    "street_equivalent": "Pocketing a $1,800 residential security deposit",
+    "street_sentence": "Civil judgment or 12 months state custody; no $62.8M online crowdfunding pitch deck"
+  },
+  "sources": [
+    {
+      "title": "Former Nightingale Properties CEO Elie Schwartz Sentenced to 87 Months for $62.8 Million CrowdStreet Fraud",
+      "agency": "U.S. Attorney’s Office, Northern District of Georgia",
+      "url": "https://www.justice.gov/usao-ndga/pr",
+      "date": "2025-05-19"
+    },
+    {
+      "title": "SEC Enforcement Action Against Elie Schwartz and Nightingale Properties",
+      "agency": "U.S. Securities and Exchange Commission",
+      "url": "https://www.sec.gov/newsroom/press-releases",
+      "date": "2025-05-19"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "shell-network",
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "Forensic cash-flow diagram contrasting the Atlanta office-tower escrow promised to 800+ CrowdStreet investors against actual disbursements.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "Escrow Promise vs. Bank Trace",
+      "subtitle": "Click entities to inspect how $62.8M in real-estate crowdfunding proceeds was diverted",
+      "nodes": [
+        {
+          "id": "crowd",
+          "label": "800+ CrowdStreet Investors",
+          "role": "Retail & Accredited",
+          "amount": "$62.8M Raised",
+          "jurisdiction": "U.S. Crowdfunding",
+          "kind": "source",
+          "note": "Capital earmarked to acquire and renovate an Atlanta office tower and Miami Beach property."
+        },
+        {
+          "id": "nightingale",
+          "label": "Nightingale Entities",
+          "role": "Sponsor Accounts",
+          "amount": "$62.8M Inflow",
+          "jurisdiction": "New York",
+          "kind": "shell",
+          "note": "Funds swept out of deal-specific accounts controlled by Elie Schwartz."
+        },
+        {
+          "id": "watches",
+          "label": "Luxury Watches & Spending",
+          "role": "Personal Assets",
+          "amount": "Diverted Funds",
+          "jurisdiction": "New York",
+          "kind": "asset",
+          "note": "Court filings cited luxury watch purchases and personal expenses."
+        },
+        {
+          "id": "margin",
+          "label": "Brokerage Margin Trades",
+          "role": "Equities & Options",
+          "amount": "Speculative Losses",
+          "jurisdiction": "New York",
+          "kind": "bank",
+          "note": "Substantial sums lost in brokerage margin trading rather than property acquisition."
+        },
+        {
+          "id": "court",
+          "label": "N.D. Ga. Sentencing",
+          "role": "87 Months Prison",
+          "amount": "$45M+ Restitution",
+          "jurisdiction": "Atlanta",
+          "kind": "regulator",
+          "note": "Guilty plea resulted in May 2025 sentence of 87 months."
+        }
+      ],
+      "edges": [
+        {
+          "from": "crowd",
+          "to": "nightingale",
+          "amount": "$62.8M",
+          "label": "Escrow Deposits"
+        },
+        {
+          "from": "nightingale",
+          "to": "watches",
+          "amount": "Personal Draw",
+          "label": "Luxury Purchases",
+          "dashed": true
+        },
+        {
+          "from": "nightingale",
+          "to": "margin",
+          "amount": "Margin Calls",
+          "label": "Brokerage Wires",
+          "dashed": true
+        },
+        {
+          "from": "court",
+          "to": "nightingale",
+          "amount": "$45M+",
+          "label": "Restitution Order"
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

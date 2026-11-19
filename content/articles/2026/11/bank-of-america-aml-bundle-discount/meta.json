@@ -1,0 +1,104 @@
+{
+  "id": "fc-2026-001",
+  "slug": "bank-of-america-aml-bundle-discount",
+  "publish_date": "2026-11-19T07:00:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "Washington",
+  "edition": "us",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. Department of the Treasury (FinCEN, OCC, OFAC)"
+  },
+  "category": "Wall Street",
+  "agencies": [
+    "FinCEN",
+    "OCC",
+    "OFAC"
+  ],
+  "docket_number": "Treasury Release sb0657",
+  "legal_stage": "settlement",
+  "template": "news",
+  "eyebrow": "BANKING & ENFORCEMENT",
+  "headline": "Bank of America Admits to Willful Laundering Lapses, Receives $750 Million Bundle Discount on Record Fine",
+  "deck": "Federal regulators assessed $1.21 billion in net civil penalties after more than $5 billion in delayed suspicious activity reports and 475 sanctions lapses. No executives were charged.",
+  "byline": "By The Financial Crimes Banking Desk",
+  "dateline": "WASHINGTON",
+  "read_time_min": 5,
+  "comment_count": 842,
+  "layout_slot": "lead-hero",
+  "financials": {
+    "amount_usd": 5000000000,
+    "amount_display": "$5.0B+",
+    "fine_usd": 1210000000,
+    "fine_display": "$1.21B",
+    "fine_ratio_pct": 24.2,
+    "prison_months": 0,
+    "prison_display": "0 Days (0 Execs Charged)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 77,
+  "street_crime_compare": {
+    "exec_summary": "$1.21B corporate civil settlement after $750M inter-agency credit; zero executives charged or indicted.",
+    "street_equivalent": "Structuring $18,000 in cash deposits to evade bank reporting rules",
+    "street_sentence": "18–30 months federal prison + full civil asset forfeiture"
+  },
+  "sources": [
+    {
+      "title": "Treasury Announces Coordinated BSA/AML and Sanctions Enforcement Actions Against Bank of America, N.A. (sb0657)",
+      "agency": "U.S. Department of the Treasury / FinCEN",
+      "url": "https://home.treasury.gov/news/press-releases/sb0657",
+      "date": "2026-10-13"
+    },
+    {
+      "title": "OCC Assesses $750 Million Civil Money Penalty Against Bank of America, N.A.",
+      "agency": "Office of the Comptroller of the Currency",
+      "url": "https://www.occ.gov/news-events/newsroom/index.html",
+      "date": "2026-10-13"
+    },
+    {
+      "title": "OFAC Settlement Agreement with Bank of America, N.A. (475 Apparent Violations)",
+      "agency": "Office of Foreign Assets Control",
+      "url": "https://ofac.treasury.gov/recent-actions",
+      "date": "2026-10-13"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "penalty-wheel",
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "Interactive deterrence gauge comparing Bank of America’s stacked regulatory assessments ($1.96 billion) against its credited net penalty ($1.21 billion) and roughly two weeks of corporate net income.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "The Regulatory Coupon Clipper",
+      "subtitle": "Toggle between stacked assessments, bundled credit, and net-income duration",
+      "score": 77,
+      "verdict": "COST OF DOING BUSINESS",
+      "fineDisplay": "$1.21B Net",
+      "lootDisplay": "$5.0B+ Late SARs",
+      "comparisons": [
+        {
+          "id": "bundled",
+          "label": "Bundled Net Fine",
+          "value": "$1.21B",
+          "detail": "OCC’s $750M assessment credited against FinCEN’s $1.2B civil money penalty, saving $750M.",
+          "score": 77
+        },
+        {
+          "id": "stacked",
+          "label": "Unbundled Total",
+          "value": "$1.96B",
+          "detail": "Combined statutory assessments across FinCEN ($1.2B), OCC ($750M), and OFAC before inter-agency credit.",
+          "score": 61
+        },
+        {
+          "id": "income",
+          "label": "Days of Net Income",
+          "value": "~15 Days",
+          "detail": "Approximate share of annual parent-company profit absorbed by the coordinated civil settlement.",
+          "score": 88
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

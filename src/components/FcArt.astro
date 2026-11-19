@@ -1,0 +1,171 @@
+---
+import '../art/runtime/fc-art.css';
+import { extractAccessibleTable, resolveArchetype } from '../art/shared/normalize';
+import type { ArtAspect, ArtMode, InteractiveArtSpec } from '../art/shared/types';
+import { renderStaticArtSvg } from '../art/ssr-svg/index';
+
+export interface Props {
+  id: string;
+  spec: {
+    archetype: string;
+    accent?: string;
+    theme?: 'newsprint' | 'monochrome';
+    caption?: string;
+    credit?: string;
+    data?: Record<string, any>;
+  };
+  mode?: 'hero' | 'inline' | 'thumb';
+  aspect?: '4/5' | '16/9' | '16/10' | '1/1' | '4/3';
+  dateline?: string;
+  dateLabel?: string;
+  showChrome?: boolean;
+  showCaption?: boolean;
+}
+
+const {
+  id,
+  spec,
+  mode = 'inline',
+  aspect = '16/9',
+  dateline,
+  dateLabel,
+  showChrome,
+  showCaption,
+} = Astro.props;
+
+const safeMode: ArtMode = mode === 'hero' || mode === 'thumb' ? mode : 'inline';
+const safeAspect: ArtAspect =
+  aspect === '4/5' || aspect === '16/9' || aspect === '16/10' || aspect === '1/1' || aspect === '4/3'
+    ? aspect
+    : '16/9';
+
+const normalizedSpec: InteractiveArtSpec = {
+  archetype: resolveArchetype(spec?.archetype),
+  accent: spec?.accent || 'crimson',
+  theme: spec?.theme === 'monochrome' ? 'monochrome' : 'newsprint',
+  caption: spec?.caption || '',
+  credit: spec?.credit || 'Interactive Illustration by The Financial Crimes',
+  data: spec?.data || {},
+};
+
+const staticSvg = renderStaticArtSvg(normalizedSpec, id, safeMode, safeAspect);
+const tableData = safeMode === 'thumb' ? null : extractAccessibleTable(normalizedSpec);
+
+// Escape closing script tags safely for inline JSON
+const serializedSpec = JSON.stringify(normalizedSpec).replace(/</g, '\\u003c');
+
+const renderChrome = showChrome ?? safeMode !== 'thumb';
+const renderCaption = showCaption ?? (safeMode !== 'thumb' && Boolean(normalizedSpec.caption));
+const aspectCss = safeAspect.replace('/', ' / ');
+---
+
+<figure class="fc-art-figure" data-archetype={normalizedSpec.archetype} data-mode={safeMode}>
+  <fc-art
+    class="fc-art-shell"
+    data-id={id}
+    data-archetype={normalizedSpec.archetype}
+    data-mode={safeMode}
+    data-aspect={safeAspect}
+    data-theme={normalizedSpec.theme}
+    style={`--fc-art-aspect: ${aspectCss};`}
+  >
+    {
+      (dateline || dateLabel) && safeMode !== 'thumb' && (
+        <div class="fc-art-dateline-pill">
+          {dateline && <span>{dateline}</span>}
+          {dateline && dateLabel && <span class="fc-art-dateline-sep">·</span>}
+          {dateLabel && <span>{dateLabel}</span>}
+        </div>
+      )
+    }
+
+    <div class="fc-art-mount" set:html={staticSvg} />
+
+    {
+      safeMode !== 'thumb' && (
+        <span class="fc-art-watermark" aria-hidden="true">FC</span>
+      )
+    }
+
+    {
+      renderChrome && (
+        <div class="fc-art-chrome" role="toolbar" aria-label="Illustration controls">
+          <button
+            type="button"
+            class="fc-art-chrome-btn"
+            data-fc-action="table"
+            aria-expanded="false"
+            title="View accessible data table"
+          >
+            Table
+          </button>
+          <button
+            type="button"
+            class="fc-art-chrome-btn"
+            data-fc-action="reset"
+            title="Reset or replay illustration"
+            aria-label="Reset or replay illustration"
+          >
+            ↻
+          </button>
+          <button
+            type="button"
+            class="fc-art-chrome-btn"
+            data-fc-action="expand"
+            title="Expand fullscreen"
+            aria-label="Expand illustration fullscreen"
+          >
+            ⤢
+          </button>
+        </div>
+      )
+    }
+
+    {
+      tableData && (
+        <div class="fc-art-table-drawer" hidden>
+          <div class="fc-art-table-head">
+            <span class="fc-art-table-title">Underlying Docket Data · {normalizedSpec.archetype}</span>
+            <button type="button" class="fc-art-pill" data-fc-action="close-table">
+              Close Table
+            </button>
+          </div>
+          <table class="fc-art-data-table">
+            <caption class="sr-only">{tableData.caption}</caption>
+            <thead>
+              <tr>
+                {tableData.headers.map((h) => (
+                  <th scope="col">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {tableData.rows.map((row) => (
+                <tr>
+                  {row.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+
+    <script type="application/json" class="fc-art-spec" set:html={serializedSpec} />
+  </fc-art>
+
+  {
+    renderCaption && (
+      <figcaption class="fc-art-figcaption">
+        <span class="fc-art-caption-text">{normalizedSpec.caption}</span>
+        {normalizedSpec.credit && <span class="fc-art-credit">{normalizedSpec.credit}</span>}
+      </figcaption>
+    )
+  }
+</figure>
+
+<script>
+  import '../art/runtime/fc-art-element';
+</script>

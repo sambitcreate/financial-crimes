@@ -1,0 +1,58 @@
+/* ==========================================================================
+   The Financial Crimes — Design Tokens (PRD §4.3)
+   100% Open-Source SIL OFL Typography · Flat-Print Broadsheet Palette
+   ========================================================================== */
+
+:root {
+  /* Paper & Surface Grounds */
+  --fc-bg-page: #ffffff;
+  --fc-bg-newsprint: #f6f3ec;
+  --fc-bg-tint: #f8f8f8;
+  --fc-bg-receipt: #fbfaf6;
+
+  /* Ink Hierarchy */
+  --fc-ink-primary: #121212;
+  --fc-ink-body: #222222;
+  --fc-ink-secondary: #363636;
+  --fc-ink-muted: #5a5a5a;
+  --fc-ink-caption: #666666;
+  --fc-ink-subtle: #727272;
+
+  /* Hairlines & Editorial Rules */
+  --fc-rule-strong: #121212;
+  --fc-rule-medium: #c7c7c7;
+  --fc-rule-column: #dfdfdf;
+  --fc-rule-light: #ebebeb;
+
+  /* Editorial & Interactive Accents */
+  --fc-accent-slate: #567b95;
+  --fc-accent-slate-dark: #326891;
+  --fc-accent-crimson: #d0021b;
+  --fc-accent-green: #1b6b3a;
+
+  /* Editorial Illustration Spot Inks */
+  --fc-art-crimson: #a62626;
+  --fc-art-slate: #2b4c6f;
+  --fc-art-gold: #b5892e;
+  --fc-art-sage: #3d6b59;
+
+  /* Typography Stacks */
+  --fc-font-masthead: 'UnifrakturMaguntia', Georgia, 'Times New Roman', serif;
+  --fc-font-headline: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --fc-font-opinion: 'Instrument Serif', 'Newsreader', Georgia, serif;
+  --fc-font-body: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --fc-font-sans: 'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --fc-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Layout Dimensions */
+  --fc-max-width: 1200px;
+  --fc-article-width: 600px;
+  --fc-media-width: 945px;
+  --fc-gutter: 24px;
+  --fc-header-compact-h: 46px;
+
+  /* Z-index Scale */
+  --fc-z-sticky: 40;
+  --fc-z-drawer: 60;
+  --fc-z-modal: 100;
+}

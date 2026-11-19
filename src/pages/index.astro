@@ -1,0 +1,298 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Masthead from '../components/Masthead.astro';
+import LeadPackage from '../components/LeadPackage.astro';
+import SectionPackage from '../components/SectionPackage.astro';
+import RightRail from '../components/RightRail.astro';
+import { loadAllArticles, loadEdition, loadRollupStats } from '../loaders/articles';
+import type { ArticleRecord } from '../schemas/article';
+
+const [allArticles, edition, rollup] = await Promise.all([
+  loadAllArticles(),
+  loadEdition(),
+  loadRollupStats(),
+]);
+
+const bySlug = new Map<string, ArticleRecord>(allArticles.map((a) => [a.slug, a]));
+
+function pickOne(slug: string | undefined, fallbackSlot: ArticleRecord['layout_slot'], fallbackIdx = 0): ArticleRecord {
+  if (slug && bySlug.has(slug)) return bySlug.get(slug)!;
+  return (
+    allArticles.find((a) => a.layout_slot === fallbackSlot) ??
+    allArticles[fallbackIdx] ??
+    allArticles[0]
+  );
+}
+
+function pickMany(slugs: string[] | undefined, fallbackSlot: ArticleRecord['layout_slot']): ArticleRecord[] {
+  if (slugs && slugs.length > 0) {
+    const found = slugs.map((s) => bySlug.get(s)).filter((a): a is ArticleRecord => Boolean(a));
+    if (found.length > 0) return found;
+  }
+  return allArticles.filter((a) => a.layout_slot === fallbackSlot);
+}
+
+const leadHero = pickOne(edition?.slots.lead_hero, 'lead-hero', 0);
+const leadLive = pickOne(edition?.slots.lead_live, 'lead-live', 1);
+const leadRight = pickOne(edition?.slots.lead_right, 'lead-right', 2);
+const leadGrid = pickMany(edition?.slots.lead_grid, 'lead-grid');
+const secondary1 = pickOne(edition?.slots.secondary_1, 'secondary-1', 3);
+const secondary2 = pickOne(edition?.slots.secondary_2, 'secondary-2', 4);
+const railFeature = pickOne(edition?.slots.rail_feature, 'rail-feature', 5);
+const railMini = pickMany(edition?.slots.rail_mini, 'rail-mini');
+const railOpinion = pickMany(edition?.slots.rail_opinion, 'rail-opinion');
+const ledgerExplicit = pickMany(edition?.slots.ledger, 'ledger');
+
+// Track already placed slugs so the bottom Ledger Grid displays every remaining case cleanly
+const placed = new Set<string>([
+  leadHero.slug,
+  leadLive.slug,
+  leadRight.slug,
+  ...leadGrid.map((a) => a.slug),
+  secondary1.slug,
+  secondary2.slug,
+  railFeature.slug,
+  ...railMini.map((a) => a.slug),
+  ...railOpinion.map((a) => a.slug),
+]);
+
+const remaining = [
+  ...ledgerExplicit,
+  ...allArticles.filter((a) => !placed.has(a.slug) && !ledgerExplicit.some((l) => l.slug === a.slug)),
+];
+
+// Pick 1 secondary blurb for the left LIVE column & companion items for the 2 section packages
+const secondaryBlurb = remaining[0];
+const wallStCompanions = remaining.filter((a) => ['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition)).slice(1, 3);
+const globalCompanions = remaining.filter((a) => !['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition)).slice(0, 2);
+
+const ledgerGridArticles = remaining.filter(
+  (a) =>
+    a.slug !== secondaryBlurb?.slug &&
+    !wallStCompanions.some((c) => c.slug === a.slug) &&
+    !globalCompanions.some((c) => c.slug === a.slug)
+);
+
+// If ledgerGridArticles is small, show all remaining so the bottom ledger feels rich
+const bottomLedger = ledgerGridArticles.length >= 4 ? ledgerGridArticles : remaining;
+
+const displayDate = edition?.display_date ?? 'Thursday, November 19, 2026';
+const editionDate = edition?.edition_date ?? '2026-11-19';
+---
+
+<BaseLayout
+  title="The Financial Crimes — All the Crimes Fit to Fine"
+  description="Independent satirical-yet-factually-grounded digital broadsheet covering global white-collar, corporate, regulatory, and political financial crimes."
+>
+  <Masthead slot="header" displayDate={displayDate} editionDate={editionDate} rollup={rollup} />
+
+  <div class="fc-container">
+    {/* Dynamic Edition Filter Banner */}
+    <div class="fc-edition-notice" id="fc-edition-notice" role="status" aria-live="polite">
+      <div>
+        <strong id="fc-edition-notice-label">GLOBAL EDITION</strong>
+        <span id="fc-edition-notice-count" style="margin-left: 8px; color: var(--fc-ink-muted);"></span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <a id="fc-edition-ledger-link" href="/ledger" class="fc-see-more">Open in Full Ledger &rsaquo;</a>
+        <button type="button" class="fc-btn-outline" id="fc-edition-reset" style="padding: 4px 9px; font-size: 10.5px;">
+          Show All Editions
+        </button>
+      </div>
+    </div>
+
+    {/* Asymmetric 70% / 30% Broadsheet Grid */}
+    <div class="fc-home-grid">
+      <div class="fc-main-well">
+        <LeadPackage
+          leadHero={leadHero}
+          leadLive={leadLive}
+          leadRight={leadRight}
+          leadGrid={leadGrid}
+          secondaryBlurb={secondaryBlurb}
+        />
+
+        <SectionPackage
+          topicTitle="Wall Street &amp; BigLaw"
+          subLinks={[
+            { label: 'Wall Street', href: '/ledger?category=Wall+Street' },
+            { label: 'Courts', href: '/ledger?category=Courts' },
+            { label: 'New York Bureau', href: '/ledger?edition=new-york' },
+            { label: 'Full Ledger', href: '/ledger' },
+          ]}
+          leadArticle={secondary1}
+          companionArticles={wallStCompanions}
+        />
+
+        <SectionPackage
+          topicTitle="Europe, India &amp; Global Enforcement"
+          subLinks={[
+            { label: 'Europe', href: '/ledger?category=Europe' },
+            { label: 'India & Asia', href: '/ledger?category=India+%26+Asia' },
+            { label: 'London Bureau', href: '/ledger?edition=london' },
+            { label: 'Singapore & HK', href: '/ledger?edition=global' },
+          ]}
+          leadArticle={secondary2}
+          companionArticles={globalCompanions}
+        />
+
+        {/* Global Broadsheet Ledger Grid */}
+        <section class="fc-ledger-strip-section" aria-label="More From the Running Ledger">
+          <div class="fc-ledger-strip-head">
+            <div>
+              <span class="fc-eyebrow">BUSINESS DAY · GLOBAL DOCKET</span>
+              <h2 style="font-family: var(--fc-font-headline); font-size: 22px; font-weight: 700; margin: 3px 0 0;">
+                More From the Running Ledger
+              </h2>
+            </div>
+            <a href="/ledger" class="fc-see-more" style="font-size: 10.5px;">
+              Browse all {allArticles.length} cases &rsaquo;
+            </a>
+          </div>
+
+          <div class="fc-ledger-strip-grid">
+            {bottomLedger.map((item) => (
+              <article
+                class="fc-ledger-card"
+                data-story-card
+                data-edition={item.edition}
+                data-city={item.city.toLowerCase()}
+              >
+                <div class="fc-ledger-card-top">
+                  <span class="fc-eyebrow">
+                    {item.city} · {item.agencies[0]}
+                  </span>
+                  {item.slap_on_wrist_score !== null ? (
+                    <span
+                      class:list={[
+                        'fc-score-badge',
+                        { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
+                      ]}
+                    >
+                      SLAP {item.slap_on_wrist_score}
+                    </span>
+                  ) : (
+                    <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
+                  )}
+                </div>
+
+                <h3 class="fc-ledger-card-title">
+                  <a href={item.url} class="fc-headline-link">{item.headline}</a>
+                </h3>
+                <p class="fc-ledger-card-deck">{item.deck}</p>
+
+                <div class="fc-ledger-card-stats">
+                  <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
+                  <span>PENALTY: <strong>{item.financials.fine_display}</strong></span>
+                  <span>CUSTODY: {item.financials.prison_display}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <RightRail
+        featureArticle={railFeature}
+        miniArticles={railMini}
+        opinionArticles={railOpinion}
+      />
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  [data-story-card].fc-edition-dimmed {
+    opacity: 0.34;
+    transition: opacity 0.18s ease;
+  }
+
+  [data-story-card].fc-edition-match {
+    opacity: 1;
+    box-shadow: inset 3px 0 0 #121212;
+    padding-left: 10px;
+    transition: opacity 0.18s ease, padding-left 0.18s ease;
+  }
+</style>
+
+<script>
+  const editionBtns = document.querySelectorAll<HTMLButtonElement>('[data-edition-btn]');
+  const storyCards = document.querySelectorAll<HTMLElement>('[data-story-card]');
+  const notice = document.getElementById('fc-edition-notice');
+  const noticeLabel = document.getElementById('fc-edition-notice-label');
+  const noticeCount = document.getElementById('fc-edition-notice-count');
+  const noticeLink = document.getElementById('fc-edition-ledger-link') as HTMLAnchorElement | null;
+  const resetBtn = document.getElementById('fc-edition-reset');
+
+  function matchesEdition(card: HTMLElement, key: string): boolean {
+    if (key === 'all') return true;
+    const ed = (card.dataset.edition || '').toLowerCase();
+    const city = (card.dataset.city || '').toLowerCase();
+    if (key === 'us') {
+      return ['us', 'new-york', 'chicago', 'los-angeles'].includes(ed);
+    }
+    if (key === 'new-york') {
+      return ed === 'new-york' || city.includes('new york');
+    }
+    if (key === 'chicago') {
+      return ed === 'chicago' || city.includes('chicago');
+    }
+    if (key === 'los-angeles') {
+      return ed === 'los-angeles' || city.includes('los angeles');
+    }
+    if (key === 'london') {
+      return ed === 'london' || city.includes('london') || city.includes('surrey');
+    }
+    if (key === 'india') {
+      return ed === 'india' || city.includes('mumbai') || city.includes('delhi') || city.includes('gurugram');
+    }
+    if (key === 'europe') {
+      return ed === 'europe' || ed === 'london' || city.includes('frankfurt') || city.includes('europe');
+    }
+    if (key === 'global') {
+      return ed === 'global' || city.includes('singapore') || city.includes('hong kong');
+    }
+    return ed === key;
+  }
+
+  function applyEdition(key: string) {
+    editionBtns.forEach((btn) => {
+      const active = btn.dataset.editionBtn === key;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', String(active));
+    });
+
+    let matchCount = 0;
+    storyCards.forEach((card) => {
+      if (key === 'all') {
+        card.classList.remove('fc-edition-dimmed', 'fc-edition-match');
+        return;
+      }
+      const isMatch = matchesEdition(card, key);
+      card.classList.toggle('fc-edition-match', isMatch);
+      card.classList.toggle('fc-edition-dimmed', !isMatch);
+      if (isMatch) matchCount++;
+    });
+
+    if (notice && noticeLabel && noticeCount && noticeLink) {
+      if (key === 'all') {
+        notice.classList.remove('is-visible');
+      } else {
+        notice.classList.add('is-visible');
+        noticeLabel.textContent = `${key.replace('-', ' ').toUpperCase()} BUREAU EDITION`;
+        noticeCount.textContent = `${matchCount} front-page ${matchCount === 1 ? 'dispatch' : 'dispatches'} highlighted`;
+        noticeLink.href = `/ledger?edition=${encodeURIComponent(key)}`;
+      }
+    }
+
+    window.dispatchEvent(new CustomEvent('fc:edition-change', { detail: { edition: key } }));
+  }
+
+  editionBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      applyEdition(btn.dataset.editionBtn || 'all');
+    });
+  });
+
+  resetBtn?.addEventListener('click', () => applyEdition('all'));
+</script>

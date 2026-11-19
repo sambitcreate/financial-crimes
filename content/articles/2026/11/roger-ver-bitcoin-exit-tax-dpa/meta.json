@@ -1,0 +1,80 @@
+{
+  "id": "fc-2026-008",
+  "slug": "roger-ver-bitcoin-exit-tax-dpa",
+  "publish_date": "2026-11-19T06:20:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "Los Angeles",
+  "edition": "los-angeles",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Central District of California & DOJ Tax"
+  },
+  "category": "Opinion",
+  "agencies": [
+    "DOJ Tax Division",
+    "USAO-CDCA",
+    "IRS-CI"
+  ],
+  "docket_number": "C.D. Cal. DPA (Oct. 14, 2025)",
+  "legal_stage": "dpa",
+  "template": "opinion",
+  "eyebrow": "OPINION",
+  "headline": "Early Bitcoin Evangelist Settles Decade-Old Exit Tax Indictment With Check and Zero Prison Time",
+  "deck": "Roger Ver resolved an alleged $48 million expatriation-tax case via a $49.9 million deferred prosecution agreement — illustrating the quiet arithmetic of paying your way out of an indictment.",
+  "byline": "By The Editorial Board",
+  "dateline": "LOS ANGELES",
+  "read_time_min": 4,
+  "comment_count": 731,
+  "layout_slot": "rail-opinion",
+  "financials": {
+    "amount_usd": 48000000,
+    "amount_display": "~$48M Tax Alleged",
+    "fine_usd": 49900000,
+    "fine_display": "$49.9M Paid",
+    "fine_ratio_pct": 103.96,
+    "prison_months": 0,
+    "prison_display": "0 Days (DPA Dismissal)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 62,
+  "street_crime_compare": {
+    "exec_summary": "Resolved alleged $48M 2014 exit-tax evasion via Oct. 2025 DPA for $49.9M paid and zero days in prison.",
+    "street_equivalent": "Underreporting $18,000 in W-2 cash wages on a federal return",
+    "street_sentence": "Multi-year criminal tax sentence rarely resolved by a decade-late check with zero incarceration"
+  },
+  "sources": [
+    {
+      "title": "Deferred Prosecution Agreement and Motion to Dismiss Indictment: United States v. Roger Ver",
+      "agency": "U.S. Department of Justice Tax Division / C.D. Cal.",
+      "url": "https://www.justice.gov/tax/press-releases",
+      "date": "2025-10-14"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "scale-of-impunity",
+    "accent": "crimson",
+    "theme": "monochrome",
+    "caption": "Monochrome editorial plate comparing a $48 million alleged 2014 exit-tax liability resolved for $49.9 million and zero prison days against ordinary criminal tax prosecution.",
+    "credit": "The Financial Crimes Opinion Art",
+    "data": {
+      "title": "The Expatriation Carry Trade",
+      "subtitle": "Comparing a decade-deferred $49.9M settlement with zero prison days against ordinary tax enforcement",
+      "lootLabel": "Alleged 2014 Exit Tax",
+      "lootDisplay": "~$48.0M",
+      "lootUsd": 48000000,
+      "fineLabel": "Oct. 2025 DPA Payment",
+      "fineDisplay": "$49.9M",
+      "fineUsd": 49900000,
+      "ratioDisplay": "104% PAID // 0 PRISON DAYS",
+      "stampText": "ZERO PRISON DAYS",
+      "gridRatioPct": 103.96,
+      "streetComparison": {
+        "label": "Ordinary Felony Tax Evasion",
+        "amountDisplay": "$48,000",
+        "sentenceDisplay": "15–24 Months Federal Prison",
+        "execSentenceDisplay": "0 Prison Days (DPA)"
+      }
+    }
+  },
+  "status": "published"
+}

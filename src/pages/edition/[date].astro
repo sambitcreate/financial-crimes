@@ -1,0 +1,249 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CompactHeader from '../../components/CompactHeader.astro';
+import FcArt from '../../components/FcArt.astro';
+import { loadAllArticles, loadAllEditions, loadEdition, loadRollupStats } from '../../loaders/articles';
+import type { ArticleRecord, EditionManifest } from '../../schemas/article';
+
+export async function getStaticPaths() {
+  const [editions, allArticles, rollup] = await Promise.all([
+    loadAllEditions(),
+    loadAllArticles(),
+    loadRollupStats(),
+  ]);
+
+  if (editions.length > 0) {
+    return editions.map((edition) => ({
+      params: { date: edition.edition_date },
+      props: { edition, allEditions: editions, allArticles, rollup },
+    }));
+  }
+
+  const latest = await loadEdition();
+  const fallbackEdition: EditionManifest = latest ?? {
+    edition_date: '2026-11-19',
+    volume: 'Vol. I, No. 1',
+    display_date: 'Thursday, November 19, 2026',
+    tagline: 'All the Crimes Fit to Fine.',
+    slots: {
+      lead_hero: allArticles[0]?.slug ?? 'lead',
+      lead_live: allArticles[1]?.slug ?? 'live',
+      lead_right: allArticles[2]?.slug ?? 'right',
+      lead_grid: allArticles.slice(3, 7).map((a) => a.slug),
+      secondary_1: allArticles[7]?.slug ?? 'sec1',
+      secondary_2: allArticles[8]?.slug ?? 'sec2',
+      rail_feature: allArticles[9]?.slug ?? 'rail',
+      rail_mini: allArticles.slice(10, 14).map((a) => a.slug),
+      rail_opinion: allArticles.filter((a) => a.template === 'opinion').map((a) => a.slug),
+      ledger: allArticles.slice(14).map((a) => a.slug),
+    },
+  };
+
+  return [
+    {
+      params: { date: fallbackEdition.edition_date },
+      props: {
+        edition: fallbackEdition,
+        allEditions: [fallbackEdition],
+        allArticles,
+        rollup,
+      },
+    },
+  ];
+}
+
+interface Props {
+  edition: EditionManifest;
+  allEditions: EditionManifest[];
+  allArticles: ArticleRecord[];
+  rollup: Awaited<ReturnType<typeof loadRollupStats>>;
+}
+
+const { edition, allEditions, allArticles, rollup } = Astro.props;
+const bySlug = new Map(allArticles.map((a) => [a.slug, a]));
+
+const resolveList = (slugs: string[]) =>
+  slugs.map((s) => bySlug.get(s)).filter((a): a is ArticleRecord => Boolean(a));
+
+const pageA1 = resolveList([
+  edition.slots.lead_hero,
+  edition.slots.lead_live,
+  edition.slots.lead_right,
+  ...edition.slots.lead_grid,
+]);
+
+const pageA2 = resolveList([
+  edition.slots.secondary_1,
+  edition.slots.secondary_2,
+  edition.slots.rail_feature,
+  ...edition.slots.rail_mini,
+]);
+
+const pageOpinion = resolveList(edition.slots.rail_opinion);
+
+const listed = new Set([
+  ...pageA1.map((a) => a.slug),
+  ...pageA2.map((a) => a.slug),
+  ...pageOpinion.map((a) => a.slug),
+]);
+
+const pageBusiness = [
+  ...resolveList(edition.slots.ledger),
+  ...allArticles.filter((a) => !listed.has(a.slug) && !edition.slots.ledger.includes(a.slug)),
+];
+
+const topicLinks = [
+  { label: 'Front Page', href: '/' },
+  { label: "Today's Docket", href: `/edition/${edition.edition_date}`, current: true },
+  { label: 'Searchable Ledger', href: '/ledger' },
+];
+---
+
+<BaseLayout
+  title={`Today's Docket (${edition.display_date}) — The Financial Crimes`}
+  description={`Print-style daily edition snapshot for ${edition.display_date} (${edition.volume}) of The Financial Crimes.`}
+>
+  <CompactHeader
+    slot="header"
+    showTopicBar={true}
+    topicTitle={`Edition Archive · ${edition.volume}`}
+    topicLinks={topicLinks}
+  />
+
+  <div class="fc-container" style="padding-top: 28px; padding-bottom: 56px;">
+    {/* Print Edition Masthead Box */}
+    <header style="text-align: center; padding-bottom: 20px; border-bottom: 4px double var(--fc-rule-strong);">
+      <p class="fc-eyebrow" style="margin: 0 0 6px;">
+        {edition.volume} &middot; DAILY EDITION SNAPSHOT &middot; 7:00 A.M. ET PRESS RUN
+      </p>
+      <h1 style="font-family: var(--fc-font-headline); font-size: clamp(30px, 4.5vw, 46px); font-weight: 700; line-height: 1.08; margin: 0 0 8px;">
+        Today&rsquo;s Docket: {edition.display_date}
+      </h1>
+      <p style="font-family: var(--fc-font-body); font-size: 16.5px; color: var(--fc-ink-muted); margin: 0 0 14px;">
+        &ldquo;{edition.tagline ?? 'All the Crimes Fit to Fine.'}&rdquo; &mdash;{' '}
+        {allArticles.length} verified public court and regulatory filings totaling{' '}
+        <strong>{rollup.total_loot_display}</strong> in alleged scale.
+      </p>
+
+      {allEditions.length > 1 && (
+        <div style="display: inline-flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
+          {allEditions.map((ed) => (
+            <a
+              href={`/edition/${ed.edition_date}`}
+              class={ed.edition_date === edition.edition_date ? 'fc-btn-slate' : 'fc-btn-outline'}
+            >
+              {ed.edition_date}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    {/* Section A1: Lead Docket */}
+    <section style="padding: 24px 0; border-bottom: 1px solid var(--fc-rule-strong);">
+      <p class="fc-eyebrow fc-eyebrow--crimson" style="margin: 0 0 4px;">SECTION A · PAGE A1</p>
+      <h2 style="font-family: var(--fc-font-headline); font-size: 26px; font-weight: 700; margin: 0 0 18px;">
+        Front-Page Lead Docket
+      </h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 22px;">
+        {pageA1.map((item) => (
+          <article style="border-top: 1px solid var(--fc-rule-column); padding-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <a href={item.url} style="border: 1px solid var(--fc-rule-light); display: block;" aria-label={item.headline}>
+              <FcArt
+                id={`${item.id}-ed-a1`}
+                spec={item.interactive_art_spec}
+                mode="thumb"
+                aspect="16/10"
+                showChrome={false}
+                showCaption={false}
+              />
+            </a>
+            <span class="fc-eyebrow">{item.city} &middot; {item.agencies[0]}</span>
+            <h3 style="font-family: var(--fc-font-headline); font-size: 18px; font-weight: 700; line-height: 1.18; margin: 0;">
+              <a href={item.url} class="fc-headline-link">{item.headline}</a>
+            </h3>
+            <p style="font-family: var(--fc-font-body); font-size: 14px; color: var(--fc-ink-muted); margin: 0;">
+              {item.deck}
+            </p>
+            <div class="fc-ledger-card-stats">
+              <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
+              <span>FINE: <strong>{item.financials.fine_display}</strong></span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {/* Section A2: Investigations & Global Bureaus */}
+    <section style="padding: 24px 0; border-bottom: 1px solid var(--fc-rule-strong);">
+      <p class="fc-eyebrow" style="margin: 0 0 4px;">SECTION A · PAGES A2–A6</p>
+      <h2 style="font-family: var(--fc-font-headline); font-size: 26px; font-weight: 700; margin: 0 0 18px;">
+        Wall Street, Global Bureaus &amp; Investigations
+      </h2>
+
+      <div class="fc-ledger-strip-grid">
+        {pageA2.map((item) => (
+          <article class="fc-ledger-card">
+            <span class="fc-eyebrow">{item.city} &middot; {item.agencies.join(', ')}</span>
+            <h3 class="fc-ledger-card-title">
+              <a href={item.url} class="fc-headline-link">{item.headline}</a>
+            </h3>
+            <p class="fc-ledger-card-deck">{item.deck}</p>
+            <div class="fc-ledger-card-stats">
+              <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
+              <span>PENALTY: <strong>{item.financials.fine_display}</strong></span>
+              <span>CUSTODY: {item.financials.prison_display}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {/* Section A3: Opinion */}
+    {pageOpinion.length > 0 && (
+      <section style="padding: 24px 0; border-bottom: 1px solid var(--fc-rule-strong);">
+        <p class="fc-eyebrow fc-eyebrow--opinion" style="margin: 0 0 4px;">SECTION A · OP-ED</p>
+        <h2 style="font-family: var(--fc-font-headline); font-size: 26px; font-weight: 700; margin: 0 0 16px;">
+          Opinion &amp; Editorial Commentary
+        </h2>
+        <div class="fc-ledger-strip-grid">
+          {pageOpinion.map((op) => (
+            <article class="fc-ledger-card">
+              <span class="fc-opinion-byline-sc">{op.byline}</span>
+              <h3 style="font-family: var(--fc-font-opinion); font-size: 26px; font-weight: 400; line-height: 1.1; margin: 0 0 6px;">
+                <a href={op.url} class="fc-headline-link">{op.headline}</a>
+              </h3>
+              <p class="fc-ledger-card-deck">{op.deck}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {/* Section B1: Business Day Running Ledger */}
+    {pageBusiness.length > 0 && (
+      <section style="padding: 24px 0;">
+        <p class="fc-eyebrow" style="margin: 0 0 4px;">SECTION B · BUSINESS DAY</p>
+        <h2 style="font-family: var(--fc-font-headline); font-size: 26px; font-weight: 700; margin: 0 0 16px;">
+          Additional Cases Logged in This Edition
+        </h2>
+        <div class="fc-ledger-strip-grid">
+          {pageBusiness.map((item) => (
+            <article class="fc-ledger-card">
+              <span class="fc-eyebrow">{item.city} &middot; {item.category}</span>
+              <h3 class="fc-ledger-card-title">
+                <a href={item.url} class="fc-headline-link">{item.headline}</a>
+              </h3>
+              <p class="fc-ledger-card-deck">{item.deck}</p>
+              <div class="fc-ledger-card-stats">
+                <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
+                <span>FINE: <strong>{item.financials.fine_display}</strong></span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</BaseLayout>

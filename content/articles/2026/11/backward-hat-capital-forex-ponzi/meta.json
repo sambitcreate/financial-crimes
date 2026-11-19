@@ -1,0 +1,110 @@
+{
+  "id": "fc-2026-002",
+  "slug": "backward-hat-capital-forex-ponzi",
+  "publish_date": "2026-11-19T06:55:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "New York",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Southern District of New York"
+  },
+  "category": "Wall Street",
+  "agencies": [
+    "DOJ",
+    "USAO-SDNY"
+  ],
+  "docket_number": "SDNY Indictment (Unsealed Nov. 2026)",
+  "legal_stage": "indicted",
+  "template": "news",
+  "eyebrow": "SOUTHERN DISTRICT OF NEW YORK",
+  "headline": "Firm Named ‘Backward Hat Capital’ Accused of Operating $600 Million Currency Ponzi Scheme",
+  "deck": "Federal prosecutors in Manhattan allege Phillip Williams and Devin Johnson solicited more than 2,000 retail investors with promises of over 6 percent monthly foreign-exchange returns.",
+  "byline": "By The Financial Crimes Courts Desk",
+  "dateline": "NEW YORK",
+  "read_time_min": 4,
+  "comment_count": 519,
+  "layout_slot": "lead-live",
+  "live_updates": [
+    {
+      "text": "SDNY prosecutors unseal indictment charging Backward Hat Capital principals Phillip Williams and Devin Johnson over alleged $600M forex pool.",
+      "ago": "18m ago"
+    },
+    {
+      "text": "Filing notes promised returns exceeding 6% per month (>100% annualized) drew over 2,000 retail accounts before redemptions stalled.",
+      "ago": "1h ago"
+    },
+    {
+      "text": "Defendants retain presumption of innocence pending arraignment and bail proceedings in Manhattan federal court.",
+      "ago": "2h ago"
+    }
+  ],
+  "financials": {
+    "amount_usd": 600000000,
+    "amount_display": "~$600M",
+    "fine_usd": null,
+    "fine_display": "Pending Trial",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending Trial",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "Criminal fraud charges pending in SDNY over ~$600M allegedly solicited from 2,000+ retail investors.",
+    "street_equivalent": "Retail check-kiting scheme totaling $2,400 at a neighborhood branch",
+    "street_sentence": "Immediate pre-trial detention without unsecured personal recognizance bond"
+  },
+  "sources": [
+    {
+      "title": "U.S. Attorney’s Office for the Southern District of New York: Backward Hat Capital Indictment Press Release",
+      "agency": "U.S. Department of Justice (USAO-SDNY)",
+      "url": "https://www.justice.gov/usao-sdny/pr",
+      "date": "2026-11-12"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "ponzi-pyramid",
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "Simulated redemption-collapse model of an alleged >6%-per-month foreign-exchange pool. Click “Request Redemption” to trigger liquidity failure.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "Backward Hat Capital: Liquidity Tier Model",
+      "promisedReturn": ">6% MONTHLY (>100% ANNUALIZED)",
+      "totalRaised": "~$600M ALLEGEDLY RAISED",
+      "collapseStamp": "REDEMPTIONS FROZEN",
+      "tiers": [
+        {
+          "label": "Principals & Promoters",
+          "count": "2 Indicted Principals",
+          "inflow": "$0 Net Trading",
+          "payout": "Alleged Diversions",
+          "note": "Prosecutors allege investor funds covered disbursements rather than profitable FX trading."
+        },
+        {
+          "label": "Early Referral Accounts",
+          "count": "Early Cohorts",
+          "inflow": "Initial Capital",
+          "payout": "Lulling Payouts",
+          "note": "Early withdrawals funded by subsequent retail deposits, according to the indictment."
+        },
+        {
+          "label": "Mid-Cycle Retail Pool",
+          "count": "Hundreds of Investors",
+          "inflow": "Mid-Cycle Wires",
+          "payout": "Paper Balances",
+          "note": "Account statements allegedly reflected fabricated compounding gains above 6% monthly."
+        },
+        {
+          "label": "Late-Stage Retail Investors",
+          "count": "2,000+ Total Investors",
+          "inflow": "~$600M Cumulative",
+          "payout": "Unmet Redemptions",
+          "note": "At 6% monthly compounding, $600M would theoretically eclipse global GDP within 18 years."
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

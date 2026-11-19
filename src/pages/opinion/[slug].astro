@@ -1,0 +1,171 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CompactHeader from '../../components/CompactHeader.astro';
+import FcArt from '../../components/FcArt.astro';
+import CompareStreetCrime from '../../components/CompareStreetCrime.astro';
+import CrimeReceiptModal from '../../components/CrimeReceiptModal.astro';
+import { loadAllArticles } from '../../loaders/articles';
+import type { ArticleRecord } from '../../schemas/article';
+
+export async function getStaticPaths() {
+  const articles = await loadAllArticles();
+  return articles
+    .filter((a) => a.template === 'opinion')
+    .map((article) => ({
+      params: { slug: article.slug },
+      props: { article, allArticles: articles },
+    }));
+}
+
+interface Props {
+  article: ArticleRecord;
+  allArticles: ArticleRecord[];
+}
+
+const { article, allArticles } = Astro.props;
+
+const bylineClean = article.byline.replace(/^By\s+/i, '').trim();
+const monoSpec = {
+  ...article.interactive_art_spec,
+  theme: 'monochrome' as const,
+};
+
+const related = allArticles
+  .filter((a) => a.slug !== article.slug)
+  .sort((a, b) => (b.template === 'opinion' ? 1 : 0) - (a.template === 'opinion' ? 1 : 0))
+  .slice(0, 3);
+---
+
+<BaseLayout
+  title={`Opinion | ${article.headline} — The Financial Crimes`}
+  description={article.deck}
+  ogType="article"
+>
+  <CompactHeader slot="header" showTopicBar={false} />
+
+  <article class="fc-article-page" data-pagefind-body>
+    {/* Centered Opinion Header (matches Screenshot 5) */}
+    <header class="fc-opinion-header">
+      <p class="fc-opinion-eyebrow" data-pagefind-meta="category">OPINION</p>
+      <p class="fc-opinion-author">{bylineClean}</p>
+      <h1 class="fc-opinion-h1" data-pagefind-meta="title">{article.headline}</h1>
+      <p class="fc-opinion-deck">{article.deck}</p>
+      <p class="fc-opinion-date">
+        {article.publish_date} &middot; {article.city} &middot; {article.read_time_min} min read
+      </p>
+
+      <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;">
+        <button type="button" class="fc-btn-pill" data-open-receipt>
+          <span aria-hidden="true">&#129534;</span>
+          <span>Crime Receipt</span>
+        </button>
+        <button
+          type="button"
+          class="fc-btn-pill"
+          id="fc-opinion-copy-btn"
+        >
+          Copy Link
+        </button>
+        {article.slap_on_wrist_score !== null && (
+          <span class="fc-score-badge fc-score-badge--high">
+            WRIST-SLAP {article.slap_on_wrist_score}/100
+          </span>
+        )}
+      </div>
+    </header>
+
+    {/* Wide 945px High-Contrast Monochrome Interactive JS Centerpiece */}
+    <div class="fc-article-media">
+      <FcArt
+        id={`${article.id}-mono`}
+        spec={monoSpec}
+        mode="hero"
+        aspect="16/10"
+        dateline={article.city}
+        dateLabel={article.publish_date}
+        showChrome={true}
+        showCaption={true}
+      />
+    </div>
+
+    {/* 600px Editorial Drop-Cap Body */}
+    <div class="fc-article-body fc-opinion-body" set:html={article.bodyHtml} />
+
+    <CompareStreetCrime article={article} />
+
+    {/* Primary Public Filings */}
+    <section class="fc-sources-box" aria-label="Primary public filings referenced in this column">
+      <h2 class="fc-sources-title">Primary Public Filings Referenced</h2>
+      <p class="fc-sources-subtitle">
+        While this column offers editorial commentary, every dollar amount, docket date, and
+        enforcement order cited above comes from official public records.
+      </p>
+      <ul class="fc-sources-list">
+        {article.sources.map((src) => (
+          <li>
+            <div>
+              <a href={src.url} target="_blank" rel="noopener noreferrer">
+                {src.title} &nearr;
+              </a>
+              <span style="display: block; font-size: 11.5px; color: var(--fc-ink-muted);">
+                {src.agency}
+              </span>
+            </div>
+            <span class="fc-sources-meta">{src.date}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* Related Opinion & Dispatches */}
+    {related.length > 0 && (
+      <section class="fc-related-section" aria-label="More Opinion and Dispatches">
+        <h2 class="fc-related-heading">More Opinion &amp; Docket Dispatches</h2>
+        <div class="fc-related-grid">
+          {related.map((rel) => (
+            <article class="fc-related-card">
+              <a href={rel.url} aria-label={rel.headline} style="border: 1px solid var(--fc-rule-light);">
+                <FcArt
+                  id={`${rel.id}-op-rel`}
+                  spec={rel.template === 'opinion' ? { ...rel.interactive_art_spec, theme: 'monochrome' } : rel.interactive_art_spec}
+                  mode="thumb"
+                  aspect="16/10"
+                  showChrome={false}
+                  showCaption={false}
+                />
+              </a>
+              <span
+                class:list={[
+                  'fc-eyebrow',
+                  { 'fc-eyebrow--opinion': rel.template === 'opinion' },
+                ]}
+              >
+                {rel.template === 'opinion' ? 'OPINION' : rel.eyebrow}
+              </span>
+              <h3 class="fc-related-card-title">
+                <a href={rel.url} class="fc-headline-link">{rel.headline}</a>
+              </h3>
+              <span class="fc-meta-readtime">{rel.read_time_min} MIN READ</span>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+
+  <CrimeReceiptModal slot="modals" article={article} />
+</BaseLayout>
+
+<script>
+  const copyBtn = document.getElementById('fc-opinion-copy-btn');
+  copyBtn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      const orig = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => {
+        copyBtn.textContent = orig;
+      }, 1500);
+    } catch {}
+  });
+</script>

@@ -1,0 +1,63 @@
+{
+  "edition_date": "2026-11-19",
+  "volume": "Vol. I, No. 1",
+  "display_date": "Thursday, November 19, 2026",
+  "tagline": "All the Crimes Fit to Fine.",
+  "published_at": "2026-11-19T07:00:00-05:00",
+  "slots": {
+    "lead_hero": "bank-of-america-aml-bundle-discount",
+    "lead_live": "backward-hat-capital-forex-ponzi",
+    "lead_right": "sebi-jane-street-mumbai-options-manipulation",
+    "lead_grid": [
+      "do-kwon-terraform-fifteen-years",
+      "nate-app-zero-percent-ai-manila",
+      "cbi-sting-sfio-deputy-director-dhfl",
+      "singapore-mas-nine-banks-fujian-laundering"
+    ],
+    "secondary_1": "biglaw-merger-insider-trading-ring",
+    "secondary_2": "eppo-operation-hermes-smartphone-vat-carousel",
+    "rail_feature": "bradley-heppner-gwg-ai-privilege",
+    "rail_mini": [
+      "chad-monroe-medicare-rogue-shark-yacht",
+      "gensol-blusmart-ev-loan-camellias-condo",
+      "aog-technics-forged-jet-engine-parts",
+      "pwc-hong-kong-evergrande-audit-sanctions"
+    ],
+    "rail_opinion": [
+      "roger-ver-bitcoin-exit-tax-dpa",
+      "bafin-jpmorgan-germany-record-aml-fine"
+    ],
+    "ledger": [
+      "michael-madigan-comed-bribery-appeal",
+      "tigo-scoular-fepa-foreign-bribery",
+      "elie-schwartz-nightingale-crowdstreet-fraud",
+      "charlie-javice-frank-jpmorgan-sentencing",
+      "indusind-bank-derivatives-insider-trading",
+      "korfuzi-siblings-wfh-insider-trading-fca"
+    ]
+  },
+  "article_slugs": [
+    "bank-of-america-aml-bundle-discount",
+    "backward-hat-capital-forex-ponzi",
+    "biglaw-merger-insider-trading-ring",
+    "bradley-heppner-gwg-ai-privilege",
+    "chad-monroe-medicare-rogue-shark-yacht",
+    "do-kwon-terraform-fifteen-years",
+    "nate-app-zero-percent-ai-manila",
+    "roger-ver-bitcoin-exit-tax-dpa",
+    "michael-madigan-comed-bribery-appeal",
+    "tigo-scoular-fepa-foreign-bribery",
+    "elie-schwartz-nightingale-crowdstreet-fraud",
+    "charlie-javice-frank-jpmorgan-sentencing",
+    "sebi-jane-street-mumbai-options-manipulation",
+    "gensol-blusmart-ev-loan-camellias-condo",
+    "indusind-bank-derivatives-insider-trading",
+    "cbi-sting-sfio-deputy-director-dhfl",
+    "aog-technics-forged-jet-engine-parts",
+    "korfuzi-siblings-wfh-insider-trading-fca",
+    "eppo-operation-hermes-smartphone-vat-carousel",
+    "bafin-jpmorgan-germany-record-aml-fine",
+    "singapore-mas-nine-banks-fujian-laundering",
+    "pwc-hong-kong-evergrande-audit-sanctions"
+  ]
+}

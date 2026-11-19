@@ -1,0 +1,129 @@
+{
+  "id": "fc-2026-015",
+  "slug": "indusind-bank-derivatives-insider-trading",
+  "publish_date": "2026-11-19T05:55:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "Mumbai",
+  "edition": "india",
+  "jurisdiction": {
+    "country_iso": "IN",
+    "venue": "SEBI, SAT, Reserve Bank of India (RBI) & SFIO"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "SEBI",
+    "RBI",
+    "SFIO",
+    "SAT"
+  ],
+  "docket_number": "SEBI Interim Order (May 28, 2025)",
+  "legal_stage": "interim_order",
+  "template": "news",
+  "eyebrow": "INDIA & BANKING",
+  "headline": "Before Telling Shareholders About a $230 Million Hole, Bank Chiefs Found Time to Sell",
+  "deck": "SEBI froze ₹19.78 crore in alleged avoided losses by former IndusInd Bank leaders Sumant Kathpalia, Arun Khurana and three colleagues after a ₹2,000 crore FX-derivatives discrepancy triggered a 27 percent stock plunge.",
+  "byline": "By The Financial Crimes Mumbai Bureau",
+  "dateline": "MUMBAI",
+  "read_time_min": 4,
+  "comment_count": 312,
+  "layout_slot": "ledger",
+  "financials": {
+    "amount_usd": 230000000,
+    "amount_display": "~₹2,000 Cr (~$230M Hole)",
+    "fine_usd": 2300000,
+    "fine_display": "₹19.78 Cr (~$2.3M) Frozen",
+    "fine_ratio_pct": 1,
+    "prison_months": null,
+    "prison_display": "Resignations; SAT & SFIO Active",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "Executive resignations, ESOP clawbacks, and ₹19.78 Cr frozen under SEBI’s May 2025 interim order; SAT appeals and SFIO inquiries active.",
+    "street_equivalent": "Selling a wrecked car for $1,800 after hiding an inspection report",
+    "street_sentence": "Immediate consumer-fraud charges without multi-year appellate stays"
+  },
+  "sources": [
+    {
+      "title": "SEBI Interim Order in the Matter of Insider Trading in the Scrip of IndusInd Bank Ltd.",
+      "agency": "Securities and Exchange Board of India (SEBI)",
+      "url": "https://www.sebi.gov.in/enforcement/orders.html",
+      "date": "2025-05-28"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "pump-dump-ticker",
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "Timeline contrasting internal derivatives warnings and executive share sales cited by SEBI against the subsequent 27 percent share-price drop.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "IndusInd Bank: Pre-Disclosure Sales vs. -27% Cliff",
+      "ticker": "INDUSINDBK",
+      "currency": "₹",
+      "unit": "",
+      "drawdownLabel": "-27% DISCLOSURE CLIFF",
+      "peakIndex": 2,
+      "troughIndex": 8,
+      "points": [
+        {
+          "label": "Q4-23",
+          "value": 1520
+        },
+        {
+          "label": "Q1-24",
+          "value": 1560
+        },
+        {
+          "label": "Q2-24",
+          "value": 1495
+        },
+        {
+          "label": "Q3-24",
+          "value": 1420
+        },
+        {
+          "label": "Q4-24",
+          "value": 1050
+        },
+        {
+          "label": "Feb-25",
+          "value": 990
+        },
+        {
+          "label": "Mar-10",
+          "value": 900
+        },
+        {
+          "label": "Mar-11",
+          "value": 656
+        },
+        {
+          "label": "May-25",
+          "value": 685
+        }
+      ],
+      "events": [
+        {
+          "index": 1,
+          "label": "Internal FX Warnings",
+          "detail": "SEBI order cites unpublished internal emails flagging internal derivative-accounting gaps.",
+          "kind": "warning"
+        },
+        {
+          "index": 2,
+          "label": "Exec Share Sales",
+          "detail": "₹19.78 Cr (~$2.3M) in alleged avoided losses by 5 executives later impounded.",
+          "kind": "sell"
+        },
+        {
+          "index": 7,
+          "label": "-27% Disclosure Plunge",
+          "detail": "Public disclosure of ~₹2,000 Cr (~$230M) net-worth impact triggers single-day selloff.",
+          "kind": "enforcement"
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

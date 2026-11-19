@@ -1,0 +1,230 @@
+---
+import type { ArticleRecord } from '../schemas/article';
+import FcArt from './FcArt.astro';
+
+interface Props {
+  featureArticle: ArticleRecord;
+  miniArticles: ArticleRecord[];
+  opinionArticles: ArticleRecord[];
+}
+
+const { featureArticle, miniArticles, opinionArticles } = Astro.props;
+
+// Build 4 synchronized collage cells for the top 2x2 spotlight (mirrors NYT Screenshot 1 right rail)
+const collageSpecs = [
+  featureArticle.interactive_art_spec,
+  miniArticles[0]?.interactive_art_spec ?? featureArticle.interactive_art_spec,
+  miniArticles[1]?.interactive_art_spec ?? featureArticle.interactive_art_spec,
+  {
+    ...featureArticle.interactive_art_spec,
+    theme: 'monochrome' as const,
+  },
+];
+
+function formatComments(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
+  return String(n);
+}
+---
+
+<aside class="fc-right-rail" aria-label="Right Rail Features and Opinion">
+  {/* TOP: 2x2 Synchronized Mini-Canvas Feature Spotlight */}
+  <article
+    class="fc-rail-spotlight"
+    data-story-card
+    data-edition={featureArticle.edition}
+    data-city={featureArticle.city.toLowerCase()}
+  >
+    <a href={featureArticle.url} aria-label={featureArticle.headline}>
+      <div class="fc-rail-collage">
+        {collageSpecs.map((spec, idx) => (
+          <div class="fc-rail-collage-cell">
+            <FcArt
+              id={`${featureArticle.id}-quad-${idx}`}
+              spec={spec}
+              mode="thumb"
+              aspect="1/1"
+              showChrome={false}
+              showCaption={false}
+            />
+          </div>
+        ))}
+      </div>
+    </a>
+    <p class="fc-rail-credit">
+      {featureArticle.interactive_art_spec.credit ?? 'Interactive Exhibit for The Financial Crimes'}
+    </p>
+
+    <h2 class="fc-rail-feature-title">
+      <a href={featureArticle.url} class="fc-headline-link">{featureArticle.headline}</a>
+    </h2>
+    <p class="fc-rail-feature-deck">{featureArticle.deck}</p>
+    <div class="fc-meta-row">
+      <span class="fc-meta-readtime">{featureArticle.read_time_min} MIN READ</span>
+      <span class="fc-comment-pill">
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z" stroke="currentColor" stroke-width="1.2" />
+        </svg>
+        {formatComments(featureArticle.comment_count)}
+      </span>
+    </div>
+  </article>
+
+  {/* MIDDLE: 2-Column Visual Mini-Cards with Working ‹ › Carousel */}
+  {miniArticles.length > 0 && (
+    <section class="fc-rail-carousel" aria-label="Visual Docket Dispatches" data-rail-carousel>
+      <div class="fc-rail-mini-grid">
+        {miniArticles.map((item, idx) => (
+          <article
+            class="fc-rail-mini-card"
+            data-carousel-item={idx}
+            data-story-card
+            data-edition={item.edition}
+            data-city={item.city.toLowerCase()}
+            hidden={idx >= 2}
+          >
+            <a href={item.url} class="fc-rail-mini-art" aria-label={item.headline}>
+              <FcArt
+                id={`${item.id}-rail`}
+                spec={item.interactive_art_spec}
+                mode="thumb"
+                aspect="1/1"
+                showChrome={false}
+                showCaption={false}
+              />
+            </a>
+            <h3 class="fc-rail-mini-title">
+              <a href={item.url} class="fc-headline-link">{item.headline}</a>
+            </h3>
+            <div class="fc-meta-row">
+              <span class="fc-comment-pill">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                  />
+                </svg>
+                {formatComments(item.comment_count)}
+              </span>
+              <span class="fc-meta-readtime">{item.read_time_min} MIN</span>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      {miniArticles.length > 2 && (
+        <div class="fc-carousel-controls">
+          <span
+            data-carousel-status
+            style="font-family: var(--fc-font-mono); font-size: 10px; color: var(--fc-ink-muted); margin-right: auto;"
+          >
+            1–2 OF {miniArticles.length}
+          </span>
+          <button
+            type="button"
+            class="fc-carousel-btn"
+            data-carousel-prev
+            aria-label="Previous dispatches"
+            disabled
+          >
+            &lsaquo;
+          </button>
+          <button
+            type="button"
+            class="fc-carousel-btn"
+            data-carousel-next
+            aria-label="Next dispatches"
+          >
+            &rsaquo;
+          </button>
+        </div>
+      )}
+    </section>
+  )}
+
+  {/* BOTTOM: Opinion Section */}
+  {opinionArticles.length > 0 && (
+    <section id="opinion-desk" aria-label="Opinion Columns">
+      <h2 class="fc-rail-opinion-heading">Opinion</h2>
+      {opinionArticles.map((op, idx) => (
+        <article
+          class="fc-rail-opinion-item"
+          data-story-card
+          data-edition={op.edition}
+          data-city={op.city.toLowerCase()}
+        >
+          <span class="fc-opinion-byline-sc">{op.byline}</span>
+          <h3 class="fc-rail-opinion-title">
+            <a href={op.url} class="fc-headline-link">{op.headline}</a>
+          </h3>
+          <div class="fc-meta-row">
+            <span class="fc-comment-pill">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+              </svg>
+              {formatComments(op.comment_count)}
+            </span>
+            <span class="fc-meta-readtime">{op.read_time_min} MIN READ</span>
+          </div>
+
+          {idx === opinionArticles.length - 1 && (
+            <a href={op.url} class="fc-rail-opinion-art" style="display: block;" aria-label={op.headline}>
+              <FcArt
+                id={`${op.id}-opinion-rail`}
+                spec={{ ...op.interactive_art_spec, theme: 'monochrome' }}
+                mode="thumb"
+                aspect="16/10"
+                showChrome={false}
+                showCaption={false}
+              />
+            </a>
+          )}
+        </article>
+      ))}
+    </section>
+  )}
+</aside>
+
+<script>
+  document.querySelectorAll('[data-rail-carousel]').forEach((carousel) => {
+    const items = Array.from(carousel.querySelectorAll<HTMLElement>('[data-carousel-item]'));
+    const prevBtn = carousel.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+    const nextBtn = carousel.querySelector<HTMLButtonElement>('[data-carousel-next]');
+    const status = carousel.querySelector<HTMLElement>('[data-carousel-status]');
+    if (items.length <= 2) return;
+
+    let page = 0;
+    const pageSize = 2;
+    const totalPages = Math.ceil(items.length / pageSize);
+
+    function render() {
+      const start = page * pageSize;
+      const end = Math.min(start + pageSize, items.length);
+      items.forEach((el, i) => {
+        el.hidden = i < start || i >= end;
+      });
+      if (prevBtn) prevBtn.disabled = page === 0;
+      if (nextBtn) nextBtn.disabled = page >= totalPages - 1;
+      if (status) status.textContent = `${start + 1}–${end} OF ${items.length}`;
+    }
+
+    prevBtn?.addEventListener('click', () => {
+      if (page > 0) {
+        page--;
+        render();
+      }
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      if (page < totalPages - 1) {
+        page++;
+        render();
+      }
+    });
+  });
+</script>

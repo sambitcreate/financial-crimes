@@ -1,0 +1,93 @@
+---
+import type { ArticleRecord } from '../schemas/article';
+import FcArt from './FcArt.astro';
+
+interface SubLink {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  topicTitle: string;
+  subLinks: SubLink[];
+  leadArticle: ArticleRecord;
+  companionArticles?: ArticleRecord[];
+}
+
+const { topicTitle, subLinks, leadArticle, companionArticles = [] } = Astro.props;
+
+function formatComments(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
+  return String(n);
+}
+---
+
+<section class="fc-section-pkg" aria-label={topicTitle}>
+  <div class="fc-section-topic-bar">
+    <span class="fc-section-topic-title">{topicTitle}</span>
+    {subLinks.map((link) => (
+      <a href={link.href} class="fc-section-topic-link">{link.label}</a>
+    ))}
+  </div>
+
+  <div class="fc-section-grid">
+    {/* LEFT 35%: Analysis Column + Companion Stories */}
+    <div class="fc-section-analysis">
+      <article
+        data-story-card
+        data-edition={leadArticle.edition}
+        data-city={leadArticle.city.toLowerCase()}
+      >
+        <span class="fc-eyebrow">{leadArticle.eyebrow}</span>
+        <h2 class="fc-section-headline">
+          <a href={leadArticle.url} class="fc-headline-link">{leadArticle.headline}</a>
+        </h2>
+        <p class="fc-section-deck">{leadArticle.deck}</p>
+        <div class="fc-meta-row">
+          <span class="fc-comment-pill">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z" stroke="currentColor" stroke-width="1.2" />
+            </svg>
+            {formatComments(leadArticle.comment_count)}
+          </span>
+          <span class="fc-meta-readtime">{leadArticle.financials.amount_display}</span>
+          <span class="fc-meta-readtime">{leadArticle.read_time_min} MIN READ</span>
+        </div>
+      </article>
+
+      {companionArticles.slice(0, 2).map((sub) => (
+        <article
+          class="fc-section-substory"
+          data-story-card
+          data-edition={sub.edition}
+          data-city={sub.city.toLowerCase()}
+        >
+          <span class="fc-eyebrow" style="display: block; margin-bottom: 3px;">
+            {sub.city} · {sub.agencies[0]}
+          </span>
+          <h3 class="fc-section-substory-title">
+            <a href={sub.url} class="fc-headline-link">{sub.headline}</a>
+          </h3>
+          <div class="fc-meta-row">
+            <span class="fc-meta-readtime">{sub.financials.fine_display}</span>
+            <span class="fc-meta-readtime">{sub.read_time_min} MIN READ</span>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    {/* RIGHT 65%: 16:9 Interactive JS Art Centerpiece */}
+    <div data-story-card data-edition={leadArticle.edition} data-city={leadArticle.city.toLowerCase()}>
+      <FcArt
+        id={leadArticle.id}
+        spec={leadArticle.interactive_art_spec}
+        mode="inline"
+        aspect="16/9"
+        dateline={leadArticle.city}
+        dateLabel="Nov. 19"
+        showChrome={true}
+        showCaption={true}
+      />
+    </div>
+  </div>
+</section>

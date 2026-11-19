@@ -1,0 +1,92 @@
+{
+  "id": "fc-2026-012",
+  "slug": "charlie-javice-frank-jpmorgan-sentencing",
+  "publish_date": "2026-11-19T06:00:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "New York",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Southern District of New York (Judge Alvin Hellerstein)"
+  },
+  "category": "Wall Street",
+  "agencies": [
+    "DOJ",
+    "USAO-SDNY",
+    "SEC"
+  ],
+  "docket_number": "S.D.N.Y. Sentenced Sept. 29, 2025",
+  "legal_stage": "sentenced",
+  "template": "news",
+  "eyebrow": "MERGERS & DILIGENCE",
+  "headline": "Founder Who Sold JPMorgan Four Million Imaginary College Students Is Sentenced to Seven Years",
+  "deck": "Judge Alvin Hellerstein imposed an 85-month prison term on Frank founder Charlie Javice after a jury convicted her and Olivier Amar over a $175 million buyout built on an $18,000 fabricated spreadsheet.",
+  "byline": "By The Financial Crimes Wall Street Desk",
+  "dateline": "NEW YORK",
+  "read_time_min": 4,
+  "comment_count": 504,
+  "layout_slot": "ledger",
+  "financials": {
+    "amount_usd": 175000000,
+    "amount_display": "$175M Buyout",
+    "fine_usd": 287500000,
+    "fine_display": "Restitution & Forfeiture Ordered",
+    "fine_ratio_pct": 100,
+    "prison_months": 85,
+    "prison_display": "7 Years (85 Months)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 24,
+  "street_crime_compare": {
+    "exec_summary": "85 months federal prison for fabricating 4 million student accounts in a $175M sale to JPMorgan Chase (~$41.18 per synthetic row).",
+    "street_equivalent": "Forging pay stubs to obtain a $1,800 personal loan",
+    "street_sentence": "18–24 months prison, typically detected before a single dollar is wired"
+  },
+  "sources": [
+    {
+      "title": "Frank Founder Charlie Javice Sentenced to 85 Months in Prison for Defrauding JPMorgan Chase in $175 Million Acquisition",
+      "agency": "U.S. Department of Justice (USAO-SDNY)",
+      "url": "https://www.justice.gov/usao-sdny/pr",
+      "date": "2025-09-29"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "redacted-dossier",
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "Interactive M&A due-diligence exhibit from the Frank acquisition. Click redaction bars to uncover the $18,000 synthetic spreadsheet and post-close test-email bounce rate.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "exhibitLabel": "EXHIBIT F // M&A DILIGENCE AUDIT",
+      "docketNumber": "S.D.N.Y. — U.S. v. JAVICE & AMAR",
+      "subject": "Frank Customer Roster Verification ($175M Acquisition)",
+      "subtitle": "Declassify the diligence audit behind 4.25 million purported student users",
+      "icon": "shredder",
+      "stamp": "85 MONTHS IMPOSED",
+      "excerpts": [
+        {
+          "label": "ACQUISITION PITCH",
+          "prefix": "Frank represented a user base of more than ",
+          "redacted": "4.25 million college students to justify a $175 million buyout",
+          "suffix": " by JPMorgan Chase.",
+          "note": "Actual customer count stood below 300,000, trial evidence showed."
+        },
+        {
+          "label": "DATA VENDOR RECEIPT",
+          "prefix": "Synthetic student rows were generated via an outside data scientist for ",
+          "redacted": "$18,000 — yielding roughly $41.18 in buyout value per fake row",
+          "suffix": ".",
+          "note": "Convictions returned March 2025 for Charlie Javice and Olivier Amar."
+        },
+        {
+          "label": "POST-CLOSE TEST CAMPAIGN",
+          "prefix": "When JPMorgan sent marketing test emails to 400,000 rows, ",
+          "redacted": "over 70 percent bounced as undeliverable addresses",
+          "suffix": ".",
+          "note": "Judge Hellerstein sentenced Javice to 85 months on Sept. 29, 2025."
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

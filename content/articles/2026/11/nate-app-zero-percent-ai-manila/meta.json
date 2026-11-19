@@ -1,0 +1,96 @@
+{
+  "id": "fc-2026-007",
+  "slug": "nate-app-zero-percent-ai-manila",
+  "publish_date": "2026-11-19T06:25:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "New York",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Southern District of New York & SEC"
+  },
+  "category": "Crypto & AI",
+  "agencies": [
+    "DOJ",
+    "USAO-SDNY",
+    "SEC"
+  ],
+  "docket_number": "S.D.N.Y. Indicted Apr. 9, 2025",
+  "legal_stage": "indicted",
+  "template": "news",
+  "eyebrow": "SILICON VALLEY & A.I. WASHING",
+  "headline": "Shopping App’s ‘Proprietary Neural Network’ Was Actually a Night Shift in Manila, Prosecutors Say",
+  "deck": "Albert Saniger raised more than $42 million pitching Nate, Inc. as 93 to 97 percent automated by artificial intelligence; federal filings allege the true automation rate was near zero.",
+  "byline": "By The Financial Crimes Technology Desk",
+  "dateline": "NEW YORK",
+  "read_time_min": 4,
+  "comment_count": 528,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 42000000,
+    "amount_display": "$42M+",
+    "fine_usd": null,
+    "fine_display": "Trial Proceeding",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Trial Proceeding (2026)",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "Criminal indictment and SEC civil suit pending trial in SDNY over $42M+ raised on alleged 93–97% AI automation claims.",
+    "street_equivalent": "Selling a $1,800 counterfeit watch on a street corner",
+    "street_sentence": "Misdemeanor or felony fraud booking without $42M in venture-capital diligence memos"
+  },
+  "sources": [
+    {
+      "title": "Founder and Former CEO of Nate, Inc. Indicted for Defrauding Investors Over Artificial Intelligence Capabilities",
+      "agency": "U.S. Department of Justice (USAO-SDNY)",
+      "url": "https://www.justice.gov/usao-sdny/pr",
+      "date": "2025-04-09"
+    },
+    {
+      "title": "SEC Charges Nate, Inc. Founder Albert Saniger with AI-Washing Investor Fraud",
+      "agency": "U.S. Securities and Exchange Commission",
+      "url": "https://www.sec.gov/newsroom/press-releases",
+      "date": "2025-04-09"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "editorial-vignette",
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "Isometric X-ray of the Nate, Inc. “neural network.” Select pins or toggle X-Ray Inspection to contrast investor decks against alleged manual checkout operations.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "The 0% Artificial Intelligence Engine",
+      "subtitle": "Toggle X-Ray to peel back claimed neural-net automation and view filing allegations",
+      "scene": "server_vault",
+      "xrayLabel": "Toggle Neural-Net X-Ray",
+      "hotspots": [
+        {
+          "title": "Venture Pitch Claim",
+          "figure": "93%–97% A.I.",
+          "note": "Prosecutors allege investor decks touted proprietary neural-network checkout automation to raise $42M+.",
+          "x": 32,
+          "y": 48
+        },
+        {
+          "title": "Alleged Actual Automation",
+          "figure": "~0% Automated",
+          "note": "According to SDNY and SEC complaints, the real automation rate hovered near zero percent.",
+          "x": 55,
+          "y": 52
+        },
+        {
+          "title": "Manual Checkout Shifts",
+          "figure": "Manila & Romania",
+          "note": "Human contractors manually typed customer orders behind the scenes while the app displayed A.I. processing screens, filings allege.",
+          "x": 72,
+          "y": 62
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

@@ -1,0 +1,108 @@
+{
+  "id": "fc-2026-018",
+  "slug": "korfuzi-siblings-wfh-insider-trading-fca",
+  "publish_date": "2026-11-19T05:50:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "London",
+  "edition": "london",
+  "jurisdiction": {
+    "country_iso": "GB",
+    "venue": "Southwark Crown Court & UK Financial Conduct Authority (FCA)"
+  },
+  "category": "Courts",
+  "agencies": [
+    "UK FCA",
+    "Southwark Crown Court"
+  ],
+  "docket_number": "Southwark Crown Court Sentenced July 4, 2025",
+  "legal_stage": "sentenced",
+  "template": "news",
+  "eyebrow": "LONDON & INSIDER TRADING",
+  "headline": "Working From Home Offered Flexibility, Including Minutes Between Confidential Emails and Leveraged Bets",
+  "deck": "Former Janus Henderson analyst Redinel Korfuzi and his sister Oerta received a record 11 combined years in prison after an F.C.A. prosecution tracing £1 million in insider profits and 173 cash deposits.",
+  "byline": "By The Financial Crimes London Bureau",
+  "dateline": "LONDON",
+  "read_time_min": 4,
+  "comment_count": 238,
+  "layout_slot": "ledger",
+  "financials": {
+    "amount_usd": 1250000,
+    "amount_display": "~£1.0M (~$1.25M)",
+    "fine_usd": 1250000,
+    "fine_display": "POCA Confiscation Active (2026)",
+    "fine_ratio_pct": 100,
+    "prison_months": 132,
+    "prison_display": "11 Combined Years (Record FCA)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 8,
+  "street_crime_compare": {
+    "exec_summary": "Record 11 combined years prison (132 months) for ~£1M insider trading and money laundering — an unusually stern white-collar benchmark.",
+    "street_equivalent": "Stealing £1,400 ($1,800) from a retail safe",
+    "street_sentence": "12–24 months custody; here, an individual analyst received far stiffer prison time than banks fined billions"
+  },
+  "sources": [
+    {
+      "title": "Redinel and Oerta Korfuzi Sentenced to Combined 11 Years for Insider Dealing and Money Laundering",
+      "agency": "UK Financial Conduct Authority (FCA)",
+      "url": "https://www.fca.org.uk/news/press-releases",
+      "date": "2025-07-04"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "offshore-flight-map",
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "Geographic trail connecting remote trading from London to a Knightsbridge safety-deposit vault and cash transfers toward Albania.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "From Home Desk to Knightsbridge Vault & Albania",
+      "subtitle": "Click waypoints to inspect the FCA insider-dealing and 173-cash-deposit money-laundering trail",
+      "region": "europe",
+      "waypoints": [
+        {
+          "id": "lon",
+          "label": "London (WFH Desk)",
+          "lat": 51.51,
+          "lon": -0.13,
+          "role": "Analyst Terminal",
+          "amount": "~£1M Profit",
+          "status": "Convicted June 2025"
+        },
+        {
+          "id": "knights",
+          "label": "Knightsbridge Vault",
+          "lat": 51.5,
+          "lon": -0.16,
+          "role": "Cash Storage",
+          "amount": "173 Deposits",
+          "status": "POCA Confiscation 2026"
+        },
+        {
+          "id": "tir",
+          "label": "Albania Corridor",
+          "lat": 41.33,
+          "lon": 19.82,
+          "role": "Cash Destination",
+          "amount": "Laundered Proceeds",
+          "status": "11 Combined Yrs Sentenced"
+        }
+      ],
+      "routes": [
+        {
+          "from": "lon",
+          "to": "knights",
+          "amount": "CFDs / Bets",
+          "label": "Minutes After Confidential Emails"
+        },
+        {
+          "from": "knights",
+          "to": "tir",
+          "amount": "173 Deposits",
+          "label": "Cash Laundering Trail"
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

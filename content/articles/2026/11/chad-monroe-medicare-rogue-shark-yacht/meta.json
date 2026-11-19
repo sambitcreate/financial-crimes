@@ -1,0 +1,96 @@
+{
+  "id": "fc-2026-005",
+  "slug": "chad-monroe-medicare-rogue-shark-yacht",
+  "publish_date": "2026-11-19T06:35:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "Tampa",
+  "edition": "us",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Middle District of Florida & DOJ Fraud Section"
+  },
+  "category": "Courts",
+  "agencies": [
+    "DOJ Fraud Section",
+    "HHS-OIG",
+    "FBI"
+  ],
+  "docket_number": "M.D. Fla. Guilty Plea (Nov. 13, 2026)",
+  "legal_stage": "guilty_plea",
+  "template": "news",
+  "eyebrow": "HEALTH CARE FRAUD",
+  "headline": "Man Who Named His Medicare-Funded Yacht ‘The Rogue Shark’ Pleads Guilty in $42 Million Scheme",
+  "deck": "Chad Monroe of Maksix Medical admitted to a durable medical equipment and genetic-testing billing fraud highlighted amid the Justice Department’s $6.5 billion 2026 takedown.",
+  "byline": "By The Financial Crimes Enforcement Desk",
+  "dateline": "TAMPA, Fla.",
+  "read_time_min": 4,
+  "comment_count": 376,
+  "layout_slot": "rail-mini",
+  "financials": {
+    "amount_usd": 42000000,
+    "amount_display": "$42M ($6.5B Sweep)",
+    "fine_usd": null,
+    "fine_display": "47-Ft Yacht Seized; Sentencing Pending",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Guilty Plea (Sentencing Pending)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "Pleaded guilty Nov. 13, 2026 in $42M Medicare billing scheme; 47-foot yacht “The Rogue Shark” seized in federal forfeiture.",
+    "street_equivalent": "Shoplifting $1,800 in medical supplies from a chain pharmacy",
+    "street_sentence": "Immediate felony arrest; zero 47-foot vessels christened with irony"
+  },
+  "sources": [
+    {
+      "title": "National Health Care Fraud Enforcement Action (455 Defendants, $6.5 Billion+)",
+      "agency": "U.S. Department of Justice Criminal Division",
+      "url": "https://www.justice.gov/criminal/criminal-fraud/health-care-fraud-unit",
+      "date": "2026-06-23"
+    },
+    {
+      "title": "Maksix Medical Principal Chad Monroe Pleads Guilty in $42 Million Medicare Fraud Scheme",
+      "agency": "U.S. Attorney’s Office, Middle District of Florida",
+      "url": "https://www.justice.gov/usao-mdfl/pr",
+      "date": "2026-11-13"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "editorial-vignette",
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "Isometric plate of “The Rogue Shark,” the 47-foot vessel seized alongside federal health care fraud prosecutions spanning 56 districts.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "Anatomy of a Medicare Yacht",
+      "subtitle": "Select numbered pins to inspect billing volume, asset seizure, and national sweep totals",
+      "scene": "marina_yacht",
+      "xrayLabel": "Inspect Forfeiture Pins",
+      "hotspots": [
+        {
+          "title": "“The Rogue Shark” (47-Foot Vessel)",
+          "figure": "Seized Asset",
+          "note": "Federal authorities moved to forfeit the 47-foot yacht acquired with proceeds of the Maksix Medical scheme.",
+          "x": 35,
+          "y": 58
+        },
+        {
+          "title": "Phantom Braces & Genetic Tests",
+          "figure": "$42 Million",
+          "note": "Chad Monroe pleaded guilty on Nov. 13, 2026 in M.D. Fla. to billing Medicare for medically unnecessary braces and tests.",
+          "x": 62,
+          "y": 46
+        },
+        {
+          "title": "2026 National Takedown",
+          "figure": "$6.5B+ / 455 Defs",
+          "note": "Announced June 23, 2026 across 56 federal districts ($21.1B combined with the 2025 sweep).",
+          "x": 76,
+          "y": 68
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

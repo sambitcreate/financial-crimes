@@ -1,0 +1,80 @@
+{
+  "id": "fc-2026-006",
+  "slug": "do-kwon-terraform-fifteen-years",
+  "publish_date": "2026-11-19T06:30:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "New York",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Southern District of New York (Judge Paul Engelmayer)"
+  },
+  "category": "Crypto & AI",
+  "agencies": [
+    "DOJ",
+    "USAO-SDNY",
+    "SEC"
+  ],
+  "docket_number": "S.D.N.Y. Sentenced Dec. 11, 2025",
+  "legal_stage": "sentenced",
+  "template": "news",
+  "eyebrow": "CRYPTOCURRENCY & COURTS",
+  "headline": "Architect of $40 Billion Crypto Collapse Receives 15 Years, or $7.3 Million in Losses per Day Served",
+  "deck": "Judge Paul Engelmayer sentenced Terraform Labs co-founder Do Kwon in Manhattan after his August 2025 guilty plea over the TerraUSD and LUNA implosion.",
+  "byline": "By The Financial Crimes Digital Assets Desk",
+  "dateline": "NEW YORK",
+  "read_time_min": 4,
+  "comment_count": 615,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 40000000000,
+    "amount_display": "$40.0B",
+    "fine_usd": 4470000000,
+    "fine_display": "$4.47B SEC Judgment / 15 Yrs",
+    "fine_ratio_pct": 11.18,
+    "prison_months": 180,
+    "prison_display": "15 Years (180 Months)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 32,
+  "street_crime_compare": {
+    "exec_summary": "15-year federal prison sentence for a $40B market wipeout — approximately $7.3 million in investor losses per day of imprisonment.",
+    "street_equivalent": "Stealing $1,800 from a retail cash register",
+    "street_sentence": "24 months prison — roughly $2.47 in losses per day served"
+  },
+  "sources": [
+    {
+      "title": "Terraform Labs Co-Founder Do Kwon Sentenced to 15 Years in Prison in Manhattan Federal Court",
+      "agency": "U.S. Department of Justice (USAO-SDNY)",
+      "url": "https://www.justice.gov/usao-sdny/pr",
+      "date": "2025-12-11"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "scale-of-impunity",
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "Interactive proportionality scale weighing the $40 billion TerraUSD/LUNA collapse against Do Kwon’s 15-year sentence (~$7.3 million in investor losses per prison day).",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "Dollars per Prison Day: Terraform Labs",
+      "subtitle": "Drop the penalty counterweight to compare $40B in investor losses against 5,475 days sentenced",
+      "lootLabel": "TerraUSD / LUNA Wipeout",
+      "lootDisplay": "$40.0B",
+      "lootUsd": 40000000000,
+      "fineLabel": "Civil Judgment / Forfeiture",
+      "fineDisplay": "$4.47B",
+      "fineUsd": 4470000000,
+      "ratioDisplay": "$7.3M LOSS / PRISON DAY",
+      "stampText": "15 YEARS IMPOSED",
+      "gridRatioPct": 11.18,
+      "streetComparison": {
+        "label": "Median Retail Register Theft",
+        "amountDisplay": "$1,800",
+        "sentenceDisplay": "24 Months ($2.47/day)",
+        "execSentenceDisplay": "15 Years ($7.3M/day)"
+      }
+    }
+  },
+  "status": "published"
+}

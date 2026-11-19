@@ -1,0 +1,334 @@
+---
+import type { RollupStats } from '../schemas/article';
+
+interface Props {
+  displayDate?: string;
+  editionDate?: string;
+  rollup: RollupStats;
+}
+
+const {
+  displayDate = 'Thursday, November 19, 2026',
+  editionDate = '2026-11-19',
+  rollup,
+} = Astro.props;
+
+const editions = [
+  { key: 'all', label: 'U.S. & GLOBAL' },
+  { key: 'us', label: 'U.S.' },
+  { key: 'new-york', label: 'NEW YORK' },
+  { key: 'chicago', label: 'CHICAGO' },
+  { key: 'los-angeles', label: 'L.A.' },
+  { key: 'london', label: 'LONDON' },
+  { key: 'india', label: 'INDIA' },
+  { key: 'europe', label: 'EUROPE' },
+  { key: 'global', label: 'GLOBAL' },
+];
+
+const sectionsPrimary = [
+  { label: 'Wall Street', href: '/ledger?category=Wall+Street' },
+  { label: 'Crypto & AI', href: '/ledger?category=Crypto+%26+AI' },
+  { label: 'Courts', href: '/ledger?category=Courts' },
+  { label: 'India & Asia', href: '/ledger?category=India+%26+Asia' },
+  { label: 'Europe', href: '/ledger?category=Europe' },
+  { label: 'Politics', href: '/ledger?category=Politics' },
+  { label: 'Opinion', href: '/ledger?category=Opinion' },
+];
+
+const sectionsSecondary = [
+  { label: 'The Ledger', href: '/ledger' },
+  { label: 'Interactive', href: '/#interactive-exhibits' },
+  { label: 'Archive', href: `/edition/${editionDate}` },
+];
+
+const tickerPayload = JSON.stringify({
+  global: {
+    loot: rollup.total_loot_display,
+    fines: rollup.total_fines_display,
+    ratio: `${rollup.avg_fine_ratio_pct.toFixed(1)}%`,
+    cases: rollup.total_cases,
+    zeroPrison: rollup.zero_prison_cases,
+  },
+  regions: rollup.regions,
+});
+---
+
+<header class="fc-masthead" role="banner">
+  <div class="fc-container">
+    {/* Row 1: Top Utility Strip */}
+    <div class="fc-utility-bar">
+      <div class="fc-utility-left">
+        <button
+          type="button"
+          class="fc-icon-btn"
+          id="fc-masthead-menu-btn"
+          aria-label="Open sections menu"
+          aria-controls="fc-home-drawer"
+          aria-expanded="false"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 3.5h12M2 8h12M2 12.5h12" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          class="fc-icon-btn"
+          id="fc-masthead-search-toggle"
+          aria-label="Toggle docket search"
+          aria-controls="fc-masthead-search-drawer"
+          aria-expanded="false"
+        >
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.8" stroke="currentColor" stroke-width="1.5" />
+            <path d="M10.8 10.8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
+          </svg>
+        </button>
+      </div>
+
+      <nav class="fc-edition-bar" aria-label="City and regional editions">
+        {editions.map((ed, idx) => (
+          <button
+            type="button"
+            class:list={['fc-edition-btn', { 'is-active': idx === 0 }]}
+            data-edition-btn={ed.key}
+            aria-pressed={idx === 0 ? 'true' : 'false'}
+          >
+            {ed.label}
+          </button>
+        ))}
+      </nav>
+
+      <div class="fc-utility-right">
+        <button type="button" class="fc-btn-slate" data-open-subscribe>
+          Subscribe for $0/Week
+        </button>
+        <button type="button" class="fc-btn-outline" data-open-tipline>
+          Tip Line
+        </button>
+      </div>
+    </div>
+
+    {/* Collapsible Search Drawer */}
+    <div class="fc-search-drawer" id="fc-masthead-search-drawer">
+      <form class="fc-search-form" action="/ledger" method="get" role="search">
+        <label class="fc-sr-only" for="fc-masthead-search-input">Search cases, defendants, or dockets</label>
+        <input
+          id="fc-masthead-search-input"
+          class="fc-search-input"
+          type="search"
+          name="q"
+          placeholder="Search defendants, agencies, dockets (e.g., Bank of America, SEBI, Do Kwon)..."
+        />
+        <button type="submit" class="fc-btn-slate" style="padding: 9px 14px;">Search Ledger</button>
+      </form>
+    </div>
+
+    {/* Row 2: Nameplate Row (Date | Blackletter Nameplate | Live Cycling Ticker) */}
+    <div class="fc-nameplate-row">
+      <div class="fc-date-block">
+        <span class="fc-date-main">{displayDate}</span>
+        <a href={`/edition/${editionDate}`} class="fc-date-sub">Today&rsquo;s Docket</a>
+      </div>
+
+      <h1 class="fc-nameplate">
+        <a href="/">The Financial Crimes</a>
+      </h1>
+
+      <div class="fc-ticker-wrap">
+        <button
+          type="button"
+          class="fc-masthead-ticker"
+          id="fc-masthead-ticker-btn"
+          data-ticker-payload={tickerPayload}
+          title="Click to cycle live docket metrics"
+        >
+          <span class="fc-ticker-label" id="fc-ticker-label">LOOTED YTD</span>
+          <span class="fc-ticker-val fc-ticker-val--crimson" id="fc-ticker-val">
+            {rollup.total_loot_display} &uarr;
+          </span>
+        </button>
+        <span class="fc-ticker-hint" id="fc-ticker-sub">
+          {rollup.total_cases} active docket filings · click to cycle
+        </span>
+      </div>
+    </div>
+
+    {/* Row 3: Section Navigation */}
+    <nav class="fc-section-nav" aria-label="Primary sections">
+      <ul class="fc-section-nav-list">
+        {sectionsPrimary.map((item) => (
+          <li>
+            <a class="fc-section-nav-link" href={item.href}>
+              <span>{item.label}</span>
+              <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.2" />
+              </svg>
+            </a>
+          </li>
+        ))}
+        <li class="fc-section-nav-divider" aria-hidden="true"></li>
+        {sectionsSecondary.map((item) => (
+          <li>
+            <a class="fc-section-nav-link" href={item.href}>
+              <span>{item.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    {/* Signature Double Horizontal Rule */}
+    <div class="fc-double-rule" aria-hidden="true"></div>
+  </div>
+</header>
+
+{/* Slide-Out Broadsheet Sections Drawer */}
+<div class="fc-nav-drawer" id="fc-home-drawer" aria-hidden="true">
+  <div class="fc-nav-drawer-backdrop" data-close-home-drawer></div>
+  <nav class="fc-nav-drawer-panel" aria-label="Sections and editions drawer">
+    <div class="fc-nav-drawer-head">
+      <span style="font-family: var(--fc-font-masthead); font-size: 22px;">The Financial Crimes</span>
+      <button type="button" class="fc-icon-btn" data-close-home-drawer aria-label="Close menu">&times;</button>
+    </div>
+
+    <div>
+      <p class="fc-eyebrow" style="margin: 0 0 8px;">Desks &amp; Beats</p>
+      <ul class="fc-nav-drawer-list">
+        <li><a href="/">Front Page</a></li>
+        <li><a href="/ledger">The Running Ledger</a></li>
+        <li><a href={`/edition/${editionDate}`}>Today&rsquo;s Docket</a></li>
+        {sectionsPrimary.map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <p class="fc-eyebrow" style="margin: 0 0 8px;">Regional Bureaus</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+        {editions.map((ed) => (
+          <button
+            type="button"
+            class="fc-btn-outline"
+            data-edition-btn={ed.key}
+            data-close-home-drawer
+            style="font-size: 10px; padding: 5px 8px;"
+          >
+            {ed.label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
+      <button type="button" class="fc-btn-slate" data-open-subscribe data-close-home-drawer>
+        Subscribe for $0/Week
+      </button>
+      <button type="button" class="fc-btn-outline" data-open-tipline data-close-home-drawer>
+        Submit Public Docket Tip
+      </button>
+    </div>
+  </nav>
+</div>
+
+<script>
+  const searchBtn = document.getElementById('fc-masthead-search-toggle');
+  const searchDrawer = document.getElementById('fc-masthead-search-drawer');
+  const searchInput = document.getElementById('fc-masthead-search-input') as HTMLInputElement | null;
+
+  if (searchBtn && searchDrawer) {
+    searchBtn.addEventListener('click', () => {
+      const open = searchDrawer.classList.toggle('is-open');
+      searchBtn.setAttribute('aria-expanded', String(open));
+      if (open && searchInput) searchInput.focus();
+    });
+  }
+
+  const menuBtn = document.getElementById('fc-masthead-menu-btn');
+  const drawer = document.getElementById('fc-home-drawer');
+  function toggleHomeDrawer(open: boolean) {
+    if (!drawer || !menuBtn) return;
+    drawer.classList.toggle('is-open', open);
+    drawer.setAttribute('aria-hidden', String(!open));
+    menuBtn.setAttribute('aria-expanded', String(open));
+  }
+  menuBtn?.addEventListener('click', () => toggleHomeDrawer(true));
+  document.querySelectorAll('[data-close-home-drawer]').forEach((el) => {
+    el.addEventListener('click', () => toggleHomeDrawer(false));
+  });
+
+  // Cycling Crime Ticker
+  const tickerBtn = document.getElementById('fc-masthead-ticker-btn');
+  const tickerLabel = document.getElementById('fc-ticker-label');
+  const tickerVal = document.getElementById('fc-ticker-val');
+  const tickerSub = document.getElementById('fc-ticker-sub');
+
+  if (tickerBtn && tickerLabel && tickerVal && tickerSub) {
+    const payload = JSON.parse(tickerBtn.getAttribute('data-ticker-payload') || '{}');
+    let activeRegion = 'all';
+    let metricIndex = 0;
+
+    function getRegionStats(regionKey: string) {
+      if (regionKey === 'all' || !payload.regions || !payload.regions[regionKey]) {
+        return {
+          prefix: regionKey === 'all' ? '' : `${regionKey.toUpperCase()} `,
+          loot: payload.global?.loot || '$54.2B',
+          fines: payload.global?.fines || '$2.0B',
+          ratio: payload.global?.ratio || '3.4%',
+          cases: payload.global?.cases || 22,
+          zeroPrison: payload.global?.zeroPrison ?? 4,
+        };
+      }
+      const r = payload.regions[regionKey];
+      return {
+        prefix: `${r.label} `,
+        loot: r.total_loot_display,
+        fines: r.total_fines_display,
+        ratio: r.avg_fine_ratio_pct != null ? `${r.avg_fine_ratio_pct.toFixed(1)}%` : 'PENDING',
+        cases: r.case_count,
+        zeroPrison: payload.global?.zeroPrison ?? 0,
+      };
+    }
+
+    function renderTicker() {
+      const s = getRegionStats(activeRegion);
+      const modes = [
+        {
+          label: `${s.prefix}LOOTED YTD`,
+          val: `${s.loot} ↑`,
+          cls: 'fc-ticker-val fc-ticker-val--crimson',
+          sub: `${s.cases} active docket filings · click to cycle`,
+        },
+        {
+          label: `${s.prefix}AVG FINE/LOOT`,
+          val: `${s.ratio} ↓`,
+          cls: 'fc-ticker-val fc-ticker-val--green',
+          sub: `${s.fines} total fines imposed · click to cycle`,
+        },
+        {
+          label: 'ZERO-PRISON DEALS',
+          val: `${s.zeroPrison} CASES`,
+          cls: 'fc-ticker-val fc-ticker-val--crimson',
+          sub: 'Resolved with fines & 0 days served · click to cycle',
+        },
+      ];
+      const current = modes[metricIndex % modes.length];
+      tickerLabel!.textContent = current.label;
+      tickerVal!.textContent = current.val;
+      tickerVal!.className = current.cls;
+      tickerSub!.textContent = current.sub;
+    }
+
+    tickerBtn.addEventListener('click', () => {
+      metricIndex = (metricIndex + 1) % 3;
+      renderTicker();
+    });
+
+    window.addEventListener('fc:edition-change', ((e: CustomEvent<{ edition: string }>) => {
+      activeRegion = e.detail?.edition || 'all';
+      metricIndex = 0;
+      renderTicker();
+    }) as EventListener);
+  }
+</script>

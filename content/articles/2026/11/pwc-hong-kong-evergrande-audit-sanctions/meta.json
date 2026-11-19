@@ -1,0 +1,80 @@
+{
+  "id": "fc-2026-022",
+  "slug": "pwc-hong-kong-evergrande-audit-sanctions",
+  "publish_date": "2026-11-19T06:24:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "Hong Kong",
+  "edition": "global",
+  "jurisdiction": {
+    "country_iso": "HK",
+    "venue": "Hong Kong SFC, AFRC & High Court of Hong Kong"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "HK SFC",
+    "AFRC",
+    "Hong Kong High Court"
+  ],
+  "docket_number": "SFC / AFRC Sanctions (Apr. 23, 2026)",
+  "legal_stage": "regulatory_order",
+  "template": "news",
+  "eyebrow": "HONG KONG & AUDITING",
+  "headline": "PwC Pays $167 Million to Put Evergrande’s Audits Behind It; Evergrande’s Liquidators Present an $8.4 Billion Tab",
+  "deck": "Hong Kong’s S.F.C. and A.F.R.C. imposed HK$1.3 billion in combined sanctions and a six-month public-interest audit ban in April, while liquidators press an $8.4 billion High Court lawsuit.",
+  "byline": "By The Financial Crimes Asia Bureau",
+  "dateline": "HONG KONG",
+  "read_time_min": 4,
+  "comment_count": 388,
+  "layout_slot": "rail-mini",
+  "financials": {
+    "amount_usd": 8400000000,
+    "amount_display": "US$8.4B Liquidator Claim",
+    "fine_usd": 167000000,
+    "fine_display": "HK$1.3B (~$167M) + 6-Mo PIE Ban",
+    "fine_ratio_pct": 1.99,
+    "prison_months": 0,
+    "prison_display": "0 Criminal Charges (6-Mo PIE Ban)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 88,
+  "street_crime_compare": {
+    "exec_summary": "HK$1.3B (~$167M) combined regulatory package (HK$300M AFRC fine + HK$1B SFC fund) plus a 6-month PIE audit ban — 1.99% of liquidators’ $8.4B claim.",
+    "street_equivalent": "Certifying $1,800 in nonexistent collateral on a consumer credit application",
+    "street_sentence": "Criminal fraud charges rather than a six-month timeout on new public-interest clients"
+  },
+  "sources": [
+    {
+      "title": "SFC and AFRC Coordinated Regulatory Sanctions Against PricewaterhouseCoopers Hong Kong Over China Evergrande Audits",
+      "agency": "Securities and Futures Commission (SFC) & AFRC, Hong Kong",
+      "url": "https://www.sfc.hk/en/News-and-announcements/Policy-statements-and-announcements",
+      "date": "2026-04-23"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "scale-of-impunity",
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "Proportionality scale contrasting PwC Hong Kong’s HK$1.3 billion (~$167 million) regulatory settlement against Evergrande liquidators’ US$8.4 billion High Court claim.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "Evergrande’s Audit Tab: $167M Paid vs. $8.4B Claimed",
+      "subtitle": "Compare the April 2026 SFC/AFRC sanctions against the active High Court liquidator suit",
+      "lootLabel": "Liquidators’ High Court Claim",
+      "lootDisplay": "US$8.40B",
+      "lootUsd": 8400000000,
+      "fineLabel": "HK$1.3B SFC + AFRC Package",
+      "fineDisplay": "US$167M",
+      "fineUsd": 167000000,
+      "ratioDisplay": "1.99% OF CLAIM",
+      "stampText": "6-MONTH TIMEOUT",
+      "gridRatioPct": 1.99,
+      "streetComparison": {
+        "label": "Regulatory Package Breakdown",
+        "amountDisplay": "$8.4B Claim",
+        "sentenceDisplay": "HK$300M AFRC + HK$1B SFC Fund",
+        "execSentenceDisplay": "0 Criminal Charges"
+      }
+    }
+  },
+  "status": "published"
+}

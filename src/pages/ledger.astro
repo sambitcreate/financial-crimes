@@ -1,0 +1,578 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CompactHeader from '../components/CompactHeader.astro';
+import FcArt from '../components/FcArt.astro';
+import { loadAllArticles, loadRollupStats } from '../loaders/articles';
+
+const [articles, rollup] = await Promise.all([loadAllArticles(), loadRollupStats()]);
+
+const categories = Array.from(new Set(articles.map((a) => a.category))).sort();
+const editions = [
+  { key: 'all', label: 'All Bureaus' },
+  { key: 'us', label: 'U.S. (All)' },
+  { key: 'new-york', label: 'New York' },
+  { key: 'chicago', label: 'Chicago' },
+  { key: 'los-angeles', label: 'Los Angeles' },
+  { key: 'london', label: 'London / UK' },
+  { key: 'india', label: 'India' },
+  { key: 'europe', label: 'Europe' },
+  { key: 'global', label: 'Singapore & Hong Kong' },
+];
+
+const topicLinks = [
+  { label: 'Front Page', href: '/' },
+  { label: 'Full Ledger', href: '/ledger', current: true },
+  { label: '$1B+ Megacases', href: '/ledger?magnitude=1000000000' },
+  { label: 'Zero-Prison Deals', href: '/ledger?slap=zero-prison' },
+  { label: "Today's Docket", href: `/edition/${rollup.edition_date}` },
+];
+---
+
+<BaseLayout
+  title="The Running Ledger — The Financial Crimes"
+  description="Searchable running ledger of global white-collar, corporate, regulatory, and billionaire financial crimes, fines, and sentencing outcomes."
+>
+  <CompactHeader
+    slot="header"
+    showTopicBar={true}
+    topicTitle="The Running Ledger"
+    topicLinks={topicLinks}
+  />
+
+  <div class="fc-container" style="padding-bottom: 56px;">
+    {/* Ledger Hero Header */}
+    <header class="fc-ledger-hero">
+      <p class="fc-eyebrow">PERMANENT PUBLIC DOCKET &middot; VOL. I</p>
+      <h1 class="fc-ledger-title">The Running Ledger</h1>
+      <p style="font-family: var(--fc-font-body); font-size: 17px; color: var(--fc-ink-muted); max-width: 720px; margin: 0;">
+        Every white-collar indictment, regulatory consent order, fine-to-loot ratio, and custody
+        sentence indexed across U.S., Indian, British, European, and Asian financial hubs.
+      </p>
+
+      {/* Live Dynamic Totals Strip */}
+      <div class="fc-ledger-totals" aria-live="polite">
+        <div>
+          <span class="fc-docket-stat-label">Cases Shown</span>
+          <span class="fc-docket-stat-val" id="fc-ledger-total-count" style="font-size: 18px;">
+            {articles.length}
+          </span>
+        </div>
+        <div>
+          <span class="fc-docket-stat-label">Combined Alleged Scale</span>
+          <span class="fc-docket-stat-val" id="fc-ledger-total-loot" style="font-size: 18px;">
+            {rollup.total_loot_display}
+          </span>
+        </div>
+        <div>
+          <span class="fc-docket-stat-label">Combined Penalties / Fines</span>
+          <span class="fc-docket-stat-val" id="fc-ledger-total-fines" style="font-size: 18px;">
+            {rollup.total_fines_display}
+          </span>
+        </div>
+        <div>
+          <span class="fc-docket-stat-label">Avg. Fine-to-Loot Ratio</span>
+          <span
+            class="fc-docket-stat-val"
+            id="fc-ledger-avg-ratio"
+            style="font-size: 18px; color: var(--fc-art-crimson);"
+          >
+            {rollup.avg_fine_ratio_pct.toFixed(2)}%
+          </span>
+        </div>
+      </div>
+    </header>
+
+    {/* Sticky Multi-Facet Filter Bar */}
+    <section class="fc-ledger-filterbar" aria-label="Filter and sort the Running Ledger">
+      <div class="fc-ledger-controls">
+        <label class="fc-sr-only" for="fc-ledger-search">Search cases</label>
+        <input
+          type="search"
+          id="fc-ledger-search"
+          placeholder="Search defendants, agencies, dockets, cities..."
+        />
+
+        <label class="fc-sr-only" for="fc-ledger-edition">Bureau</label>
+        <select id="fc-ledger-edition">
+          {editions.map((ed) => (
+            <option value={ed.key}>{ed.label}</option>
+          ))}
+        </select>
+
+        <label class="fc-sr-only" for="fc-ledger-category">Category</label>
+        <select id="fc-ledger-category">
+          <option value="all">All Categories</option>
+          {categories.map((cat) => (
+            <option value={cat}>{cat}</option>
+          ))}
+        </select>
+
+        <label class="fc-sr-only" for="fc-ledger-magnitude">Dollar magnitude</label>
+        <select id="fc-ledger-magnitude">
+          <option value="0">Any Scale</option>
+          <option value="10000000">$10M+</option>
+          <option value="100000000">$100M+</option>
+          <option value="500000000">$500M+</option>
+          <option value="1000000000">$1B+</option>
+        </select>
+
+        <label class="fc-sr-only" for="fc-ledger-slap">Wrist-slap filter</label>
+        <select id="fc-ledger-slap">
+          <option value="all">All Outcomes</option>
+          <option value="70">Wrist-Slap &ge; 70</option>
+          <option value="85">Extreme Wrist-Slap &ge; 85</option>
+          <option value="zero-prison">Zero Prison Days</option>
+          <option value="pending">Pending Litigation</option>
+        </select>
+
+        <label class="fc-sr-only" for="fc-ledger-sort">Sort order</label>
+        <select id="fc-ledger-sort">
+          <option value="newest">Sort: Newest</option>
+          <option value="loot-desc">Largest Alleged Scale</option>
+          <option value="fine-desc">Largest Fine / Penalty</option>
+          <option value="slap-desc">Highest Wrist-Slap Score</option>
+          <option value="ratio-asc">Lowest Fine/Loot Ratio</option>
+        </select>
+
+        <div class="fc-view-toggle" role="group" aria-label="Ledger display mode">
+          <button type="button" id="fc-view-editorial" aria-pressed="true">Editorial</button>
+          <button type="button" id="fc-view-table" aria-pressed="false">Ledger</button>
+        </div>
+      </div>
+    </section>
+
+    {/* Empty State */}
+    <div
+      id="fc-ledger-empty"
+      hidden
+      style="padding: 40px 20px; text-align: center; border-bottom: 1px solid var(--fc-rule-column);"
+    >
+      <p style="font-family: var(--fc-font-headline); font-size: 22px; margin: 0 0 8px;">
+        No public filings match those filters.
+      </p>
+      <p style="font-family: var(--fc-font-sans); font-size: 13px; color: var(--fc-ink-muted); margin: 0 0 14px;">
+        Try widening your dollar magnitude, bureau, or search query.
+      </p>
+      <button type="button" class="fc-btn-outline" id="fc-ledger-reset-btn">
+        Reset All Filters
+      </button>
+    </div>
+
+    {/* VIEW 1: Editorial List with 150x102 Mini-Canvas Previews */}
+    <section id="fc-ledger-list-view" class="fc-ledger-editorial-list" aria-label="Editorial case list">
+      {articles.map((item) => {
+        const searchBlob = [
+          item.headline,
+          item.deck,
+          item.city,
+          item.edition,
+          item.category,
+          item.agencies.join(' '),
+          item.docket_number ?? '',
+          item.jurisdiction.venue,
+          item.byline,
+        ]
+          .join(' ')
+          .toLowerCase();
+
+        return (
+          <article
+            class="fc-ledger-editorial-row"
+            data-ledger-item
+            data-slug={item.slug}
+            data-search={searchBlob}
+            data-edition={item.edition.toLowerCase()}
+            data-city={item.city.toLowerCase()}
+            data-category={item.category}
+            data-date={item.publish_date}
+            data-loot={item.financials.amount_usd ?? 0}
+            data-fine={item.financials.fine_usd ?? 0}
+            data-ratio={item.financials.fine_ratio_pct ?? -1}
+            data-prison={item.financials.prison_months ?? -1}
+            data-slap={item.slap_on_wrist_score ?? -1}
+          >
+            <div style="font-family: var(--fc-font-mono); font-size: 11px; color: var(--fc-ink-muted); padding-top: 2px;">
+              <div>{item.publish_date}</div>
+              <div style="margin-top: 4px; color: var(--fc-ink-primary); font-weight: 600;">
+                {item.city}
+              </div>
+              <div style="margin-top: 6px;">
+                {item.slap_on_wrist_score !== null ? (
+                  <span
+                    class:list={[
+                      'fc-score-badge',
+                      { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
+                    ]}
+                  >
+                    SLAP {item.slap_on_wrist_score}
+                  </span>
+                ) : (
+                  <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <span
+                class:list={[
+                  'fc-eyebrow',
+                  { 'fc-eyebrow--opinion': item.template === 'opinion' },
+                ]}
+              >
+                {item.template === 'opinion' ? 'OPINION' : item.category} &middot;{' '}
+                {item.agencies.join(', ')}
+              </span>
+
+              <h2 style="font-family: var(--fc-font-headline); font-size: 21px; font-weight: 700; line-height: 1.16; margin: 4px 0 6px;">
+                <a href={item.url} class="fc-headline-link">{item.headline}</a>
+              </h2>
+
+              <p style="font-family: var(--fc-font-body); font-size: 14.5px; line-height: 1.44; color: var(--fc-ink-muted); margin: 0 0 8px;">
+                {item.deck}
+              </p>
+
+              <div class="fc-ledger-card-stats">
+                <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
+                <span>PENALTY: <strong>{item.financials.fine_display}</strong></span>
+                <span>
+                  RATIO:{' '}
+                  <strong style="color: var(--fc-art-crimson);">
+                    {item.financials.fine_ratio_pct !== null
+                      ? `${item.financials.fine_ratio_pct.toFixed(2)}%`
+                      : 'Pending'}
+                  </strong>
+                </span>
+                <span>CUSTODY: {item.financials.prison_display}</span>
+              </div>
+            </div>
+
+            <a href={item.url} class="fc-ledger-editorial-thumb" aria-label={item.headline}>
+              <FcArt
+                id={`${item.id}-ledger`}
+                spec={item.interactive_art_spec}
+                mode="thumb"
+                aspect="16/10"
+                showChrome={false}
+                showCaption={false}
+              />
+            </a>
+          </article>
+        );
+      })}
+    </section>
+
+    {/* VIEW 2: Dense Spreadsheet Ledger */}
+    <section id="fc-ledger-table-view" class="fc-ledger-table-wrap" hidden aria-label="Spreadsheet ledger">
+      <table class="fc-ledger-table">
+        <thead>
+          <tr>
+            <th>Case / Headline</th>
+            <th>Bureau &amp; Agencies</th>
+            <th>Category</th>
+            <th>Alleged Scale</th>
+            <th>Fine / Penalty</th>
+            <th>Fine / Scale</th>
+            <th>Custody</th>
+            <th>Wrist-Slap</th>
+          </tr>
+        </thead>
+        <tbody id="fc-ledger-tbody">
+          {articles.map((item) => {
+            const searchBlob = [
+              item.headline,
+              item.deck,
+              item.city,
+              item.edition,
+              item.category,
+              item.agencies.join(' '),
+              item.docket_number ?? '',
+              item.jurisdiction.venue,
+            ]
+              .join(' ')
+              .toLowerCase();
+
+            return (
+              <tr
+                data-ledger-row
+                data-slug={item.slug}
+                data-search={searchBlob}
+                data-edition={item.edition.toLowerCase()}
+                data-city={item.city.toLowerCase()}
+                data-category={item.category}
+                data-date={item.publish_date}
+                data-loot={item.financials.amount_usd ?? 0}
+                data-fine={item.financials.fine_usd ?? 0}
+                data-ratio={item.financials.fine_ratio_pct ?? -1}
+                data-prison={item.financials.prison_months ?? -1}
+                data-slap={item.slap_on_wrist_score ?? -1}
+              >
+                <td style="max-width: 310px;">
+                  <a
+                    href={item.url}
+                    class="fc-headline-link"
+                    style="font-family: var(--fc-font-headline); font-weight: 700; font-size: 14.5px; line-height: 1.22; display: block;"
+                  >
+                    {item.headline}
+                  </a>
+                  <span style="font-family: var(--fc-font-mono); font-size: 10.5px; color: var(--fc-ink-muted);">
+                    {item.docket_number ?? item.legal_stage} &middot; {item.publish_date}
+                  </span>
+                </td>
+                <td>
+                  <strong style="display: block;">{item.city}</strong>
+                  <span style="font-size: 11px; color: var(--fc-ink-muted);">
+                    {item.agencies.join(', ')}
+                  </span>
+                </td>
+                <td>{item.category}</td>
+                <td class="fc-ledger-num"><strong>{item.financials.amount_display}</strong></td>
+                <td class="fc-ledger-num">{item.financials.fine_display}</td>
+                <td class="fc-ledger-num" style="color: var(--fc-art-crimson); font-weight: 600;">
+                  {item.financials.fine_ratio_pct !== null
+                    ? `${item.financials.fine_ratio_pct.toFixed(2)}%`
+                    : '—'}
+                </td>
+                <td class="fc-ledger-num">{item.financials.prison_display}</td>
+                <td class="fc-ledger-num">
+                  {item.slap_on_wrist_score !== null ? (
+                    <span
+                      class:list={[
+                        'fc-score-badge',
+                        { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
+                      ]}
+                    >
+                      {item.slap_on_wrist_score}/100
+                    </span>
+                  ) : (
+                    <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  const searchInput = document.getElementById('fc-ledger-search') as HTMLInputElement | null;
+  const editionSel = document.getElementById('fc-ledger-edition') as HTMLSelectElement | null;
+  const categorySel = document.getElementById('fc-ledger-category') as HTMLSelectElement | null;
+  const magnitudeSel = document.getElementById('fc-ledger-magnitude') as HTMLSelectElement | null;
+  const slapSel = document.getElementById('fc-ledger-slap') as HTMLSelectElement | null;
+  const sortSel = document.getElementById('fc-ledger-sort') as HTMLSelectElement | null;
+
+  const listView = document.getElementById('fc-ledger-list-view');
+  const tableView = document.getElementById('fc-ledger-table-view');
+  const tbody = document.getElementById('fc-ledger-tbody');
+  const emptyEl = document.getElementById('fc-ledger-empty');
+  const resetBtn = document.getElementById('fc-ledger-reset-btn');
+
+  const btnEditorial = document.getElementById('fc-view-editorial');
+  const btnTable = document.getElementById('fc-view-table');
+
+  const countOut = document.getElementById('fc-ledger-total-count');
+  const lootOut = document.getElementById('fc-ledger-total-loot');
+  const finesOut = document.getElementById('fc-ledger-total-fines');
+  const ratioOut = document.getElementById('fc-ledger-avg-ratio');
+
+  const listItems = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-item]'));
+  const tableRows = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-row]'));
+
+  // Optional Pagefind full-text index enhancement when built in dist/pagefind
+  let pagefindApi: any = null;
+  let pagefindSlugs: Set<string> | null = null;
+
+  async function initPagefind() {
+    try {
+      const pfPath = '/pagefind/pagefind.js';
+      pagefindApi = await import(/* @vite-ignore */ pfPath);
+      if (pagefindApi?.init) await pagefindApi.init();
+    } catch {
+      pagefindApi = null;
+    }
+  }
+  initPagefind();
+
+  function formatUsdShort(value: number): string {
+    if (value >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
+    if (value >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
+    if (value >= 1e3) return `$${(value / 1e3).toFixed(0)}K`;
+    return `$${Math.round(value).toLocaleString('en-US')}`;
+  }
+
+  function matchesEdition(el: HTMLElement, key: string): boolean {
+    if (key === 'all') return true;
+    const ed = el.dataset.edition || '';
+    const city = el.dataset.city || '';
+    if (key === 'us') return ['us', 'new-york', 'chicago', 'los-angeles'].includes(ed);
+    if (key === 'europe') return ed === 'europe' || ed === 'london' || city.includes('frankfurt');
+    if (key === 'global') return ed === 'global' || city.includes('singapore') || city.includes('hong kong');
+    return ed === key || city.includes(key.replace('-', ' '));
+  }
+
+  function matchesFilters(el: HTMLElement): boolean {
+    const q = (searchInput?.value || '').trim().toLowerCase();
+    const ed = editionSel?.value || 'all';
+    const cat = categorySel?.value || 'all';
+    const minLoot = Number(magnitudeSel?.value || 0);
+    const slapMode = slapSel?.value || 'all';
+
+    if (q) {
+      const slug = el.dataset.slug || '';
+      const localMatch = (el.dataset.search || '').includes(q);
+      const pfMatch = pagefindSlugs ? pagefindSlugs.has(slug) : false;
+      if (!localMatch && !pfMatch) return false;
+    }
+
+    if (!matchesEdition(el, ed)) return false;
+    if (cat !== 'all' && el.dataset.category !== cat) return false;
+
+    const loot = Number(el.dataset.loot || 0);
+    if (minLoot > 0 && loot < minLoot) return false;
+
+    const slap = Number(el.dataset.slap ?? -1);
+    const prison = Number(el.dataset.prison ?? -1);
+    if (slapMode === '70' && slap < 70) return false;
+    if (slapMode === '85' && slap < 85) return false;
+    if (slapMode === 'zero-prison' && prison !== 0) return false;
+    if (slapMode === 'pending' && slap >= 0) return false;
+
+    return true;
+  }
+
+  function compareElements(a: HTMLElement, b: HTMLElement, mode: string): number {
+    if (mode === 'loot-desc') return Number(b.dataset.loot || 0) - Number(a.dataset.loot || 0);
+    if (mode === 'fine-desc') return Number(b.dataset.fine || 0) - Number(a.dataset.fine || 0);
+    if (mode === 'slap-desc') return Number(b.dataset.slap || -1) - Number(a.dataset.slap || -1);
+    if (mode === 'ratio-asc') {
+      const ra = Number(a.dataset.ratio ?? -1);
+      const rb = Number(b.dataset.ratio ?? -1);
+      const va = ra < 0 ? 999999 : ra;
+      const vb = rb < 0 ? 999999 : rb;
+      return va - vb;
+    }
+    return (b.dataset.date || '').localeCompare(a.dataset.date || '');
+  }
+
+  function applyAll() {
+    const sortMode = sortSel?.value || 'newest';
+
+    const sortedList = [...listItems].sort((a, b) => compareElements(a, b, sortMode));
+    const sortedRows = [...tableRows].sort((a, b) => compareElements(a, b, sortMode));
+
+    let shown = 0;
+    let totalLoot = 0;
+    let totalFines = 0;
+    let ratioSum = 0;
+    let ratioCount = 0;
+
+    sortedList.forEach((el) => {
+      const visible = matchesFilters(el);
+      el.hidden = !visible;
+      listView?.appendChild(el);
+      if (visible) {
+        shown++;
+        totalLoot += Number(el.dataset.loot || 0);
+        totalFines += Number(el.dataset.fine || 0);
+        const r = Number(el.dataset.ratio ?? -1);
+        if (r >= 0) {
+          ratioSum += r;
+          ratioCount++;
+        }
+      }
+    });
+
+    sortedRows.forEach((row) => {
+      row.hidden = !matchesFilters(row);
+      tbody?.appendChild(row);
+    });
+
+    if (emptyEl) emptyEl.hidden = shown > 0;
+    if (countOut) countOut.textContent = String(shown);
+    if (lootOut) lootOut.textContent = formatUsdShort(totalLoot);
+    if (finesOut) finesOut.textContent = formatUsdShort(totalFines);
+    if (ratioOut) {
+      const avg = ratioCount > 0 ? ratioSum / ratioCount : totalLoot > 0 ? (totalFines / totalLoot) * 100 : 0;
+      ratioOut.textContent = `${avg.toFixed(2)}%`;
+    }
+  }
+
+  let pfDebounce: ReturnType<typeof setTimeout> | null = null;
+  searchInput?.addEventListener('input', () => {
+    const q = searchInput.value.trim();
+    if (!q || !pagefindApi) {
+      pagefindSlugs = null;
+      applyAll();
+      return;
+    }
+    applyAll();
+    if (pfDebounce) clearTimeout(pfDebounce);
+    pfDebounce = setTimeout(async () => {
+      try {
+        const res = await pagefindApi.search(q);
+        const top = await Promise.all(res.results.slice(0, 30).map((r: any) => r.data()));
+        const slugs = new Set<string>();
+        top.forEach((d: any) => {
+          const m = String(d.url || '').match(/\/(?:article|opinion)\/([^/]+)/);
+          if (m) slugs.add(m[1]);
+        });
+        pagefindSlugs = slugs;
+        applyAll();
+      } catch {
+        pagefindSlugs = null;
+      }
+    }, 180);
+  });
+
+  [editionSel, categorySel, magnitudeSel, slapSel, sortSel].forEach((sel) => {
+    sel?.addEventListener('change', applyAll);
+  });
+
+  function setView(mode: 'editorial' | 'table') {
+    const isTable = mode === 'table';
+    if (listView) listView.hidden = isTable;
+    if (tableView) tableView.hidden = !isTable;
+    btnEditorial?.setAttribute('aria-pressed', String(!isTable));
+    btnTable?.setAttribute('aria-pressed', String(isTable));
+  }
+
+  btnEditorial?.addEventListener('click', () => setView('editorial'));
+  btnTable?.addEventListener('click', () => setView('table'));
+
+  resetBtn?.addEventListener('click', () => {
+    if (searchInput) searchInput.value = '';
+    if (editionSel) editionSel.value = 'all';
+    if (categorySel) categorySel.value = 'all';
+    if (magnitudeSel) magnitudeSel.value = '0';
+    if (slapSel) slapSel.value = 'all';
+    if (sortSel) sortSel.value = 'newest';
+    pagefindSlugs = null;
+    applyAll();
+  });
+
+  // Hydrate initial filters from URL query string
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('q') && searchInput) searchInput.value = params.get('q')!;
+  if (params.get('edition') && editionSel) editionSel.value = params.get('edition')!.toLowerCase();
+  if (params.get('category') && categorySel) {
+    const wanted = params.get('category')!;
+    const opt = Array.from(categorySel.options).find(
+      (o) => o.value.toLowerCase() === wanted.toLowerCase()
+    );
+    if (opt) categorySel.value = opt.value;
+  }
+  if (params.get('magnitude') && magnitudeSel) {
+    const mag = params.get('magnitude')!;
+    magnitudeSel.value = mag === '1b' ? '1000000000' : mag;
+  }
+  if (params.get('slap') && slapSel) {
+    const s = params.get('slap')!;
+    slapSel.value = s === '80' ? '70' : s;
+  }
+  if (params.get('view') === 'table') setView('table');
+
+  applyAll();
+</script>

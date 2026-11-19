@@ -1,0 +1,146 @@
+{
+  "id": "fc-2026-003",
+  "slug": "biglaw-merger-insider-trading-ring",
+  "publish_date": "2026-11-19T06:45:00-05:00",
+  "edition_date": "2026-11-19",
+  "city": "Boston",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the District of Massachusetts & SEC"
+  },
+  "category": "Wall Street",
+  "agencies": [
+    "DOJ",
+    "USAO-MA",
+    "SEC"
+  ],
+  "docket_number": "D. Mass. Unsealed May 2026",
+  "legal_stage": "indicted",
+  "template": "news",
+  "eyebrow": "WALL STREET & LAW",
+  "headline": "Thirty Charged in Decade-Long Scheme to Monetize Confidential BigLaw Merger Files",
+  "deck": "Prosecutors in Boston and the S.E.C. allege Nicolo Nourafchan, Robert Yadgarov and 28 others traded ahead of roughly 30 corporate acquisitions exceeding $140 billion in deal value.",
+  "byline": "By The Financial Crimes Legal Desk",
+  "dateline": "BOSTON",
+  "read_time_min": 5,
+  "comment_count": 412,
+  "layout_slot": "secondary-1",
+  "financials": {
+    "amount_usd": 50000000,
+    "amount_display": "$50M+ Est. Gains ($140B Deals)",
+    "fine_usd": null,
+    "fine_display": "Pending Trial",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "19 Arrested; 1 Guilty Plea",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "30 defendants charged across criminal and SEC dockets; 19 arrested, 2 abroad, 1 guilty plea entered.",
+    "street_equivalent": "Snatching $1,800 worth of electronics from a storefront display",
+    "street_sentence": "Felony grand larceny arraignment within 24 hours; no multi-year trading window"
+  },
+  "sources": [
+    {
+      "title": "U.S. Attorney for the District of Massachusetts: Thirty Charged in International M&A Insider Trading Ring",
+      "agency": "U.S. Department of Justice (D. Mass.)",
+      "url": "https://www.justice.gov/usao-ma/pr",
+      "date": "2026-05-14"
+    },
+    {
+      "title": "SEC Enforcement Action Targeting Decade-Long Law Firm Merger Tipping Network",
+      "agency": "U.S. Securities and Exchange Commission",
+      "url": "https://www.sec.gov/newsroom/press-releases",
+      "date": "2026-05-14"
+    }
+  ],
+  "interactive_art_spec": {
+    "archetype": "shell-network",
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "Interactive diagram of the alleged tipping chain from confidential law-firm deal rooms to 30 traders across roughly 30 acquisitions.",
+    "credit": "The Financial Crimes Graphics Desk",
+    "data": {
+      "title": "Confidential Merger Leak Chain",
+      "subtitle": "Click or drag nodes to trace alleged non-public deal tips to downstream traders",
+      "nodes": [
+        {
+          "id": "lawfirms",
+          "label": "BigLaw Deal Rooms",
+          "role": "Confidential Files",
+          "amount": "$140B+ Deals",
+          "jurisdiction": "New York / Global",
+          "kind": "source",
+          "note": "Merger drafts covering roughly 30 corporate acquisitions including Anadarko, Express Scripts, and iRobot."
+        },
+        {
+          "id": "tippers",
+          "label": "Inside Tippers",
+          "role": "Source Conduit",
+          "amount": "~30 Transactions",
+          "jurisdiction": "U.S. / Abroad",
+          "kind": "person",
+          "note": "Prosecutors allege privileged deal timelines leaked ahead of public announcements."
+        },
+        {
+          "id": "brokers",
+          "label": "Nourafchan & Yadgarov",
+          "role": "Alleged Hubs",
+          "amount": "Multi-Year Ring",
+          "jurisdiction": "D. Mass. / NY",
+          "kind": "intermediary",
+          "note": "Named among 30 defendants unsealed in May 2026; presumption of innocence applies to pending charges."
+        },
+        {
+          "id": "accounts",
+          "label": "30 Trading Accounts",
+          "role": "Options & Equity",
+          "amount": "Tens of Millions",
+          "jurisdiction": "Cross-Border",
+          "kind": "shell",
+          "note": "19 defendants arrested, 2 fugitives abroad, and 1 guilty plea recorded as of filing."
+        },
+        {
+          "id": "regulators",
+          "label": "DOJ & SEC Enforcement",
+          "role": "Parallel Actions",
+          "amount": "May 2026 Unseal",
+          "jurisdiction": "Boston / D.C.",
+          "kind": "regulator",
+          "note": "Coordinated criminal indictments in D. Mass. alongside parallel SEC civil complaints."
+        }
+      ],
+      "edges": [
+        {
+          "from": "lawfirms",
+          "to": "tippers",
+          "amount": "~30 Deals",
+          "label": "Confidential M&A Dates"
+        },
+        {
+          "from": "tippers",
+          "to": "brokers",
+          "amount": "Pre-Announcement",
+          "label": "Alleged Tips",
+          "dashed": true
+        },
+        {
+          "from": "brokers",
+          "to": "accounts",
+          "amount": "Tens of Millions",
+          "label": "Coordinated Trades"
+        },
+        {
+          "from": "regulators",
+          "to": "brokers",
+          "amount": "19 Arrested",
+          "label": "May 2026 Takedown",
+          "dashed": true
+        }
+      ]
+    }
+  },
+  "status": "published"
+}

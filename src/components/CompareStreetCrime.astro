@@ -1,0 +1,149 @@
+---
+import type { ArticleRecord } from '../schemas/article';
+
+interface Props {
+  article: ArticleRecord;
+}
+
+const { article } = Astro.props;
+const { street_crime_compare: compare, financials, slap_on_wrist_score: score } = article;
+const uid = `fc-cmp-${article.slug.replace(/[^a-z0-9]/gi, '')}`;
+
+// Visual bar percentages (capped cleanly for clear hairline contrast)
+const execPrisonMonths = financials.prison_months ?? 0;
+const execBarPct = financials.prison_months === null ? 12 : Math.min(100, Math.max(4, Math.round((execPrisonMonths / 180) * 100)));
+const streetBarPct = 86; // Typical felony retail theft / embezzlement custody & collateral consequence index
+---
+
+<section class="fc-compare-card" aria-labelledby={`${uid}-heading`} data-compare-widget>
+  <div class="fc-compare-head">
+    <div>
+      <p class="fc-eyebrow fc-eyebrow--crimson" style="margin: 0 0 3px;">
+        SENTENCING BENCHMARK · PROPORTIONALITY CHECK
+      </p>
+      <h2
+        id={`${uid}-heading`}
+        style="font-family: var(--fc-font-headline); font-size: 19px; font-weight: 700; margin: 0;"
+      >
+        Compare to Street Crime
+      </h2>
+    </div>
+
+    <div class="fc-compare-tabs" role="tablist" aria-label="Outcome comparison view">
+      <button
+        type="button"
+        role="tab"
+        id={`${uid}-tab-exec`}
+        aria-selected="true"
+        aria-controls={`${uid}-panel-exec`}
+        class="fc-compare-tab"
+        data-compare-tab="exec"
+      >
+        Executive Outcome
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id={`${uid}-tab-street`}
+        aria-selected="false"
+        aria-controls={`${uid}-panel-street`}
+        class="fc-compare-tab"
+        data-compare-tab="street"
+      >
+        If You Stole $1,800 From a Register
+      </button>
+    </div>
+  </div>
+
+  <div
+    id={`${uid}-panel-exec`}
+    role="tabpanel"
+    aria-labelledby={`${uid}-tab-exec`}
+    class="fc-compare-panel"
+    data-compare-panel="exec"
+  >
+    <p style="margin: 0 0 10px; font-weight: 600; color: var(--fc-ink-primary);">
+      {compare.exec_summary}
+    </p>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px 18px; font-family: var(--fc-font-mono); font-size: 11.5px; color: var(--fc-ink-muted);">
+      <span>ALLEGED SCALE: <strong style="color: var(--fc-ink-primary);">{financials.amount_display}</strong></span>
+      <span>PENALTY: <strong style="color: var(--fc-ink-primary);">{financials.fine_display}</strong></span>
+      <span>CUSTODY: <strong style="color: var(--fc-ink-primary);">{financials.prison_display}</strong></span>
+      <span>
+        WRIST-SLAP INDEX:{' '}
+        <strong style="color: var(--fc-art-crimson);">
+          {score !== null ? `${score}/100` : 'PENDING'}
+        </strong>
+      </span>
+    </div>
+  </div>
+
+  <div
+    id={`${uid}-panel-street`}
+    role="tabpanel"
+    aria-labelledby={`${uid}-tab-street`}
+    class="fc-compare-panel"
+    data-compare-panel="street"
+    hidden
+  >
+    <p style="margin: 0 0 8px; font-weight: 600; color: var(--fc-ink-primary);">
+      {compare.street_equivalent}
+    </p>
+    <p style="margin: 0; color: var(--fc-ink-secondary);">
+      <strong>Typical Statutory Exposure:</strong> {compare.street_sentence}
+    </p>
+  </div>
+
+  <div class="fc-compare-meter" aria-label="Visual custody exposure comparison">
+    <div class="fc-compare-bar-row">
+      <span>THIS CASE ({financials.amount_display})</span>
+      <div class="fc-compare-bar-track">
+        <div
+          class="fc-compare-bar-fill"
+          data-bar-exec
+          style={`width: ${execBarPct}%;`}
+        ></div>
+      </div>
+      <span style="text-align: right;">{financials.prison_display}</span>
+    </div>
+
+    <div class="fc-compare-bar-row" style="margin-bottom: 0;">
+      <span>$1,800 REGISTER THEFT</span>
+      <div class="fc-compare-bar-track">
+        <div
+          class="fc-compare-bar-fill fc-compare-bar-fill--crimson"
+          data-bar-street
+          style={`width: ${streetBarPct}%;`}
+        ></div>
+      </div>
+      <span style="text-align: right;">Felony Custody</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-compare-widget]').forEach((widget) => {
+    const tabs = widget.querySelectorAll<HTMLButtonElement>('[data-compare-tab]');
+    const panels = widget.querySelectorAll<HTMLElement>('[data-compare-panel]');
+    const barExec = widget.querySelector<HTMLElement>('[data-bar-exec]');
+    const barStreet = widget.querySelector<HTMLElement>('[data-bar-street]');
+
+    function activate(key: string) {
+      tabs.forEach((tab) => {
+        const selected = tab.dataset.compareTab === key;
+        tab.setAttribute('aria-selected', String(selected));
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.comparePanel !== key;
+      });
+      if (barExec && barStreet) {
+        barExec.style.opacity = key === 'exec' ? '1' : '0.45';
+        barStreet.style.opacity = key === 'street' ? '1' : '0.45';
+      }
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => activate(tab.dataset.compareTab || 'exec'));
+    });
+  });
+</script>

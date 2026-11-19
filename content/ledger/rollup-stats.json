@@ -1,0 +1,86 @@
+{
+  "as_of": "2026-11-19T07:00:00-05:00",
+  "edition_date": "2026-11-19",
+  "total_cases": 22,
+  "total_loot_usd": 58981545000,
+  "total_loot_display": "$58.98B",
+  "total_fines_usd": 7523330000,
+  "total_fines_display": "$7.52B",
+  "avg_fine_ratio_pct": 12.76,
+  "avg_slap_on_wrist_score": 53,
+  "zero_prison_cases": 6,
+  "regions": {
+    "us": {
+      "label": "U.S.",
+      "case_count": 12,
+      "total_loot_usd": 46448180000,
+      "total_loot_display": "$46.45B",
+      "total_fines_usd": 6393280000,
+      "total_fines_display": "$6.39B",
+      "avg_fine_ratio_pct": 70.86
+    },
+    "new-york": {
+      "label": "NEW YORK",
+      "case_count": 7,
+      "total_loot_usd": 41079800000,
+      "total_loot_display": "$41.08B",
+      "total_fines_usd": 4802500000,
+      "total_fines_display": "$4.80B",
+      "avg_fine_ratio_pct": 60.95
+    },
+    "chicago": {
+      "label": "CHICAGO",
+      "case_count": 1,
+      "total_loot_usd": 150000000,
+      "total_loot_display": "$150.0M",
+      "total_fines_usd": 202500000,
+      "total_fines_display": "$202.5M",
+      "avg_fine_ratio_pct": 135
+    },
+    "los-angeles": {
+      "label": "L.A.",
+      "case_count": 1,
+      "total_loot_usd": 48000000,
+      "total_loot_display": "$48.0M",
+      "total_fines_usd": 49900000,
+      "total_fines_display": "$49.9M",
+      "avg_fine_ratio_pct": 103.96
+    },
+    "london": {
+      "label": "LONDON",
+      "case_count": 2,
+      "total_loot_usd": 51250000,
+      "total_loot_display": "$51.3M",
+      "total_fines_usd": 1250000,
+      "total_fines_display": "$1.3M",
+      "avg_fine_ratio_pct": 50
+    },
+    "india": {
+      "label": "INDIA",
+      "case_count": 4,
+      "total_loot_usd": 897115000,
+      "total_loot_display": "$897.1M",
+      "total_fines_usd": 555300000,
+      "total_fines_display": "$555.3M",
+      "avg_fine_ratio_pct": 50.5
+    },
+    "europe": {
+      "label": "EUROPE",
+      "case_count": 2,
+      "total_loot_usd": 935000000,
+      "total_loot_display": "$935.0M",
+      "total_fines_usd": 385000000,
+      "total_fines_display": "$385.0M",
+      "avg_fine_ratio_pct": 10
+    },
+    "global": {
+      "label": "GLOBAL",
+      "case_count": 22,
+      "total_loot_usd": 58981545000,
+      "total_loot_display": "$58.98B",
+      "total_fines_usd": 7523330000,
+      "total_fines_display": "$7.52B",
+      "avg_fine_ratio_pct": 50.71
+    }
+  }
+}

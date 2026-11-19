@@ -1,0 +1,389 @@
+---
+import type { ArticleRecord } from '../schemas/article';
+
+interface Props {
+  article: ArticleRecord;
+}
+
+const { article } = Astro.props;
+const { financials } = article;
+
+const fineRatioText =
+  financials.fine_ratio_pct !== null ? `${financials.fine_ratio_pct.toFixed(2)}%` : 'PENDING';
+const guiltText =
+  financials.admitted_guilt === true
+    ? 'YES (PLEA / CONVICTION)'
+    : financials.admitted_guilt === false
+      ? 'NO ("NEITHER ADMIT NOR DENY")'
+      : 'PENDING LITIGATION';
+const slapText =
+  article.slap_on_wrist_score !== null ? `${article.slap_on_wrist_score} / 100` : 'PENDING';
+
+// Deterministic faux-barcode pattern from article.id
+function makeBarcodeBars(seedStr: string): number[] {
+  let h = 2166136261;
+  for (let i = 0; i < seedStr.length; i++) {
+    h ^= seedStr.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const bars: number[] = [];
+  for (let i = 0; i < 42; i++) {
+    h ^= h << 13;
+    h ^= h >>> 17;
+    h ^= h << 5;
+    bars.push((Math.abs(h) % 3) + 1);
+  }
+  return bars;
+}
+
+const bars = makeBarcodeBars(article.id + article.slug);
+let cursorX = 8;
+const barRects = bars.map((w, idx) => {
+  const x = cursorX;
+  cursorX += w + (idx % 2 === 0 ? 2 : 3);
+  return { x, w };
+});
+const svgWidth = cursorX + 8;
+
+const receiptPayload = JSON.stringify({
+  id: article.id,
+  slug: article.slug,
+  headline: article.headline,
+  city: article.city,
+  venue: article.jurisdiction.venue,
+  agencies: article.agencies.join(' · '),
+  docket: article.docket_number ?? 'PUBLIC REGULATORY ORDER',
+  legalStage: article.legal_stage.toUpperCase(),
+  date: article.publish_date,
+  amount: financials.amount_display,
+  fine: financials.fine_display,
+  ratio: fineRatioText,
+  prison: financials.prison_display,
+  guilt: guiltText,
+  slap: slapText,
+  bars,
+});
+---
+
+<dialog
+  id="fc-receipt-dialog"
+  class="fc-dialog fc-dialog--receipt"
+  aria-labelledby="fc-receipt-heading"
+>
+  <div class="fc-receipt-shell" id="fc-receipt-card" data-receipt-payload={receiptPayload}>
+    <button
+      type="button"
+      class="fc-dialog-close"
+      data-close-dialog
+      aria-label="Close Crime Receipt"
+      style="top: 8px; right: 8px; width: 26px; height: 26px; font-size: 14px;"
+    >
+      &times;
+    </button>
+
+    <div style="text-align: center; padding-right: 18px;">
+      <div style="font-family: var(--fc-font-masthead); font-size: 24px; line-height: 1.1; margin-bottom: 3px;">
+        The Financial Crimes
+      </div>
+      <div style="font-size: 10px; letter-spacing: 0.1em; color: var(--fc-ink-muted);">
+        ITEMIZED PUBLIC DOCKET RECEIPT
+      </div>
+      <div style="font-size: 10px; color: var(--fc-ink-muted);">
+        {article.publish_date} · {article.city.toUpperCase()}
+      </div>
+    </div>
+
+    <hr class="fc-receipt-divider" />
+
+    <h2
+      id="fc-receipt-heading"
+      style="font-family: var(--fc-font-mono); font-size: 12px; font-weight: 700; line-height: 1.38; margin: 0 0 8px; text-transform: uppercase;"
+    >
+      {article.headline}
+    </h2>
+
+    <div class="fc-receipt-row">
+      <span>DOCKET / REF</span>
+      <span style="text-align: right; font-weight: 600;">{article.docket_number ?? 'REGULATORY ORDER'}</span>
+    </div>
+    <div class="fc-receipt-row">
+      <span>AGENCIES</span>
+      <span style="text-align: right;">{article.agencies.join(', ')}</span>
+    </div>
+    <div class="fc-receipt-row">
+      <span>STATUS</span>
+      <span style="text-align: right; text-transform: uppercase;">{article.legal_stage}</span>
+    </div>
+
+    <hr class="fc-receipt-divider" />
+
+    <div class="fc-receipt-row">
+      <span>ALLEGED LOOT / SCALE</span>
+      <span style="font-weight: 700;">{financials.amount_display}</span>
+    </div>
+    <div class="fc-receipt-row">
+      <span>FINE / PENALTY</span>
+      <span style="font-weight: 700;">{financials.fine_display}</span>
+    </div>
+    <div class="fc-receipt-row">
+      <span>FINE-TO-LOOT RATIO</span>
+      <span style="font-weight: 700; color: var(--fc-art-crimson);">{fineRatioText}</span>
+    </div>
+    <div class="fc-receipt-row">
+      <span>PRISON SENTENCE</span>
+      <span style="font-weight: 700;">{financials.prison_display}</span>
+    </div>
+    <div class="fc-receipt-row">
+      <span>ADMITTED GUILT</span>
+      <span style="text-align: right;">{guiltText}</span>
+    </div>
+
+    <hr class="fc-receipt-divider" />
+
+    <div class="fc-receipt-row" style="font-size: 13px; font-weight: 700;">
+      <span>WRIST-SLAP INDEX</span>
+      <span style="color: var(--fc-art-crimson);">{slapText}</span>
+    </div>
+
+    <div style="margin: 12px 0 6px; display: flex; flex-direction: column; align-items: center;">
+      <svg
+        width={svgWidth}
+        height="34"
+        viewBox={`0 0 ${svgWidth} 34`}
+        role="img"
+        aria-label={`Docket barcode ${article.id}`}
+        style="max-width: 100%; height: 34px;"
+      >
+        {barRects.map((b) => (
+          <rect x={b.x} y="0" width={b.w} height="34" fill="#121212" />
+        ))}
+      </svg>
+      <span style="font-size: 9.5px; letter-spacing: 0.16em; margin-top: 3px; color: var(--fc-ink-muted);">
+        {article.id.toUpperCase()} · FINANCIALCRIMES.NEWS
+      </span>
+    </div>
+
+    <p style="text-align: center; font-size: 10px; color: var(--fc-ink-muted); margin: 6px 0 0;">
+      THANK YOU FOR YOUR COMPLIANCE. PLEASE RETAIN FOR SHAREHOLDER DISCLOSURES.
+    </p>
+
+    <div class="fc-receipt-actions">
+      <button type="button" class="fc-btn-slate" id="fc-receipt-download-png" style="flex: 1;">
+        Download PNG
+      </button>
+      <button type="button" class="fc-btn-outline" id="fc-receipt-copy-link">
+        Copy Link
+      </button>
+      <button type="button" class="fc-btn-outline" data-close-dialog>
+        Close
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const receiptDialog = document.getElementById('fc-receipt-dialog') as HTMLDialogElement | null;
+  const receiptCard = document.getElementById('fc-receipt-card');
+  const downloadBtn = document.getElementById('fc-receipt-download-png');
+  const copyBtn = document.getElementById('fc-receipt-copy-link');
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+    if (target.closest('[data-open-receipt]') && receiptDialog) {
+      event.preventDefault();
+      if (!receiptDialog.open) receiptDialog.showModal();
+    }
+  });
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = orig;
+        }, 1600);
+      } catch {
+        copyBtn.textContent = 'Link Ready';
+      }
+    });
+  }
+
+  function wrapCanvasText(
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    maxWidth: number
+  ): string[] {
+    const words = text.split(/\s+/);
+    const lines: string[] = [];
+    let current = '';
+    for (const word of words) {
+      const candidate = current ? `${current} ${word}` : word;
+      if (ctx.measureText(candidate).width > maxWidth && current) {
+        lines.push(current);
+        current = word;
+      } else {
+        current = candidate;
+      }
+    }
+    if (current) lines.push(current);
+    return lines;
+  }
+
+  if (downloadBtn && receiptCard) {
+    downloadBtn.addEventListener('click', () => {
+      const data = JSON.parse(receiptCard.getAttribute('data-receipt-payload') || '{}');
+      const W = 760;
+      const pad = 46;
+      const innerW = W - pad * 2;
+
+      // Measure wrapped headline lines first
+      const measureCanvas = document.createElement('canvas');
+      const mctx = measureCanvas.getContext('2d');
+      if (!mctx) return;
+      mctx.font = '700 22px "JetBrains Mono", ui-monospace, monospace';
+      const headLines = wrapCanvasText(mctx, String(data.headline || '').toUpperCase(), innerW);
+
+      const H = 760 + headLines.length * 30;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Outer white editorial mat
+      ctx.fillStyle = '#ece9e1';
+      ctx.fillRect(0, 0, W, H);
+
+      // Serrated thermal paper body
+      const rx = 24;
+      const ry = 26;
+      const rw = W - 48;
+      const rh = H - 52;
+      ctx.fillStyle = '#fbfaf6';
+      ctx.beginPath();
+      ctx.moveTo(rx, ry);
+      const teeth = 28;
+      const toothW = rw / teeth;
+      for (let i = 0; i < teeth; i++) {
+        ctx.lineTo(rx + i * toothW + toothW / 2, ry - 10);
+        ctx.lineTo(rx + (i + 1) * toothW, ry);
+      }
+      ctx.lineTo(rx + rw, ry + rh);
+      for (let i = teeth; i > 0; i--) {
+        ctx.lineTo(rx + i * toothW - toothW / 2, ry + rh + 10);
+        ctx.lineTo(rx + (i - 1) * toothW, ry + rh);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#121212';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      let y = ry + 52;
+      ctx.fillStyle = '#121212';
+      ctx.textAlign = 'center';
+      ctx.font = '400 42px "UnifrakturMaguntia", Georgia, serif';
+      ctx.fillText('The Financial Crimes', W / 2, y);
+
+      y += 28;
+      ctx.font = '600 15px "JetBrains Mono", ui-monospace, monospace';
+      ctx.fillStyle = '#5a5a5a';
+      ctx.fillText('ITEMIZED PUBLIC DOCKET RECEIPT', W / 2, y);
+
+      y += 22;
+      ctx.fillText(`${data.date || ''} · ${String(data.city || '').toUpperCase()}`, W / 2, y);
+
+      const drawDash = (yy: number) => {
+        ctx.save();
+        ctx.strokeStyle = '#666666';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 6]);
+        ctx.beginPath();
+        ctx.moveTo(pad, yy);
+        ctx.lineTo(W - pad, yy);
+        ctx.stroke();
+        ctx.restore();
+      };
+
+      y += 22;
+      drawDash(y);
+      y += 34;
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#121212';
+      ctx.font = '700 22px "JetBrains Mono", ui-monospace, monospace';
+      for (const line of headLines) {
+        ctx.fillText(line, pad, y);
+        y += 30;
+      }
+
+      y += 12;
+      const drawRow = (label: string, val: string, accent = false, bold = false) => {
+        ctx.font = `${bold ? '700' : '400'} 17px "JetBrains Mono", ui-monospace, monospace`;
+        ctx.fillStyle = '#444444';
+        ctx.textAlign = 'left';
+        ctx.fillText(label, pad, y);
+        ctx.font = '700 17px "JetBrains Mono", ui-monospace, monospace';
+        ctx.fillStyle = accent ? '#a62626' : '#121212';
+        ctx.textAlign = 'right';
+        ctx.fillText(val, W - pad, y);
+        y += 32;
+      };
+
+      drawRow('DOCKET / REF', String(data.docket || 'REGULATORY ORDER').slice(0, 28));
+      drawRow('AGENCIES', String(data.agencies || '').slice(0, 32));
+      drawRow('STATUS', String(data.legalStage || ''));
+
+      y += 4;
+      drawDash(y);
+      y += 34;
+
+      drawRow('ALLEGED LOOT / SCALE', String(data.amount || ''));
+      drawRow('FINE / PENALTY', String(data.fine || ''));
+      drawRow('FINE-TO-LOOT RATIO', String(data.ratio || ''), true);
+      drawRow('PRISON SENTENCE', String(data.prison || ''));
+      drawRow('ADMITTED GUILT', String(data.guilt || '').slice(0, 28));
+
+      y += 4;
+      drawDash(y);
+      y += 38;
+
+      ctx.font = '700 22px "JetBrains Mono", ui-monospace, monospace';
+      ctx.fillStyle = '#121212';
+      ctx.textAlign = 'left';
+      ctx.fillText('WRIST-SLAP INDEX', pad, y);
+      ctx.fillStyle = '#a62626';
+      ctx.textAlign = 'right';
+      ctx.fillText(String(data.slap || 'PENDING'), W - pad, y);
+
+      // Draw crisp barcode
+      y += 34;
+      const bars: number[] = Array.isArray(data.bars) ? data.bars : [2, 1, 3, 2, 1, 2];
+      const totalBarUnits = bars.reduce((acc, w, i) => acc + w * 2 + (i % 2 === 0 ? 4 : 6), 0);
+      let bx = Math.max(pad, (W - totalBarUnits) / 2);
+      ctx.fillStyle = '#121212';
+      bars.forEach((w, i) => {
+        ctx.fillRect(bx, y, w * 2, 54);
+        bx += w * 2 + (i % 2 === 0 ? 4 : 6);
+      });
+
+      y += 78;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#5a5a5a';
+      ctx.font = '600 13px "JetBrains Mono", ui-monospace, monospace';
+      ctx.fillText(`${String(data.id || '').toUpperCase()} · FINANCIALCRIMES.NEWS`, W / 2, y);
+
+      y += 24;
+      ctx.font = '400 12px "JetBrains Mono", ui-monospace, monospace';
+      ctx.fillText('ALL THE CRIMES FIT TO FINE · RETAIN FOR SHAREHOLDER DISCLOSURES', W / 2, y);
+
+      const link = document.createElement('a');
+      link.download = `crime-receipt-${data.slug || 'docket'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+</script>
