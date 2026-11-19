@@ -23,6 +23,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { judgeAll } from './judge-wrist-slap.mjs';
 
 const DEFAULT_MODEL = process.env.GEMINI_MODEL || 'gemini-4-hydrogen';
 const PAINTING_PROMPT_PATH = path.join(process.cwd(), 'pipeline', 'prompts', 'js-painting-prompt.md');
@@ -205,7 +206,7 @@ async function runSweepBlueprint({ mode, date }) {
     console.log('\n[blueprint] Running in safe non-mutating blueprint mode.');
     console.log('[blueprint] Phase 2 activation steps:');
     console.log('  1. Add GEMINI_API_KEY (or ANTIGRAVITY_AGENT_ENDPOINT + TOKEN) to GitHub Secrets.');
-    console.log('  2. Wire feed fetchers + Wikimedia Commons portrait normalizer (max 420px RGB JPEG)');
+    console.log('  2. Wire feed fetchers + Wikimedia Commons portrait normalizer (max 320px RGB JPEG)');
     console.log('     in pipeline/fetchers/ writing to public/paint-refs/<slug>.jpg.');
     console.log('  3. 6:00 AM ET sweep invokes Gemini 4 Hydrogen with pipeline/prompts/js-painting-prompt.md');
     console.log('     to draft lean body.html + meta.json + content/paint-refs.json (libel-checked)');
@@ -218,6 +219,11 @@ async function runSweepBlueprint({ mode, date }) {
   // Phase 2 hook: verify editions directory exists before remote agent invocation
   const editionsDir = path.join(process.cwd(), 'content', 'editions');
   await fs.mkdir(editionsDir, { recursive: true });
+
+  // Wrist-slap scores are always Gemini's call (PRD §2.3 rubric), never hand-entered
+  if (mode === 'sweep' && hasGeminiKey) {
+    await judgeAll({ apiKey: process.env.GEMINI_API_KEY, write: true, model: DEFAULT_MODEL });
+  }
 
   console.log(`\n[${mode}] Ready to dispatch ${DEFAULT_MODEL} sweep for edition ${date}.`);
   console.log(`[${mode}] Loaded impasto master prompt (${path.relative(process.cwd(), PAINTING_PROMPT_PATH)}).`);

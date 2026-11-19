@@ -2012,7 +2012,8 @@ export function createPortraitScene(
       stamps.length > 0 ||
       goldPatches.length > 0 ||
       foilFlecks.length > 0 ||
-      redactions.length > 0 ||
+      // Bars persist until scratched off; only a freshly dropped one needs full-rate brushwork
+      redactions.some((bar) => lastClock - bar.t0 < 2.5) ||
       waves.length > 0,
     sample,
     hotspots(t: number): Hotspot[] {

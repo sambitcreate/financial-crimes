@@ -589,7 +589,7 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
 
 ### Automated & Visual QA Checklist (Run Before Every Edition Publishes)
 
-- [ ] **1. Reference Image Integrity:** Every slug in `content/articles/YYYY/MM/` has a matching key in `content/paint-refs.json` and an existing RGB JPEG (`components 3`, `>15KB`, max `420px`) in `public/paint-refs/<slug>.jpg`.
+- [ ] **1. Reference Image Integrity:** Every slug in `content/articles/YYYY/MM/` has a matching key in `content/paint-refs.json` and an existing RGB JPEG (`components 3`, `>5KB`, max `320px`) in `public/paint-refs/<slug>.jpg`.
 - [ ] **2. Visual Spot Inspection:** Hero & newly added reference JPEGs are verified clean (no logos, SVG errors, watermarks, B&W negatives, or clipped foreheads).
 - [ ] **3. License Audit:** Every entry carries a verified `sourceUrl` and permissive/public-domain `sourceLicense` (`Public Domain`, `CC0`, `CC BY`, `CC BY-SA`, `OGL`, `GODL-India`).
 - [ ] **4. Zero-`<img>` DOM Audit:** `document.querySelectorAll('fc-painting img').length === 0` across homepage, article, and opinion pages.

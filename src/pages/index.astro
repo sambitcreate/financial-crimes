@@ -81,7 +81,8 @@ const ledgerGridArticles = remaining.filter(
     !globalCompanions.some((c) => c.slug === a.slug)
 );
 
-const bottomLedger = ledgerGridArticles.length >= 4 ? ledgerGridArticles : remaining;
+// Only stories not already on the page; the section hides itself when everything is placed above
+const bottomLedger = ledgerGridArticles;
 
 const displayDate = edition?.display_date ?? 'Thursday, Nov. 19, 2026';
 const editionDate = edition?.edition_date ?? '2026-11-19';
@@ -143,55 +144,57 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
         />
 
         {/* Compact Ledger Grid */}
-        <section class="fc-ledger-strip-section" aria-label="The Ledger">
-          <div class="fc-ledger-strip-head">
-            <h2 style="font-family: var(--fc-font-headline); font-size: 21px; font-weight: 700; margin: 0;">
-              The Ledger
-            </h2>
-            <a href="/ledger" class="fc-see-more" style="font-size: 10.5px;">
-              All {allArticles.length} cases &rsaquo;
-            </a>
-          </div>
+        {bottomLedger.length > 0 && (
+          <section class="fc-ledger-strip-section" aria-label="The Ledger">
+            <div class="fc-ledger-strip-head">
+              <h2 style="font-family: var(--fc-font-headline); font-size: 21px; font-weight: 700; margin: 0;">
+                The Ledger
+              </h2>
+              <a href="/ledger" class="fc-see-more" style="font-size: 10.5px;">
+                All {allArticles.length} cases &rsaquo;
+              </a>
+            </div>
 
-          <div class="fc-ledger-strip-grid">
-            {bottomLedger.map((item) => (
-              <article
-                class="fc-ledger-card"
-                data-story-card
-                data-edition={item.edition}
-                data-city={item.city.toLowerCase()}
-              >
-                <div class="fc-ledger-card-top">
-                  <span class="fc-eyebrow">
-                    {item.city} &middot; {item.agencies[0]}
-                  </span>
-                  {item.slap_on_wrist_score !== null ? (
-                    <span
-                      class:list={[
-                        'fc-score-badge',
-                        { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
-                      ]}
-                    >
-                      SLAP {item.slap_on_wrist_score}
+            <div class="fc-ledger-strip-grid">
+              {bottomLedger.map((item) => (
+                <article
+                  class="fc-ledger-card"
+                  data-story-card
+                  data-edition={item.edition}
+                  data-city={item.city.toLowerCase()}
+                >
+                  <div class="fc-ledger-card-top">
+                    <span class="fc-eyebrow">
+                      {item.city} &middot; {item.agencies[0]}
                     </span>
-                  ) : (
-                    <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
-                  )}
-                </div>
+                    {item.slap_on_wrist_score !== null ? (
+                      <span
+                        class:list={[
+                          'fc-score-badge',
+                          { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
+                        ]}
+                      >
+                        SLAP {item.slap_on_wrist_score}
+                      </span>
+                    ) : (
+                      <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
+                    )}
+                  </div>
 
-                <h3 class="fc-ledger-card-title">
-                  <a href={item.url} class="fc-headline-link">{item.headline}</a>
-                </h3>
+                  <h3 class="fc-ledger-card-title">
+                    <a href={item.url} class="fc-headline-link">{item.headline}</a>
+                  </h3>
 
-                <div class="fc-ledger-card-stats">
-                  <span><strong>{item.financials.amount_display}</strong></span>
-                  <span>FINE <strong>{item.financials.fine_display}</strong></span>
-                  <span>{item.financials.prison_display}</span>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+                  <div class="fc-ledger-card-stats">
+                    <span><strong>{item.financials.amount_display}</strong></span>
+                    <span>FINE <strong>{item.financials.fine_display}</strong></span>
+                    <span>{item.financials.prison_display}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <RightRail

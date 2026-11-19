@@ -23,6 +23,10 @@ export interface PainterOptions {
 export const HOTSPOT_SHARE = 0.62;
 /** Under reduced motion, keep repainting this many seconds after a click/poke. */
 export const INTERACTION_GRACE = 4;
+/** Once built and untouched for this many seconds, a painting drops to idle maintenance. */
+export const IDLE_AFTER = 2;
+/** Idle paintings lay one maintenance batch per this many seconds instead of every frame (battery). */
+export const IDLE_INTERVAL = 1;
 /** Under reduced motion the underpainting lands in a few frames; cap each frame's main-thread slice. */
 const REDUCED_MOTION_BUDGET_MS = 10;
 
@@ -83,6 +87,9 @@ export class Painter {
   reducedMotion: boolean;
 
   private washed = false;
+  /** Loop time of the last pointer press/move over the painting. */
+  private lastActive = -Infinity;
+  private lastIdleBatch = -Infinity;
   private liveDirty = false;
   private revision = 0;
   private readonly fineFraction: number;
@@ -148,6 +155,7 @@ export class Painter {
 
   pointer(kind: PointerKind, u: number, v: number, t: number): void {
     if (this.failed) return;
+    if (kind !== 'leave') this.lastActive = t;
     this.guard(() => {
       const changed = this.scene.pointer?.(kind, u, v, t);
       if (kind === 'down' || changed) this.play(t);
@@ -174,11 +182,13 @@ export class Painter {
         }
         if (this.built < this.buildTarget) {
           this.underpaint(t, dt);
-        } else if (
-          !this.reducedMotion ||
-          t - this.lastPlayed < INTERACTION_GRACE ||
-          scene.busy?.()
-        ) {
+        } else if (this.reducedMotion) {
+          if (t - this.lastPlayed < INTERACTION_GRACE || scene.busy?.()) this.maintain(t);
+        } else if (t - this.lastActive < IDLE_AFTER || scene.busy?.()) {
+          // Hover sharpening and live effects keep full frame-rate brushwork
+          this.maintain(t);
+        } else if (t - this.lastIdleBatch >= IDLE_INTERVAL) {
+          this.lastIdleBatch = t;
           this.maintain(t);
         }
       }

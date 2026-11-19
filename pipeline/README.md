@@ -21,6 +21,19 @@ Both editorial journalism and visual storytelling are powered by **Gemini 4 Hydr
    - Zero real photographs or stock images anywhere on the site.
    - For every story, Gemini 4 Hydrogen selects one of the 8 editorial archetypes (`shell-network`, `scale-of-impunity`, `redacted-dossier`, `pump-dump-ticker`, `ponzi-pyramid`, `offshore-flight-map`, `editorial-vignette`, `penalty-wheel`) and generates a case-specific `interactive_art_spec` JSON payload populated with verified entity names, dollar amounts, timestamps, court quotes, and geographic routes.
 
+## Slap-on-the-Wrist Score (Gemini-judged)
+
+Scores are never hand-entered. `pipeline/judge-wrist-slap.mjs` sends each case's facts to Gemini with the
+PRD §2.3 rubric in `pipeline/prompts/wrist-slap-judge.md` and writes `slap_on_wrist_score` to `meta.json`.
+Only resolved stages (`settlement`, `regulatory_order`, `sentenced`, `dpa`) get a score; every other stage is
+written as `null` and renders PENDING. The 6:00 AM sweep re-judges every case when `GEMINI_API_KEY` is set.
+
+```bash
+GEMINI_API_KEY=... npm run judge:slap              # dry run, prints scores and rationale
+GEMINI_API_KEY=... npm run judge:slap -- --write   # write meta.json
+GEMINI_API_KEY=... npm run judge:slap -- --slug <slug> --write
+```
+
 ## Required Secrets (Phase 2 Activation)
 
 Configure these in GitHub Actions Repository Secrets when enabling Phase 2:
