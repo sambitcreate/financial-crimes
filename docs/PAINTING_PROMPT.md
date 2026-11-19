@@ -206,6 +206,13 @@ Every click triggers both Layer 1 (`drawArchivalPlate`) and ONE native wet-oil (
 
 > **Hotspot Repaint Discipline:** Whenever a surface reaction modifies `sample()` (`stamp` local glaze, `coins` gold-leaf gilding, `redaction` lampblack bar, or `gavel-ripple` chiaroscuro wave), include that active zone in `hotspots(t)` so `Painter` concentrates fine maintenance dabs there and visibly repaints/heals the wet oil!
 
+#### Adaptive Contrast & Canvas Blending Mode Rule (Dark vs. Light Grounds)
+Every `live()` surface overlay MUST remain crisp and high-contrast whether the reader clicks on a dark navy flag/suit or a bright sunlit courthouse facade:
+- **Measure Local Luminance (`sampleLocalLuminance(u, v, radius)`):** At click time (and along curve/arc midpoints), sample a 5-point cross (`center`, `±r` in `u`/`v`) from the cropped reference `PixelField` (accounting for `crop`, `wingFade`, chiaroscuro, and edge vignette; fallback `0.5` if unloaded).
+- **Dark Grounds (`bgLum < 0.48` for `stamp`, `< 0.45` for curves/arcs/waves):** Switch to luminous archival ivory (`[40, 52, 92]`) and burnished gilt foil (`[43, 82, 74]`) / coral-crimson lift (`L = 62%`), applying `g.globalCompositeOperation = 'screen'` to hairline rings, curves, and routing arcs — and for `stamp`, backing razor-sharp `'source-over'` ivory `FC / 2026` typography with a quiet deep-charcoal translucent ground wash (`rgba(12, 12, 14, 0.36)`) rather than a murky pale wash (`>= 7:1` contrast).
+- **Light / Mid Grounds (`bgLum >= 0.48` / `>= 0.45`):** Use deepened `mood.accent` or `FC_OIL.pressBlack` ink with `g.globalCompositeOperation = 'multiply'` on rings/curves/arcs (and warm cotton-rag tint `rgba(250, 247, 240, 0.72)` behind `stamp` marks). On very bright grounds (`bgLum > 0.72`), deepen `coins` foil flecks toward antique burnished bronze (`L ≈ 42%`) with a `'multiply'` rim edge.
+- **Strict Canvas Isolation:** ALWAYS wrap every `globalCompositeOperation` switch inside `g.save()` / `g.restore()` so `drawArchivalPlate` stays untouched `'source-over'`.
+
 ### Step 5 — Enforce the Zero-`<img>` DOM Guarantee
 - Never output `<img src="/paint-refs/...">` in Astro templates, article `body.html`, or client JS.
 - Pass only the JSON config object into `<fc-painting>` via `FcArt.astro`; `loadPixels()` constructs an unattached `new Image()` in JS memory, draws onto a temporary offscreen canvas, extracts `ImageData`, and lets the temporary image be garbage-collected.
@@ -253,6 +260,7 @@ VISUAL VOICE & INTERACTION AESTHETIC ("WET-OIL & ARCHIVAL EXHIBIT"):
     - `crash-line`: fine-nib editorial engraving plunge curve (1.5px Verdict Crimson + 0.75px baseline hairline + crisp peak/floor vertex dots).
     - `envelopes`: forensic investigative routing arcs (1px curved architectural ink paths + ringed archival pinpoint nodes).
     - `gavel-ripple`: optical chiaroscuro wave inside `sample()` shifting oil brushwork into stark monochrome broadsheet chiaroscuro + 2 razor-thin 1px continuous hairline rings.
+  * Adaptive Contrast & Canvas Blending Mode Rule: Sample local background luminance via `sampleLocalLuminance(u, v, radius)` (5-point cross accounting for crop, wingFade & vignette). On dark grounds (`bgLum < 0.48`), use luminous archival ivory (`[40, 52, 92]`) / burnished gilt (`[43, 82, 74]`) with `globalCompositeOperation = 'screen'` on hairline marks and a deep-charcoal wash (`rgba(12, 12, 14, 0.36)`) + `'source-over'` ivory type on seals; on light grounds (`bgLum >= 0.48`), use deepened pigment / `pressBlack` ink with `'multiply'` (and warm rag-paper tint `rgba(250, 247, 240, 0.72)` on seals; antique burnished bronze `L ≈ 42%` on `coins` when `bgLum > 0.72`). Strictly wrap all `globalCompositeOperation` changes in `g.save()` / `g.restore()` so `drawArchivalPlate` stays `'source-over'`.
 
 LIBEL & FACTUAL SAFETY (NON-NEGOTIABLE):
 - Ground every word and number strictly in the verified facts below. Never invent a dollar figure, agency, or prison term.
@@ -594,3 +602,4 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
 - [ ] **11. Libel & Legal-Stage Lint:** Zero unconvicted/pending defendants have `"GUILTY"`, `"CONVICTED"`, prison bars, or false guilt admissions in `toyText`, `toySubtext`, or `alt`.
 - [ ] **12. Performance & CLS:** `CLS === 0.000` (aspect-ratio locked wrapper), DPR capped at `2`, offscreen canvases paused via `IntersectionObserver`, and 60fps smooth scrolling with 20+ homepage paintings mounted.
 - [ ] **13. Reduced Motion & Accessibility:** Under `prefers-reduced-motion: reduce`, each canvas completes in one static pass immediately, renders a calm non-flickering Archival Exhibit Plate on click, and carries a truthful descriptive `aria-label` / `alt`.
+- [ ] **14. Adaptive Contrast & Blend Mode Check:** Clicking dark regions (`bgLum < 0.48`, e.g., dark suits/flags) renders high-contrast embossed ivory/gilt marks (`'screen'` rings + `'source-over'` ivory typography over subtle charcoal wash, `>= 7:1`), while light grounds (`bgLum >= 0.48`) render crisp deepened `'multiply'` letterpress ink, with `drawArchivalPlate` strictly isolated in `'source-over'`.

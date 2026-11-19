@@ -190,6 +190,7 @@ interface RegistrationStamp {
   t0: number;
   seed: number;
   accent: HSL;
+  bgLum: number;
 }
 
 interface GoldLeafPatch {
@@ -197,6 +198,7 @@ interface GoldLeafPatch {
   v: number;
   t0: number;
   seed: number;
+  bgLum: number;
 }
 
 interface GoldFoilFleck {
@@ -212,6 +214,7 @@ interface GoldFoilFleck {
   t0: number;
   life: number;
   pale: boolean;
+  bgLum: number;
 }
 
 interface RedactionBar {
@@ -230,6 +233,7 @@ interface EngravingPlunge {
   t0: number;
   points: { u: number; v: number }[];
   peakIndex: number;
+  bgLum: number;
 }
 
 interface RoutingArc {
@@ -247,12 +251,14 @@ interface ForensicRoute {
   v: number;
   t0: number;
   arcs: RoutingArc[];
+  bgLum: number;
 }
 
 interface ChiaroscuroWave {
   u: number;
   v: number;
   t0: number;
+  bgLum: number;
 }
 
 /* ============================================================================
@@ -898,6 +904,68 @@ export function createPortraitScene(
     return applySurfacePigmentEffects(u, v, t, { color: graded, angle, jitter, monochrome });
   }
 
+  /**
+   * Measure local background luminance (0..1) via a 5-point cross sampled from the
+   * cropped reference PixelField, accounting for crop window, wingFade, oil chiaroscuro,
+   * and vignette darkening so surface overlays select the highest-contrast ink & blend mode.
+   */
+  function sampleLocalLuminance(u: number, v: number, radius = 0.045): number {
+    if (!pixels) return 0.5;
+    const hasWings = crop.canvasU0 > 0.005 || crop.canvasU1 < 0.995;
+    const spanU = Math.max(0.001, crop.canvasU1 - crop.canvasU0);
+    const shadowL = mood.shadow[2] / 100;
+
+    const offsets: readonly [number, number][] = [
+      [0, 0],
+      [-radius, 0],
+      [radius, 0],
+      [0, -radius],
+      [0, radius],
+    ];
+
+    let sum = 0;
+    for (let i = 0; i < offsets.length; i++) {
+      const su = clamp(u + offsets[i][0], 0, 1);
+      const sv = clamp(v + offsets[i][1], 0, 1);
+      const rawIu = hasWings ? (su - crop.canvasU0) / spanU : crop.uStart + su * crop.winW;
+
+      let wingFade = 0;
+      if (hasWings) {
+        if (rawIu < 0.08) {
+          wingFade = clamp((0.08 - rawIu) / 0.24, 0, 1);
+        } else if (rawIu > 0.92) {
+          wingFade = clamp((rawIu - 0.92) / 0.24, 0, 1);
+        }
+      }
+
+      const iu = clamp(rawIu, 0, 0.9999);
+      const iv = clamp(crop.vStart + sv * crop.winH, 0, 0.9999);
+      const px = Math.min(pixels.width - 1, Math.floor(iu * pixels.width));
+      const py = Math.min(pixels.height - 1, Math.floor(iv * pixels.height));
+      const p4 = (py * pixels.width + px) * 4;
+
+      const r = pixels.data[p4];
+      const gr = pixels.data[p4 + 1];
+      const b = pixels.data[p4 + 2];
+      const rawLum = (0.299 * r + 0.587 * gr + 0.114 * b) / 255;
+
+      const distFromFocal = Math.hypot((su - crop.canvasFocalU) * 1.12, (sv - crop.canvasFocalV) * 1.05);
+      const vignette = clamp((distFromFocal - 0.34) * 1.25, 0, 1) * mood.vignetteStrength;
+
+      if (monochrome) {
+        const shaped = oilContrast(rawLum, 0.36);
+        sum += clamp((lerp(8, 93, shaped) - vignette * 18 - wingFade * 16) / 100, 0, 1);
+      } else {
+        const shaped = oilContrast(rawLum, 0.22);
+        const baseL = clamp(shaped * 0.94 + 0.035, 0.09, 0.94);
+        const totalGlaze = clamp(vignette + wingFade * 0.44, 0, 0.65);
+        sum += clamp(lerp(baseL, shadowL, totalGlaze), 0, 1);
+      }
+    }
+
+    return sum / offsets.length;
+  }
+
   /* ============================================================================
      Wet-Oil & Archival Exhibit Interaction Triggers
      ============================================================================ */
@@ -914,12 +982,14 @@ export function createPortraitScene(
   function triggerStamp(u: number, v: number, t: number): void {
     const safeU = clamp(u, 0.12, 0.88);
     const safeV = clamp(v, 0.12, 0.84);
+    const bgLum = sampleLocalLuminance(safeU, safeV, 0.06);
     stamps.push({
       u: safeU,
       v: safeV,
       t0: t,
       seed: rand() * 80,
       accent: accentPigment,
+      bgLum,
     });
     if (stamps.length > 2) stamps.shift();
     triggerPlate(t, toyText, toySubtext);
@@ -928,11 +998,13 @@ export function createPortraitScene(
   function triggerCoins(u: number, v: number, t: number): void {
     const safeU = clamp(u, 0.08, 0.92);
     const safeV = clamp(v, 0.08, 0.92);
+    const bgLum = sampleLocalLuminance(safeU, safeV, 0.06);
     goldPatches.push({
       u: safeU,
       v: safeV,
       t0: t,
       seed: rand() * 90,
+      bgLum,
     });
     if (goldPatches.length > 2) goldPatches.shift();
 
@@ -954,6 +1026,7 @@ export function createPortraitScene(
           t0: t,
           life: 1.9 + rand() * 0.9,
           pale: rand() < 0.38,
+          bgLum,
         });
       }
       if (foilFlecks.length > 14) {
@@ -1005,7 +1078,13 @@ export function createPortraitScene(
       { u: 0.92, v: floorV }, // Floor
     ];
 
-    activeCrash = { t0: t, points, peakIndex: 2 };
+    let lumSum = 0;
+    for (const pt of points) {
+      lumSum += sampleLocalLuminance(pt.u, pt.v, 0.045);
+    }
+    const bgLum = lumSum / points.length;
+
+    activeCrash = { t0: t, points, peakIndex: 2, bgLum };
     triggerPlate(t, toyText, toySubtext);
   }
 
@@ -1054,15 +1133,28 @@ export function createPortraitScene(
       };
     });
 
-    activeRoute = { u: ox, v: oy, t0: t, arcs };
+    let lumSum = sampleLocalLuminance(ox, oy, 0.045);
+    let lumCount = 1;
+    for (const arc of arcs) {
+      lumSum += sampleLocalLuminance(arc.cx, arc.cy, 0.045);
+      lumSum += sampleLocalLuminance(arc.x1, arc.y1, 0.045);
+      lumCount += 2;
+    }
+    const bgLum = lumSum / lumCount;
+
+    activeRoute = { u: ox, v: oy, t0: t, arcs, bgLum };
     triggerPlate(t, toyText, toySubtext);
   }
 
   function triggerGavelRipple(u: number, v: number, t: number): void {
+    const safeU = clamp(u, 0.08, 0.92);
+    const safeV = clamp(v, 0.08, 0.88);
+    const bgLum = sampleLocalLuminance(safeU, safeV, 0.12);
     waves.push({
-      u: clamp(u, 0.08, 0.92),
-      v: clamp(v, 0.08, 0.88),
+      u: safeU,
+      v: safeV,
       t0: t,
+      bgLum,
     });
     if (waves.length > 2) waves.shift();
     triggerPlate(t, toyText, toySubtext);
@@ -1181,6 +1273,7 @@ export function createPortraitScene(
     const plateY = Math.round(ch - margin - plateH + glideY);
 
     g.save();
+    g.globalCompositeOperation = 'source-over';
     g.globalAlpha = alpha;
 
     // Warm cotton-rag paper surface (sharp flat 0px corners, zero drop shadow)
@@ -1253,6 +1346,7 @@ export function createPortraitScene(
 
       const cx = wv.u * cw;
       const cy = wv.v * ch;
+      const isDark = wv.bgLum < 0.45;
 
       g.save();
       g.setLineDash([]);
@@ -1260,13 +1354,19 @@ export function createPortraitScene(
       if (reducedMotion) {
         const fade = age < 4.5 ? 1 : clamp(1 - (age - 4.5) / 1.1, 0, 1);
         const rad = clamp(unit * 0.11, 28, 52);
-        g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.58).toFixed(3)})`;
+        g.globalCompositeOperation = isDark ? 'screen' : 'multiply';
+        g.strokeStyle = isDark
+          ? hslCss(40, 44, 90, fade * 0.78)
+          : `rgba(18, 18, 18, ${(fade * 0.62).toFixed(3)})`;
         g.lineWidth = 1;
         g.beginPath();
         g.arc(cx, cy, rad, 0, TAU);
         g.stroke();
 
-        g.fillStyle = `rgba(18, 18, 18, ${(fade * 0.85).toFixed(3)})`;
+        g.globalCompositeOperation = 'source-over';
+        g.fillStyle = isDark
+          ? hslCss(40, 48, 92, fade * 0.92)
+          : `rgba(18, 18, 18, ${(fade * 0.85).toFixed(3)})`;
         g.beginPath();
         g.arc(cx, cy, 1.8, 0, TAU);
         g.fill();
@@ -1274,36 +1374,48 @@ export function createPortraitScene(
         continue;
       }
 
-      // Ring 1: Primary smooth continuous 1px press-black architectural hairline
+      // Adaptive blend mode for the two hairline rings (screen cream+gilt on dark, multiply ink+accent on light)
+      g.globalCompositeOperation = isDark ? 'screen' : 'multiply';
+
+      // Ring 1: Primary smooth continuous 1px architectural hairline
       if (age <= 1.7) {
         const p1 = clamp(age / 1.7, 0, 1);
         const r1 = lerp(5, unit * 0.44, easeOutCubic(p1));
-        const a1 = (1 - p1) * 0.72;
-        g.strokeStyle = `rgba(18, 18, 18, ${a1.toFixed(3)})`;
+        const a1 = (1 - p1) * (isDark ? 0.86 : 0.74);
+        g.strokeStyle = isDark
+          ? hslCss(40, 44, 90, a1)
+          : `rgba(18, 18, 18, ${a1.toFixed(3)})`;
         g.lineWidth = 1;
         g.beginPath();
         g.arc(cx, cy, r1, 0, TAU);
         g.stroke();
       }
 
-      // Ring 2: Delayed smooth continuous 1px accent/gold echo hairline
+      // Ring 2: Delayed smooth continuous 1px gilt/accent echo hairline
       const age2 = age - 0.14;
       if (age2 > 0 && age2 <= 1.8) {
         const p2 = clamp(age2 / 1.8, 0, 1);
         const r2 = lerp(5, unit * 0.38, easeOutCubic(p2));
-        const a2 = (1 - p2) * 0.52;
-        g.strokeStyle = hslCss(echoColor[0], echoColor[1], echoColor[2], a2);
+        const a2 = (1 - p2) * (isDark ? 0.68 : 0.56);
+        g.strokeStyle = isDark
+          ? hslCss(43, 82, 74, a2)
+          : hslCss(echoColor[0], echoColor[1], Math.min(echoColor[2], 36), a2);
         g.lineWidth = 1;
         g.beginPath();
         g.arc(cx, cy, r2, 0, TAU);
         g.stroke();
       }
 
-      // Tiny 3px ink origin dot (radius 1.6px = ~3.2px diameter) with whisper cream rim
+      // Tiny 3px origin dot in clean source-over with opposite polarity rim
       if (age <= 1.75) {
         const dotFade = age < 1.1 ? 1 : clamp(1 - (age - 1.1) / 0.65, 0, 1);
-        g.fillStyle = `rgba(18, 18, 18, ${(dotFade * 0.86).toFixed(3)})`;
-        g.strokeStyle = `rgba(250, 247, 240, ${(dotFade * 0.62).toFixed(3)})`;
+        g.globalCompositeOperation = 'source-over';
+        g.fillStyle = isDark
+          ? hslCss(40, 50, 92, dotFade * 0.92)
+          : `rgba(18, 18, 18, ${(dotFade * 0.86).toFixed(3)})`;
+        g.strokeStyle = isDark
+          ? `rgba(12, 12, 14, ${(dotFade * 0.72).toFixed(3)})`
+          : `rgba(250, 247, 240, ${(dotFade * 0.68).toFixed(3)})`;
         g.lineWidth = 0.75;
         g.beginPath();
         g.arc(cx, cy, 1.8, 0, TAU);
@@ -1315,7 +1427,7 @@ export function createPortraitScene(
     }
   }
 
-  /** 2. stamp: Compact circular letterpress registration seal (FC / 2026) at calm ink opacity. */
+  /** 2. stamp: Compact circular letterpress registration seal (FC / 2026) with adaptive local-luminance contrast. */
   function renderStampSeals(g: CanvasRenderingContext2D, cw: number, ch: number, t: number): void {
     const unit = Math.min(cw, ch);
 
@@ -1337,66 +1449,142 @@ export function createPortraitScene(
       const cx = st.u * cw;
       const cy = st.v * ch;
       const r = clamp(unit * 0.068, 22, 36);
-      const inkL = Math.min(st.accent[2], 42);
-      const inkAlpha = fade * 0.76;
+      const isDark = st.bgLum < 0.48;
+
+      const tickIn = r * 0.72;
+      const tickOut = r * 1.12;
+      const monoSize = Math.max(8.5, Math.round(r * 0.36));
+      const yearSize = Math.max(6.5, Math.round(r * 0.22));
 
       g.save();
       g.translate(cx, cy);
       g.scale(settle, settle);
 
-      // Translucent rag-paper wash inside seal so hairlines read crisply over both dark suits and light walls
-      g.fillStyle = `rgba(250, 247, 240, ${(fade * 0.32).toFixed(3)})`;
-      g.beginPath();
-      g.arc(0, 0, r, 0, TAU);
-      g.fill();
+      if (isDark) {
+        // Dark grounds (< 0.48): deep-charcoal translucent ground wash + luminous embossed gilt/ivory foil seal
+        const ivory: HSL = [40, 52, 92];
+        const gilt: HSL = [43, 82, 74];
 
-      // Double concentric hairline rings
-      g.strokeStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha);
-      g.lineWidth = 1.2;
-      g.beginPath();
-      g.arc(0, 0, r, 0, TAU);
-      g.stroke();
+        g.globalCompositeOperation = 'source-over';
+        g.fillStyle = `rgba(12, 12, 14, ${(fade * 0.36).toFixed(3)})`;
+        g.beginPath();
+        g.arc(0, 0, r, 0, TAU);
+        g.fill();
 
-      g.lineWidth = 0.75;
-      g.strokeStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha * 0.78);
-      g.beginPath();
-      g.arc(0, 0, r * 0.78, 0, TAU);
-      g.stroke();
+        // Crisp screen-blended glow pass & double concentric gilt/ivory hairline rings
+        g.globalCompositeOperation = 'screen';
 
-      // Subtle cardinal registration crosshairs
-      const tickIn = r * 0.72;
-      const tickOut = r * 1.12;
-      g.lineWidth = 0.8;
-      g.strokeStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha * 0.72);
-      g.beginPath();
-      g.moveTo(0, -tickOut);
-      g.lineTo(0, -tickIn);
-      g.moveTo(0, tickIn);
-      g.lineTo(0, tickOut);
-      g.moveTo(-tickOut, 0);
-      g.lineTo(-tickIn, 0);
-      g.moveTo(tickIn, 0);
-      g.lineTo(tickOut, 0);
-      g.stroke();
+        // Subtle embossed gilt foil halo on outer ring
+        g.strokeStyle = hslCss(gilt[0], gilt[1], gilt[2], fade * 0.24);
+        g.lineWidth = 2.6;
+        g.beginPath();
+        g.arc(0, 0, r, 0, TAU);
+        g.stroke();
 
-      // Tiny letterpress editorial monogram ("FC" / hairline / "2026")
-      const monoSize = Math.max(8, Math.round(r * 0.36));
-      const yearSize = Math.max(6.5, Math.round(r * 0.22));
-      g.textAlign = 'center';
-      g.textBaseline = 'middle';
-      g.fillStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha);
-      g.font = `600 ${monoSize}px "Newsreader", Georgia, serif`;
-      g.fillText('FC', 0, -r * 0.18);
+        // Outer concentric gilt hairline ring
+        g.strokeStyle = hslCss(gilt[0], gilt[1], gilt[2], fade * 0.92);
+        g.lineWidth = 1.3;
+        g.beginPath();
+        g.arc(0, 0, r, 0, TAU);
+        g.stroke();
 
-      g.strokeStyle = hslCss(st.accent[0], st.accent[1], inkL, inkAlpha * 0.55);
-      g.lineWidth = 0.65;
-      g.beginPath();
-      g.moveTo(-r * 0.3, r * 0.04);
-      g.lineTo(r * 0.3, r * 0.04);
-      g.stroke();
+        // Inner concentric archival ivory hairline ring
+        g.strokeStyle = hslCss(ivory[0], ivory[1], ivory[2], fade * 0.8);
+        g.lineWidth = 0.8;
+        g.beginPath();
+        g.arc(0, 0, r * 0.78, 0, TAU);
+        g.stroke();
 
-      g.font = `500 ${yearSize}px "JetBrains Mono", ui-monospace, monospace`;
-      g.fillText('2026', 0, r * 0.26);
+        // Cardinal registration crosshairs in burnished gilt
+        g.strokeStyle = hslCss(gilt[0], gilt[1], gilt[2], fade * 0.86);
+        g.lineWidth = 0.85;
+        g.beginPath();
+        g.moveTo(0, -tickOut);
+        g.lineTo(0, -tickIn);
+        g.moveTo(0, tickIn);
+        g.lineTo(0, tickOut);
+        g.moveTo(-tickOut, 0);
+        g.lineTo(-tickIn, 0);
+        g.moveTo(tickIn, 0);
+        g.lineTo(tickOut, 0);
+        g.stroke();
+
+        // Razor-sharp ivory typography in source-over (>= 7:1 contrast against dark ground + charcoal wash)
+        g.globalCompositeOperation = 'source-over';
+        g.textAlign = 'center';
+        g.textBaseline = 'middle';
+        g.fillStyle = hslCss(ivory[0], ivory[1], ivory[2], fade * 0.96);
+        g.font = `600 ${monoSize}px "Newsreader", Georgia, serif`;
+        g.fillText('FC', 0, -r * 0.18);
+
+        g.strokeStyle = hslCss(gilt[0], gilt[1], gilt[2], fade * 0.78);
+        g.lineWidth = 0.75;
+        g.beginPath();
+        g.moveTo(-r * 0.3, r * 0.04);
+        g.lineTo(r * 0.3, r * 0.04);
+        g.stroke();
+
+        g.fillStyle = hslCss(ivory[0], ivory[1], ivory[2], fade * 0.92);
+        g.font = `500 ${yearSize}px "JetBrains Mono", ui-monospace, monospace`;
+        g.fillText('2026', 0, r * 0.26);
+      } else {
+        // Light/mid grounds (>= 0.48): warm cotton-rag tint + multiply-blended deep letterpress ink
+        const deepInkL = Math.min(st.accent[2] * 0.62, 26);
+        const deepInkS = Math.min(st.accent[1], 72);
+        const inkAlpha = fade * 0.9;
+
+        g.globalCompositeOperation = 'source-over';
+        g.fillStyle = `rgba(250, 247, 240, ${(fade * 0.72).toFixed(3)})`;
+        g.beginPath();
+        g.arc(0, 0, r, 0, TAU);
+        g.fill();
+
+        // Letterpress double concentric hairline rings & crosshairs blended via multiply into the rag tint
+        g.globalCompositeOperation = 'multiply';
+        g.strokeStyle = hslCss(st.accent[0], deepInkS, deepInkL, inkAlpha);
+        g.lineWidth = 1.25;
+        g.beginPath();
+        g.arc(0, 0, r, 0, TAU);
+        g.stroke();
+
+        g.strokeStyle = hslCss(st.accent[0], deepInkS, deepInkL, inkAlpha * 0.8);
+        g.lineWidth = 0.75;
+        g.beginPath();
+        g.arc(0, 0, r * 0.78, 0, TAU);
+        g.stroke();
+
+        g.lineWidth = 0.8;
+        g.strokeStyle = hslCss(st.accent[0], deepInkS, deepInkL, inkAlpha * 0.78);
+        g.beginPath();
+        g.moveTo(0, -tickOut);
+        g.lineTo(0, -tickIn);
+        g.moveTo(0, tickIn);
+        g.lineTo(0, tickOut);
+        g.moveTo(-tickOut, 0);
+        g.lineTo(-tickIn, 0);
+        g.moveTo(tickIn, 0);
+        g.lineTo(tickOut, 0);
+        g.stroke();
+
+        // Crisp letterpress monogram ("FC" / hairline / "2026") in source-over
+        g.globalCompositeOperation = 'source-over';
+        g.textAlign = 'center';
+        g.textBaseline = 'middle';
+        g.fillStyle = hslCss(st.accent[0], deepInkS, Math.min(deepInkL, 22), fade * 0.94);
+        g.font = `600 ${monoSize}px "Newsreader", Georgia, serif`;
+        g.fillText('FC', 0, -r * 0.18);
+
+        g.strokeStyle = hslCss(FC_OIL.pressBlack[0], FC_OIL.pressBlack[1], FC_OIL.pressBlack[2], fade * 0.52);
+        g.lineWidth = 0.65;
+        g.beginPath();
+        g.moveTo(-r * 0.3, r * 0.04);
+        g.lineTo(r * 0.3, r * 0.04);
+        g.stroke();
+
+        g.fillStyle = hslCss(FC_OIL.pressBlack[0], FC_OIL.pressBlack[1], FC_OIL.pressBlack[2], fade * 0.9);
+        g.font = `500 ${yearSize}px "JetBrains Mono", ui-monospace, monospace`;
+        g.fillText('2026', 0, r * 0.26);
+      }
 
       g.restore();
     }
@@ -1406,7 +1594,7 @@ export function createPortraitScene(
   function renderGoldLeafLive(g: CanvasRenderingContext2D, cw: number, ch: number, t: number): void {
     const unit = Math.min(cw, ch);
 
-    // Whisper-subtle expanding 1px gold hairline ring (0.6s)
+    // Whisper-subtle expanding 1px gold/bronze hairline ring (0.6s)
     for (let i = goldPatches.length - 1; i >= 0; i--) {
       const patch = goldPatches[i];
       const age = t - patch.t0;
@@ -1417,9 +1605,21 @@ export function createPortraitScene(
       if (age >= 0 && age <= 0.62) {
         const p = reducedMotion ? 0.5 : clamp(age / 0.62, 0, 1);
         const rad = lerp(6, unit * 0.18, easeOutCubic(p));
-        const alpha = (reducedMotion ? 0.48 : (1 - p) * 0.66);
+        const alpha = reducedMotion ? 0.52 : (1 - p) * 0.72;
+        const isVeryLight = patch.bgLum > 0.72;
+        const isDark = patch.bgLum < 0.45;
+
         g.save();
-        g.strokeStyle = hslCss(FC_OIL.bullionGold[0], 78, 56, alpha);
+        if (isVeryLight) {
+          g.globalCompositeOperation = 'multiply';
+          g.strokeStyle = hslCss(35, 72, 38, alpha * 0.88);
+        } else if (isDark) {
+          g.globalCompositeOperation = 'screen';
+          g.strokeStyle = hslCss(43, 84, 72, alpha * 0.9);
+        } else {
+          g.globalCompositeOperation = 'source-over';
+          g.strokeStyle = hslCss(FC_OIL.bullionGold[0], 78, 54, alpha);
+        }
         g.lineWidth = 1;
         g.beginPath();
         g.arc(patch.u * cw, patch.v * ch, rad, 0, TAU);
@@ -1436,19 +1636,50 @@ export function createPortraitScene(
       if (age < 0 || age > f.life) continue;
       const inFade = clamp(age / 0.12, 0, 1);
       const outFade = age > f.life * 0.55 ? clamp(1 - (age - f.life * 0.55) / (f.life * 0.45), 0, 1) : 1;
-      const alpha = inFade * outFade * 0.84;
+      const alpha = inFade * outFade * 0.88;
       if (alpha <= 0.02) continue;
+
+      const isVeryLight = f.bgLum > 0.72;
+      const isDark = f.bgLum < 0.45;
 
       g.save();
       g.translate(f.u * cw, f.v * ch);
       g.rotate(f.rot);
       const shimmer = 0.5 + 0.5 * Math.cos(f.phase + age * 3.2);
-      const l = f.pale ? lerp(64, 78, shimmer) : lerp(46, 62, shimmer);
-      g.fillStyle = hslCss(43, 80, l, alpha);
-      g.fillRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
-      g.strokeStyle = hslCss(38, 66, 32, alpha * 0.45);
-      g.lineWidth = 0.5;
-      g.strokeRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
+
+      if (isVeryLight) {
+        // Antique burnished bronze (~L 42%) with multiply rim edge so flecks stay legible on bright skies
+        const l = f.pale ? lerp(42, 50, shimmer) : lerp(36, 44, shimmer);
+        g.globalCompositeOperation = 'source-over';
+        g.fillStyle = hslCss(36, 70, l, alpha);
+        g.fillRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
+
+        g.globalCompositeOperation = 'multiply';
+        g.strokeStyle = hslCss(31, 66, 24, alpha * 0.75);
+        g.lineWidth = 0.75;
+        g.strokeRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
+      } else if (isDark) {
+        // Bright 24k bullion gold with subtle screen specular glint over dark dials/jackets
+        const l = f.pale ? lerp(70, 84, shimmer) : lerp(56, 70, shimmer);
+        g.globalCompositeOperation = 'source-over';
+        g.fillStyle = hslCss(43, 84, l, alpha);
+        g.fillRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
+
+        g.globalCompositeOperation = 'screen';
+        g.strokeStyle = hslCss(44, 72, 86, alpha * 0.52);
+        g.lineWidth = 0.55;
+        g.strokeRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
+      } else {
+        const l = f.pale ? lerp(64, 78, shimmer) : lerp(46, 62, shimmer);
+        g.globalCompositeOperation = 'source-over';
+        g.fillStyle = hslCss(43, 80, l, alpha);
+        g.fillRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
+
+        g.strokeStyle = hslCss(38, 66, 32, alpha * 0.52);
+        g.lineWidth = 0.55;
+        g.strokeRect(-f.w * 0.5, -f.h * 0.5, f.w, f.h);
+      }
+
       g.restore();
     }
   }
@@ -1487,28 +1718,49 @@ export function createPortraitScene(
     const peakY = Math.round(peakPt.v * ch) + 0.5;
     const startX = pts[0].u * cw;
     const endX = floorPt.u * cw;
+    const isDark = activeCrash.bgLum < 0.45;
 
     g.save();
 
-    // Subtle 0.75px dashed cream/ink horizontal peak-baseline hairline
+    // Subtle 0.75px dashed horizontal peak-baseline hairline adapted to local luminance
     g.setLineDash([4, 4]);
     g.lineWidth = 0.75;
-    g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.34).toFixed(3)})`;
-    g.beginPath();
-    g.moveTo(startX, peakY + 0.75);
-    g.lineTo(endX, peakY + 0.75);
-    g.stroke();
+    if (isDark) {
+      g.globalCompositeOperation = 'source-over';
+      g.strokeStyle = `rgba(12, 12, 14, ${(fade * 0.42).toFixed(3)})`;
+      g.beginPath();
+      g.moveTo(startX, peakY + 0.75);
+      g.lineTo(endX, peakY + 0.75);
+      g.stroke();
 
-    g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.68).toFixed(3)})`;
-    g.beginPath();
-    g.moveTo(startX, peakY);
-    g.lineTo(endX, peakY);
-    g.stroke();
+      g.globalCompositeOperation = 'screen';
+      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.74).toFixed(3)})`;
+      g.beginPath();
+      g.moveTo(startX, peakY);
+      g.lineTo(endX, peakY);
+      g.stroke();
+    } else {
+      g.globalCompositeOperation = 'source-over';
+      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.62).toFixed(3)})`;
+      g.beginPath();
+      g.moveTo(startX, peakY + 0.75);
+      g.lineTo(endX, peakY + 0.75);
+      g.stroke();
+
+      g.globalCompositeOperation = 'multiply';
+      g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.52).toFixed(3)})`;
+      g.beginPath();
+      g.moveTo(startX, peakY);
+      g.lineTo(endX, peakY);
+      g.stroke();
+    }
 
     // Faint vertical drop tick at floor once curve lands
     if (progress >= 0.99) {
       const fx = Math.round(floorPt.u * cw) + 0.5;
-      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.42).toFixed(3)})`;
+      g.strokeStyle = isDark
+        ? `rgba(250, 247, 240, ${(fade * 0.52).toFixed(3)})`
+        : `rgba(18, 18, 18, ${(fade * 0.38).toFixed(3)})`;
       g.beginPath();
       g.moveTo(fx, peakY);
       g.lineTo(fx, floorPt.v * ch);
@@ -1539,22 +1791,46 @@ export function createPortraitScene(
     g.lineCap = 'round';
     g.lineJoin = 'round';
 
-    // Ultra-delicate parchment contrast whisper so the 1.5px nib reads over dark impasto
-    g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.32).toFixed(3)})`;
-    g.lineWidth = 2.6;
-    tracePath();
-    g.stroke();
+    if (isDark) {
+      // Dark ground: thin archival parchment micro-understroke + main crimson + screen-blended coral lift (L=62%)
+      g.globalCompositeOperation = 'source-over';
+      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.35).toFixed(3)})`;
+      g.lineWidth = 2.5;
+      tracePath();
+      g.stroke();
 
-    // Main razor-sharp 1.5px Verdict Crimson engraving stroke
-    g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 42, fade * 0.96);
-    g.lineWidth = 1.5;
-    tracePath();
-    g.stroke();
+      g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 46, fade * 0.96);
+      g.lineWidth = 1.5;
+      tracePath();
+      g.stroke();
 
-    // Tiny 3.5px solid crimson circles at peak & floor
+      g.globalCompositeOperation = 'screen';
+      g.strokeStyle = hslCss(356, 76, 62, fade * 0.74);
+      g.lineWidth = 1.3;
+      tracePath();
+      g.stroke();
+    } else {
+      // Light ground: whisper parchment contrast edge + multiply-blended Verdict Crimson engraving nib
+      g.globalCompositeOperation = 'source-over';
+      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.38).toFixed(3)})`;
+      g.lineWidth = 2.5;
+      tracePath();
+      g.stroke();
+
+      g.globalCompositeOperation = 'multiply';
+      g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 40, fade * 0.96);
+      g.lineWidth = 1.5;
+      tracePath();
+      g.stroke();
+    }
+
+    // Tiny 3.5px solid crimson circles at peak & floor in clean source-over
+    g.globalCompositeOperation = 'source-over';
     const drawPin = (px: number, py: number) => {
-      g.fillStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 42, fade * 0.96);
-      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.88).toFixed(3)})`;
+      g.fillStyle = isDark
+        ? hslCss(356, 76, 58, fade * 0.98)
+        : hslCss(FC_OIL.verdictCrimson[0], 72, 40, fade * 0.96);
+      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.92).toFixed(3)})`;
       g.lineWidth = 1;
       g.beginPath();
       g.arc(px, py, 3.5, 0, TAU);
@@ -1585,6 +1861,7 @@ export function createPortraitScene(
     const fade = age < 5.42 ? 1 : clamp(1 - (age - 5.42) / 1.1, 0, 1);
     const ox = activeRoute.u * cw;
     const oy = activeRoute.v * ch;
+    const isDark = activeRoute.bgLum < 0.45;
 
     g.save();
 
@@ -1617,42 +1894,69 @@ export function createPortraitScene(
         g.stroke();
       };
 
-      // Subtle parchment whisper so fine 1px ink reads cleanly over dark oil shadows
-      g.setLineDash([]);
-      g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.36).toFixed(3)})`;
-      g.lineWidth = 2.2;
-      strokeArc();
+      if (isDark) {
+        // Dark grounds: subtle charcoal anchor + crisp screen-blended archival ivory (L=88%) + rose-crimson dashes
+        g.setLineDash([]);
+        g.globalCompositeOperation = 'source-over';
+        g.strokeStyle = `rgba(12, 12, 14, ${(fade * 0.34).toFixed(3)})`;
+        g.lineWidth = 2.2;
+        strokeArc();
 
-      // 1px press-black architectural hairline
-      g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.74).toFixed(3)})`;
-      g.lineWidth = 1;
-      strokeArc();
+        g.globalCompositeOperation = 'screen';
+        g.strokeStyle = hslCss(40, 44, 88, fade * 0.86);
+        g.lineWidth = 1.05;
+        strokeArc();
 
-      // Hairline Verdict Crimson dashed overlay
-      g.setLineDash([5, 5]);
-      g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 42, fade * 0.88);
-      g.lineWidth = 1;
-      strokeArc();
-      g.setLineDash([]);
+        g.globalCompositeOperation = 'source-over';
+        g.setLineDash([5, 5]);
+        g.strokeStyle = hslCss(352, 76, 64, fade * 0.94);
+        g.lineWidth = 1.05;
+        strokeArc();
+        g.setLineDash([]);
+      } else {
+        // Light grounds: whisper parchment edge + multiply press-black + deep Verdict Crimson dashed overlay
+        g.setLineDash([]);
+        g.globalCompositeOperation = 'source-over';
+        g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.36).toFixed(3)})`;
+        g.lineWidth = 2.2;
+        strokeArc();
 
-      // Ringed archival pinpoint node on arrival
+        g.globalCompositeOperation = 'multiply';
+        g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.76).toFixed(3)})`;
+        g.lineWidth = 1;
+        strokeArc();
+
+        g.globalCompositeOperation = 'source-over';
+        g.setLineDash([5, 5]);
+        g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 40, fade * 0.9);
+        g.lineWidth = 1;
+        strokeArc();
+        g.setLineDash([]);
+      }
+
+      // Ringed archival pinpoint node on arrival (clean source-over)
       if (p >= 0.98) {
+        g.globalCompositeOperation = 'source-over';
         g.fillStyle = `rgba(250, 247, 240, ${(fade * 0.96).toFixed(3)})`;
-        g.strokeStyle = hslCss(FC_OIL.verdictCrimson[0], 72, 42, fade * 0.94);
-        g.lineWidth = 1.2;
+        g.strokeStyle = isDark
+          ? hslCss(43, 82, 70, fade * 0.96)
+          : hslCss(FC_OIL.verdictCrimson[0], 72, 40, fade * 0.94);
+        g.lineWidth = 1.25;
         g.beginPath();
         g.arc(x1, y1, 3.5, 0, TAU);
         g.fill();
         g.stroke();
 
         // Tiny press-black center pinhole
-        g.fillStyle = `rgba(18, 18, 18, ${(fade * 0.85).toFixed(3)})`;
+        g.fillStyle = `rgba(18, 18, 18, ${(fade * 0.88).toFixed(3)})`;
         g.beginPath();
         g.arc(x1, y1, 1, 0, TAU);
         g.fill();
 
         // Delicate cardinal registration ticks
-        g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.42).toFixed(3)})`;
+        g.strokeStyle = isDark
+          ? hslCss(40, 44, 88, fade * 0.72)
+          : `rgba(18, 18, 18, ${(fade * 0.48).toFixed(3)})`;
         g.lineWidth = 0.75;
         g.beginPath();
         g.moveTo(x1 - 6.5, y1);
@@ -1667,15 +1971,22 @@ export function createPortraitScene(
       }
     }
 
-    // Crisp origin pinpoint + registration halo
-    g.strokeStyle = `rgba(18, 18, 18, ${(fade * 0.42).toFixed(3)})`;
+    // Crisp origin pinpoint + registration halo in clean source-over
+    g.globalCompositeOperation = 'source-over';
+    g.strokeStyle = isDark
+      ? hslCss(43, 82, 72, fade * 0.72)
+      : `rgba(18, 18, 18, ${(fade * 0.45).toFixed(3)})`;
     g.lineWidth = 0.75;
     g.beginPath();
     g.arc(ox, oy, 7, 0, TAU);
     g.stroke();
 
-    g.fillStyle = `rgba(18, 18, 18, ${(fade * 0.9).toFixed(3)})`;
-    g.strokeStyle = `rgba(250, 247, 240, ${(fade * 0.85).toFixed(3)})`;
+    g.fillStyle = isDark
+      ? hslCss(40, 50, 92, fade * 0.94)
+      : `rgba(18, 18, 18, ${(fade * 0.9).toFixed(3)})`;
+    g.strokeStyle = isDark
+      ? `rgba(12, 12, 14, ${(fade * 0.82).toFixed(3)})`
+      : `rgba(250, 247, 240, ${(fade * 0.88).toFixed(3)})`;
     g.lineWidth = 1;
     g.beginPath();
     g.arc(ox, oy, 2.5, 0, TAU);

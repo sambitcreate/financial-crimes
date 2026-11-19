@@ -37,6 +37,11 @@ Every click/poke interaction must feel museum-grade (*NYT Magazine* × *The New 
   - `crash-line` — **Fine-Nib Editorial Engraving Plunge Curve** (`1.5px` Verdict Crimson stroke + `0.75px` dashed peak-baseline hairline + crisp peak/floor vertex dots; no chunky zigzag or yellow laser tip). Fit: crypto wipeouts, options manipulation, Ponzi curves, stock cliffs.
   - `envelopes` — **Forensic Investigative Routing Arcs** (`1px` curved architectural ink paths + ringed archival pinpoint nodes; no tumbling cartoon envelopes). Fit: insider-trading rings, fake-student lists, shell-company & bribery trails.
   - `gavel-ripple` — **Optical Chiaroscuro Wave** (annular wave inside `sample()` momentarily shifting oil brushwork into stark monochrome broadsheet chiaroscuro + 2 razor-thin `1px` continuous hairline rings; no chunky dashed orange circles or rising text). Fit: denied appeals, coordinated dawn raids, 4-minute trade clocks, record sentences.
+- **Adaptive Contrast & Canvas Blending Mode Rule (Dark vs. Light Grounds):**
+  - Measure local background luminance at click time (and along curve/arc midpoints) with `sampleLocalLuminance(u, v, radius)` (5-point cross accounting for crop, wingFade, chiaroscuro, and vignette).
+  - **Dark grounds (`bgLum < 0.48`):** Use luminous archival ivory (`[40, 52, 92]`) / burnished gilt foil (`[43, 82, 74]`) ink with `g.globalCompositeOperation = 'screen'` on hairline rings/curves/arcs, plus a subtle deep-charcoal ground wash (`rgba(12, 12, 14, 0.36)`) and `'source-over'` ivory typography on `stamp` seals (`>= 7:1` contrast, zero murky pale seals).
+  - **Light grounds (`bgLum >= 0.48`):** Use deepened `mood.accent` / `FC_OIL.pressBlack` ink with `g.globalCompositeOperation = 'multiply'` (plus warm rag-paper tint `rgba(250, 247, 240, 0.72)` on `stamp` seals; antique burnished bronze `L ≈ 42%` with `'multiply'` rim on `coins` when `bgLum > 0.72`).
+  - **Strict Isolation:** Always wrap every `globalCompositeOperation` change inside `g.save()` / `g.restore()` so `drawArchivalPlate` remains pure `'source-over'`.
 
 ### 3. Non-Negotiable Libel & Fair-Report Guardrails
 Check `{{LEGAL_STAGE}}` before writing `toyText`, `toySubtext`, `alt`, or any bespoke scene graphics:
@@ -55,7 +60,7 @@ Check `{{LEGAL_STAGE}}` before writing `toyText`, `toySubtext`, `alt`, or any be
 ### 5. Pre-Output QA Gate (Verify Before Returning)
 - Zero floating drop-shadow typography over the center of the canvas or a subject's face (`drawArchivalPlate` lower-left inset only).
 - Zero cartoon clipart or arcade particles (no bouncing coins, no tumbling triangle-flap envelopes, no chunky dashed radar rings, no spark bursts, no giant tilted stamp boxes, no rounded SaaS pills).
-- `toyKind` strictly follows the Two-Layer Wet-Oil & Archival Exhibit grammar (`sample()` wet-oil modulation + `hotspots()` repaint + dignified fine-print `live()` marks + zero text on `redaction` bars).
+- `toyKind` strictly follows the Two-Layer Wet-Oil & Archival Exhibit grammar (`sample()` wet-oil modulation + `hotspots()` repaint + dignified fine-print `live()` marks + zero text on `redaction` bars) and uses `sampleLocalLuminance()` adaptive contrast (`'screen'` ivory/gilt on dark grounds `< 0.48` vs. `'multiply'` press-black/deepened pigment on light grounds `>= 0.48`, strictly wrapped in `g.save()/g.restore()`).
 - `section_template === "opinion"` strictly uses `paletteMood: "monochrome-noir"`.
 - `toyText` (≤ 18 chars), `toySubtext` (≤ 26 chars), and `alt` strictly satisfy the `{{LEGAL_STAGE}}` libel guardrails.
 
