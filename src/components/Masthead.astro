@@ -8,21 +8,19 @@ interface Props {
 }
 
 const {
-  displayDate = 'Thursday, November 19, 2026',
+  displayDate = 'Thursday, Nov. 19, 2026',
   editionDate = '2026-11-19',
   rollup,
 } = Astro.props;
 
 const editions = [
-  { key: 'all', label: 'U.S. & GLOBAL' },
   { key: 'us', label: 'U.S.' },
   { key: 'new-york', label: 'NEW YORK' },
   { key: 'chicago', label: 'CHICAGO' },
   { key: 'los-angeles', label: 'L.A.' },
   { key: 'london', label: 'LONDON' },
   { key: 'india', label: 'INDIA' },
-  { key: 'europe', label: 'EUROPE' },
-  { key: 'global', label: 'GLOBAL' },
+  { key: 'all', label: 'GLOBAL' },
 ];
 
 const sectionsPrimary = [
@@ -37,25 +35,44 @@ const sectionsPrimary = [
 
 const sectionsSecondary = [
   { label: 'The Ledger', href: '/ledger' },
-  { label: 'Interactive', href: '/#interactive-exhibits' },
   { label: 'Archive', href: `/edition/${editionDate}` },
 ];
 
+function formatCompactBillions(usd: number, fallback: string): string {
+  if (usd >= 1e9) return `$${(usd / 1e9).toFixed(1)}B`;
+  if (usd >= 1e6) return `$${(usd / 1e6).toFixed(0)}M`;
+  return fallback;
+}
+
+const initialLoot = formatCompactBillions(rollup.total_loot_usd, rollup.total_loot_display);
+const initialFines = formatCompactBillions(rollup.total_fines_usd, rollup.total_fines_display);
+const initialRatio = `${rollup.avg_fine_ratio_pct.toFixed(1)}%`;
+
 const tickerPayload = JSON.stringify({
   global: {
-    loot: rollup.total_loot_display,
-    fines: rollup.total_fines_display,
-    ratio: `${rollup.avg_fine_ratio_pct.toFixed(1)}%`,
+    loot: initialLoot,
+    fines: initialFines,
+    ratio: initialRatio,
     cases: rollup.total_cases,
     zeroPrison: rollup.zero_prison_cases,
+    avgSlap: rollup.avg_slap_on_wrist_score,
   },
-  regions: rollup.regions,
+  regions: Object.fromEntries(
+    Object.entries(rollup.regions).map(([k, r]) => [
+      k,
+      {
+        ...r,
+        lootShort: formatCompactBillions(r.total_loot_usd, r.total_loot_display),
+        finesShort: formatCompactBillions(r.total_fines_usd, r.total_fines_display),
+      },
+    ])
+  ),
 });
 ---
 
 <header class="fc-masthead" role="banner">
   <div class="fc-container">
-    {/* Row 1: Top Utility Strip */}
+    {/* Row 1: Utility Strip */}
     <div class="fc-utility-bar">
       <div class="fc-utility-left">
         <button
@@ -87,12 +104,12 @@ const tickerPayload = JSON.stringify({
       </div>
 
       <nav class="fc-edition-bar" aria-label="City and regional editions">
-        {editions.map((ed, idx) => (
+        {editions.map((ed) => (
           <button
             type="button"
-            class:list={['fc-edition-btn', { 'is-active': idx === 0 }]}
+            class:list={['fc-edition-btn', { 'is-active': ed.key === 'all' }]}
             data-edition-btn={ed.key}
-            aria-pressed={idx === 0 ? 'true' : 'false'}
+            aria-pressed={ed.key === 'all' ? 'true' : 'false'}
           >
             {ed.label}
           </button>
@@ -101,7 +118,7 @@ const tickerPayload = JSON.stringify({
 
       <div class="fc-utility-right">
         <button type="button" class="fc-btn-slate" data-open-subscribe>
-          Subscribe for $0/Week
+          Subscribe $0
         </button>
         <button type="button" class="fc-btn-outline" data-open-tipline>
           Tip Line
@@ -118,13 +135,13 @@ const tickerPayload = JSON.stringify({
           class="fc-search-input"
           type="search"
           name="q"
-          placeholder="Search defendants, agencies, dockets (e.g., Bank of America, SEBI, Do Kwon)..."
+          placeholder="Search defendants, agencies, dockets..."
         />
-        <button type="submit" class="fc-btn-slate" style="padding: 9px 14px;">Search Ledger</button>
+        <button type="submit" class="fc-btn-slate" style="padding: 9px 14px;">Search</button>
       </form>
     </div>
 
-    {/* Row 2: Nameplate Row (Date | Blackletter Nameplate | Live Cycling Ticker) */}
+    {/* Row 2: Nameplate Row */}
     <div class="fc-nameplate-row">
       <div class="fc-date-block">
         <span class="fc-date-main">{displayDate}</span>
@@ -141,16 +158,18 @@ const tickerPayload = JSON.stringify({
           class="fc-masthead-ticker"
           id="fc-masthead-ticker-btn"
           data-ticker-payload={tickerPayload}
-          title="Click to cycle live docket metrics"
+          title="Click to cycle ledger totals"
         >
-          <span class="fc-ticker-label" id="fc-ticker-label">LOOTED YTD</span>
-          <span class="fc-ticker-val fc-ticker-val--crimson" id="fc-ticker-val">
-            {rollup.total_loot_display} &uarr;
+          <span class="fc-ticker-label" id="fc-ticker-left-label">LOOTED</span>
+          <span class="fc-ticker-val fc-ticker-val--crimson" id="fc-ticker-left-val">
+            {initialLoot}
+          </span>
+          <span class="fc-ticker-sep" aria-hidden="true">&middot;</span>
+          <span class="fc-ticker-label" id="fc-ticker-right-label">FINED</span>
+          <span class="fc-ticker-val fc-ticker-val--green" id="fc-ticker-right-val">
+            {initialRatio}
           </span>
         </button>
-        <span class="fc-ticker-hint" id="fc-ticker-sub">
-          {rollup.total_cases} active docket filings · click to cycle
-        </span>
       </div>
     </div>
 
@@ -159,20 +178,13 @@ const tickerPayload = JSON.stringify({
       <ul class="fc-section-nav-list">
         {sectionsPrimary.map((item) => (
           <li>
-            <a class="fc-section-nav-link" href={item.href}>
-              <span>{item.label}</span>
-              <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.2" />
-              </svg>
-            </a>
+            <a class="fc-section-nav-link" href={item.href}>{item.label}</a>
           </li>
         ))}
         <li class="fc-section-nav-divider" aria-hidden="true"></li>
         {sectionsSecondary.map((item) => (
           <li>
-            <a class="fc-section-nav-link" href={item.href}>
-              <span>{item.label}</span>
-            </a>
+            <a class="fc-section-nav-link" href={item.href}>{item.label}</a>
           </li>
         ))}
       </ul>
@@ -183,20 +195,20 @@ const tickerPayload = JSON.stringify({
   </div>
 </header>
 
-{/* Slide-Out Broadsheet Sections Drawer */}
+{/* Slide-Out Sections Drawer */}
 <div class="fc-nav-drawer" id="fc-home-drawer" aria-hidden="true">
   <div class="fc-nav-drawer-backdrop" data-close-home-drawer></div>
-  <nav class="fc-nav-drawer-panel" aria-label="Sections and editions drawer">
+  <nav class="fc-nav-drawer-panel" aria-label="Sections and bureaus">
     <div class="fc-nav-drawer-head">
       <span style="font-family: var(--fc-font-masthead); font-size: 22px;">The Financial Crimes</span>
       <button type="button" class="fc-icon-btn" data-close-home-drawer aria-label="Close menu">&times;</button>
     </div>
 
     <div>
-      <p class="fc-eyebrow" style="margin: 0 0 8px;">Desks &amp; Beats</p>
+      <p class="fc-eyebrow" style="margin: 0 0 8px;">Desks</p>
       <ul class="fc-nav-drawer-list">
         <li><a href="/">Front Page</a></li>
-        <li><a href="/ledger">The Running Ledger</a></li>
+        <li><a href="/ledger">The Ledger</a></li>
         <li><a href={`/edition/${editionDate}`}>Today&rsquo;s Docket</a></li>
         {sectionsPrimary.map((item) => (
           <li><a href={item.href}>{item.label}</a></li>
@@ -205,7 +217,7 @@ const tickerPayload = JSON.stringify({
     </div>
 
     <div>
-      <p class="fc-eyebrow" style="margin: 0 0 8px;">Regional Bureaus</p>
+      <p class="fc-eyebrow" style="margin: 0 0 8px;">Bureaus</p>
       <div style="display: flex; flex-wrap: wrap; gap: 6px;">
         {editions.map((ed) => (
           <button
@@ -223,10 +235,10 @@ const tickerPayload = JSON.stringify({
 
     <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
       <button type="button" class="fc-btn-slate" data-open-subscribe data-close-home-drawer>
-        Subscribe for $0/Week
+        Subscribe $0
       </button>
       <button type="button" class="fc-btn-outline" data-open-tipline data-close-home-drawer>
-        Submit Public Docket Tip
+        Tip Line
       </button>
     </div>
   </nav>
@@ -258,13 +270,14 @@ const tickerPayload = JSON.stringify({
     el.addEventListener('click', () => toggleHomeDrawer(false));
   });
 
-  // Cycling Crime Ticker
+  // Compact Cycling Ticker
   const tickerBtn = document.getElementById('fc-masthead-ticker-btn');
-  const tickerLabel = document.getElementById('fc-ticker-label');
-  const tickerVal = document.getElementById('fc-ticker-val');
-  const tickerSub = document.getElementById('fc-ticker-sub');
+  const leftLabel = document.getElementById('fc-ticker-left-label');
+  const leftVal = document.getElementById('fc-ticker-left-val');
+  const rightLabel = document.getElementById('fc-ticker-right-label');
+  const rightVal = document.getElementById('fc-ticker-right-val');
 
-  if (tickerBtn && tickerLabel && tickerVal && tickerSub) {
+  if (tickerBtn && leftLabel && leftVal && rightLabel && rightVal) {
     const payload = JSON.parse(tickerBtn.getAttribute('data-ticker-payload') || '{}');
     let activeRegion = 'all';
     let metricIndex = 0;
@@ -272,22 +285,24 @@ const tickerPayload = JSON.stringify({
     function getRegionStats(regionKey: string) {
       if (regionKey === 'all' || !payload.regions || !payload.regions[regionKey]) {
         return {
-          prefix: regionKey === 'all' ? '' : `${regionKey.toUpperCase()} `,
-          loot: payload.global?.loot || '$54.2B',
-          fines: payload.global?.fines || '$2.0B',
-          ratio: payload.global?.ratio || '3.4%',
+          prefix: '',
+          loot: payload.global?.loot || '$59.0B',
+          fines: payload.global?.fines || '$7.5B',
+          ratio: payload.global?.ratio || '12.8%',
           cases: payload.global?.cases || 22,
-          zeroPrison: payload.global?.zeroPrison ?? 4,
+          zeroPrison: payload.global?.zeroPrison ?? 6,
+          avgSlap: payload.global?.avgSlap ?? 53,
         };
       }
       const r = payload.regions[regionKey];
       return {
         prefix: `${r.label} `,
-        loot: r.total_loot_display,
-        fines: r.total_fines_display,
+        loot: r.lootShort || r.total_loot_display,
+        fines: r.finesShort || r.total_fines_display,
         ratio: r.avg_fine_ratio_pct != null ? `${r.avg_fine_ratio_pct.toFixed(1)}%` : 'PENDING',
         cases: r.case_count,
-        zeroPrison: payload.global?.zeroPrison ?? 0,
+        zeroPrison: payload.global?.zeroPrison ?? 6,
+        avgSlap: payload.global?.avgSlap ?? 53,
       };
     }
 
@@ -295,29 +310,37 @@ const tickerPayload = JSON.stringify({
       const s = getRegionStats(activeRegion);
       const modes = [
         {
-          label: `${s.prefix}LOOTED YTD`,
-          val: `${s.loot} ↑`,
-          cls: 'fc-ticker-val fc-ticker-val--crimson',
-          sub: `${s.cases} active docket filings · click to cycle`,
+          l1: `${s.prefix}LOOTED`,
+          v1: s.loot,
+          c1: 'fc-ticker-val fc-ticker-val--crimson',
+          l2: 'FINED',
+          v2: s.ratio,
+          c2: 'fc-ticker-val fc-ticker-val--green',
         },
         {
-          label: `${s.prefix}AVG FINE/LOOT`,
-          val: `${s.ratio} ↓`,
-          cls: 'fc-ticker-val fc-ticker-val--green',
-          sub: `${s.fines} total fines imposed · click to cycle`,
+          l1: `${s.prefix}FINES`,
+          v1: s.fines,
+          c1: 'fc-ticker-val fc-ticker-val--green',
+          l2: '0-PRISON',
+          v2: `${s.zeroPrison}`,
+          c2: 'fc-ticker-val fc-ticker-val--crimson',
         },
         {
-          label: 'ZERO-PRISON DEALS',
-          val: `${s.zeroPrison} CASES`,
-          cls: 'fc-ticker-val fc-ticker-val--crimson',
-          sub: 'Resolved with fines & 0 days served · click to cycle',
+          l1: `${s.prefix}CASES`,
+          v1: String(s.cases),
+          c1: 'fc-ticker-val',
+          l2: 'AVG SLAP',
+          v2: `${s.avgSlap}/100`,
+          c2: 'fc-ticker-val fc-ticker-val--crimson',
         },
       ];
-      const current = modes[metricIndex % modes.length];
-      tickerLabel!.textContent = current.label;
-      tickerVal!.textContent = current.val;
-      tickerVal!.className = current.cls;
-      tickerSub!.textContent = current.sub;
+      const m = modes[metricIndex % modes.length];
+      leftLabel!.textContent = m.l1;
+      leftVal!.textContent = m.v1;
+      leftVal!.className = m.c1;
+      rightLabel!.textContent = m.l2;
+      rightVal!.textContent = m.v2;
+      rightVal!.className = m.c2;
     }
 
     tickerBtn.addEventListener('click', () => {

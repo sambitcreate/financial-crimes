@@ -43,7 +43,6 @@ const railMini = pickMany(edition?.slots.rail_mini, 'rail-mini');
 const railOpinion = pickMany(edition?.slots.rail_opinion, 'rail-opinion');
 const ledgerExplicit = pickMany(edition?.slots.ledger, 'ledger');
 
-// Track already placed slugs so the bottom Ledger Grid displays every remaining case cleanly
 const placed = new Set<string>([
   leadHero.slug,
   leadLive.slug,
@@ -61,10 +60,13 @@ const remaining = [
   ...allArticles.filter((a) => !placed.has(a.slug) && !ledgerExplicit.some((l) => l.slug === a.slug)),
 ];
 
-// Pick 1 secondary blurb for the left LIVE column & companion items for the 2 section packages
 const secondaryBlurb = remaining[0];
-const wallStCompanions = remaining.filter((a) => ['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition)).slice(1, 3);
-const globalCompanions = remaining.filter((a) => !['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition)).slice(0, 2);
+const wallStCompanions = remaining
+  .filter((a) => ['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition))
+  .slice(1, 3);
+const globalCompanions = remaining
+  .filter((a) => !['us', 'new-york', 'chicago', 'los-angeles'].includes(a.edition))
+  .slice(0, 2);
 
 const ledgerGridArticles = remaining.filter(
   (a) =>
@@ -73,30 +75,29 @@ const ledgerGridArticles = remaining.filter(
     !globalCompanions.some((c) => c.slug === a.slug)
 );
 
-// If ledgerGridArticles is small, show all remaining so the bottom ledger feels rich
 const bottomLedger = ledgerGridArticles.length >= 4 ? ledgerGridArticles : remaining;
 
-const displayDate = edition?.display_date ?? 'Thursday, November 19, 2026';
+const displayDate = edition?.display_date ?? 'Thursday, Nov. 19, 2026';
 const editionDate = edition?.edition_date ?? '2026-11-19';
 ---
 
 <BaseLayout
   title="The Financial Crimes — All the Crimes Fit to Fine"
-  description="Independent satirical-yet-factually-grounded digital broadsheet covering global white-collar, corporate, regulatory, and political financial crimes."
+  description="Daily broadsheet tracking global white-collar crime, regulatory fines, and prison time."
 >
   <Masthead slot="header" displayDate={displayDate} editionDate={editionDate} rollup={rollup} />
 
   <div class="fc-container">
-    {/* Dynamic Edition Filter Banner */}
+    {/* Dynamic Bureau Filter Notice */}
     <div class="fc-edition-notice" id="fc-edition-notice" role="status" aria-live="polite">
       <div>
         <strong id="fc-edition-notice-label">GLOBAL EDITION</strong>
         <span id="fc-edition-notice-count" style="margin-left: 8px; color: var(--fc-ink-muted);"></span>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
-        <a id="fc-edition-ledger-link" href="/ledger" class="fc-see-more">Open in Full Ledger &rsaquo;</a>
+        <a id="fc-edition-ledger-link" href="/ledger" class="fc-see-more">Open in Ledger &rsaquo;</a>
         <button type="button" class="fc-btn-outline" id="fc-edition-reset" style="padding: 4px 9px; font-size: 10.5px;">
-          Show All Editions
+          Global
         </button>
       </div>
     </div>
@@ -117,36 +118,31 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
           subLinks={[
             { label: 'Wall Street', href: '/ledger?category=Wall+Street' },
             { label: 'Courts', href: '/ledger?category=Courts' },
-            { label: 'New York Bureau', href: '/ledger?edition=new-york' },
-            { label: 'Full Ledger', href: '/ledger' },
+            { label: 'New York', href: '/ledger?edition=new-york' },
           ]}
           leadArticle={secondary1}
           companionArticles={wallStCompanions}
         />
 
         <SectionPackage
-          topicTitle="Europe, India &amp; Global Enforcement"
+          topicTitle="Global Enforcement"
           subLinks={[
             { label: 'Europe', href: '/ledger?category=Europe' },
             { label: 'India & Asia', href: '/ledger?category=India+%26+Asia' },
-            { label: 'London Bureau', href: '/ledger?edition=london' },
-            { label: 'Singapore & HK', href: '/ledger?edition=global' },
+            { label: 'London', href: '/ledger?edition=london' },
           ]}
           leadArticle={secondary2}
           companionArticles={globalCompanions}
         />
 
-        {/* Global Broadsheet Ledger Grid */}
-        <section class="fc-ledger-strip-section" aria-label="More From the Running Ledger">
+        {/* Compact Ledger Grid */}
+        <section class="fc-ledger-strip-section" aria-label="The Ledger">
           <div class="fc-ledger-strip-head">
-            <div>
-              <span class="fc-eyebrow">BUSINESS DAY · GLOBAL DOCKET</span>
-              <h2 style="font-family: var(--fc-font-headline); font-size: 22px; font-weight: 700; margin: 3px 0 0;">
-                More From the Running Ledger
-              </h2>
-            </div>
+            <h2 style="font-family: var(--fc-font-headline); font-size: 21px; font-weight: 700; margin: 0;">
+              The Ledger
+            </h2>
             <a href="/ledger" class="fc-see-more" style="font-size: 10.5px;">
-              Browse all {allArticles.length} cases &rsaquo;
+              All {allArticles.length} cases &rsaquo;
             </a>
           </div>
 
@@ -160,7 +156,7 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
               >
                 <div class="fc-ledger-card-top">
                   <span class="fc-eyebrow">
-                    {item.city} · {item.agencies[0]}
+                    {item.city} &middot; {item.agencies[0]}
                   </span>
                   {item.slap_on_wrist_score !== null ? (
                     <span
@@ -179,12 +175,11 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
                 <h3 class="fc-ledger-card-title">
                   <a href={item.url} class="fc-headline-link">{item.headline}</a>
                 </h3>
-                <p class="fc-ledger-card-deck">{item.deck}</p>
 
                 <div class="fc-ledger-card-stats">
-                  <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
-                  <span>PENALTY: <strong>{item.financials.fine_display}</strong></span>
-                  <span>CUSTODY: {item.financials.prison_display}</span>
+                  <span><strong>{item.financials.amount_display}</strong></span>
+                  <span>FINE <strong>{item.financials.fine_display}</strong></span>
+                  <span>{item.financials.prison_display}</span>
                 </div>
               </article>
             ))}
@@ -279,8 +274,8 @@ const editionDate = edition?.edition_date ?? '2026-11-19';
         notice.classList.remove('is-visible');
       } else {
         notice.classList.add('is-visible');
-        noticeLabel.textContent = `${key.replace('-', ' ').toUpperCase()} BUREAU EDITION`;
-        noticeCount.textContent = `${matchCount} front-page ${matchCount === 1 ? 'dispatch' : 'dispatches'} highlighted`;
+        noticeLabel.textContent = `${key.replace('-', ' ').toUpperCase()} BUREAU`;
+        noticeCount.textContent = `${matchCount} front-page ${matchCount === 1 ? 'case' : 'cases'}`;
         noticeLink.href = `/ledger?edition=${encodeURIComponent(key)}`;
       }
     }

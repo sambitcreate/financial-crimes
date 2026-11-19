@@ -1,7 +1,5 @@
 ---
-// Native <dialog> modals:
-// 1. Satirical "$0/week" Paywall-That-Isn't-a-Paywall Daily Docket Signup (frontend-only Phase 1)
-// 2. Public-Record Tip Line Modal
+// Native <dialog> modals: $0 Morning Docket signup + Public-Record Tip Line
 ---
 
 <dialog
@@ -21,27 +19,26 @@
     </button>
 
     <p class="fc-eyebrow fc-eyebrow--crimson" style="margin: 0 0 8px;">
-      METERING NOTICE · $0.00 / WEEK
+      $0.00 / WEEK &middot; NO PAYWALL
     </p>
     <h2
       id="fc-sub-title"
-      style="font-family: var(--fc-font-headline); font-size: 27px; font-weight: 700; line-height: 1.14; margin: 0 0 10px;"
+      style="font-family: var(--fc-font-headline); font-size: 26px; font-weight: 700; line-height: 1.14; margin: 0 0 10px;"
     >
-      You have reached your limit of 0 free articles.
+      You have reached your limit of 0 free indictments.
     </h2>
     <p
       id="fc-sub-desc"
-      style="font-family: var(--fc-font-body); font-size: 16px; line-height: 1.48; color: var(--fc-ink-secondary); margin: 0 0 16px;"
+      style="font-family: var(--fc-font-body); font-size: 16px; line-height: 1.46; color: var(--fc-ink-secondary); margin: 0 0 16px;"
     >
-      Just kidding. Every indictment, consent order, and fine-to-loot ratio on
-      <strong>The Financial Crimes</strong> is permanently free to read — without admitting or
-      denying wrongdoing. Leave your email to reserve a seat on <em>The Morning Docket</em>
-      (7:00 AM ET briefing).
+      Every docket, fine ratio, and consent order here is permanently free &mdash; without
+      admitting or denying wrongdoing. Leave an address to reserve <em>The Morning Docket</em>
+      (7:00 a.m. ET).
     </p>
 
     <form id="fc-subscribe-form" style="display: flex; flex-direction: column; gap: 10px;">
       <label style="display: flex; flex-direction: column; gap: 4px; font-family: var(--fc-font-sans); font-size: 12px; font-weight: 600;">
-        Email Address
+        Email
         <input
           type="email"
           name="email"
@@ -52,13 +49,13 @@
       </label>
 
       <label style="display: flex; flex-direction: column; gap: 4px; font-family: var(--fc-font-sans); font-size: 12px; font-weight: 600;">
-        Preferred Bureau Edition
+        Desk
         <select
           name="edition"
           style="border: 1px solid var(--fc-rule-medium); padding: 8px 10px; font-size: 13px; background: #fff;"
         >
-          <option value="global">Global Broadsheet (All Jurisdictions)</option>
-          <option value="us">U.S. Federal &amp; Wall Street</option>
+          <option value="global">Global (All Bureaus)</option>
+          <option value="us">U.S. &amp; Wall Street</option>
           <option value="new-york">New York (SDNY / EDNY)</option>
           <option value="india">India (SEBI / CBI / ED)</option>
           <option value="london">London (UK SFO / FCA)</option>
@@ -67,12 +64,11 @@
       </label>
 
       <button type="submit" class="fc-btn-slate" style="padding: 11px 14px; font-size: 11.5px; margin-top: 4px;">
-        Subscribe for $0.00 / Week
+        Subscribe for $0.00
       </button>
 
       <p style="font-family: var(--fc-font-sans); font-size: 11px; color: var(--fc-ink-muted); margin: 2px 0 0; line-height: 1.4;">
-        Billed at $0.00 every 4 weeks forever. No deferred prosecution agreement required.
-        (Preview mode: local confirmation only; newsletter delivery launches in Phase 3.)
+        Billed at $0.00 forever. No deferred prosecution agreement required.
       </p>
     </form>
 
@@ -81,8 +77,8 @@
       hidden
       style="margin-top: 14px; padding: 14px; background: var(--fc-bg-newsprint); border: 1px solid var(--fc-rule-strong); font-family: var(--fc-font-sans); font-size: 13px; line-height: 1.48;"
     >
-      <strong style="display: block; margin-bottom: 4px; font-family: var(--fc-font-mono); font-size: 11.5px;">
-        DOCKET RESERVATION LOGGED · $0.00 RECEIPT
+      <strong style="display: block; margin-bottom: 4px; font-family: var(--fc-font-mono); font-size: 11px;">
+        RESERVATION LOGGED &middot; $0.00
       </strong>
       <span id="fc-subscribe-success-msg"></span>
     </div>
@@ -105,58 +101,57 @@
       &times;
     </button>
 
-    <p class="fc-eyebrow" style="margin: 0 0 8px;">PUBLIC RECORD DESK · TIP LINE</p>
+    <p class="fc-eyebrow" style="margin: 0 0 8px;">TIP LINE</p>
     <h2
       id="fc-tip-title"
-      style="font-family: var(--fc-font-headline); font-size: 25px; font-weight: 700; line-height: 1.15; margin: 0 0 8px;"
+      style="font-family: var(--fc-font-headline); font-size: 24px; font-weight: 700; line-height: 1.15; margin: 0 0 8px;"
     >
-      Flag a Public Court Filing or Consent Order
+      Send Us a Public Filing
     </h2>
     <p
       id="fc-tip-desc"
-      style="font-family: var(--fc-font-sans); font-size: 13px; line-height: 1.48; color: var(--fc-ink-muted); margin: 0 0 14px;"
+      style="font-family: var(--fc-font-sans); font-size: 13px; line-height: 1.46; color: var(--fc-ink-muted); margin: 0 0 14px;"
     >
-      Point our editors to an unsealed indictment, SEC/CFTC complaint, SEBI order, SFO press
-      release, or regulatory fine we missed. Please submit <strong>publicly filed records</strong>
-      only.
+      Point us to an unsealed indictment, consent order, or regulatory fine we missed.
+      Publicly filed records only.
     </p>
 
     <form id="fc-tipline-form" style="display: flex; flex-direction: column; gap: 10px;">
       <label style="display: flex; flex-direction: column; gap: 4px; font-family: var(--fc-font-sans); font-size: 12px; font-weight: 600;">
-        Jurisdiction / Agency
+        Agency / Court
         <input
           type="text"
           name="agency"
           required
-          placeholder="e.g., SDNY, SEC, FinCEN, SEBI, UK SFO, EPPO"
+          placeholder="SDNY, FinCEN, SEBI, UK SFO, EPPO..."
           style="border: 1px solid var(--fc-rule-medium); padding: 8px 10px; font-size: 13px;"
         />
       </label>
 
       <label style="display: flex; flex-direction: column; gap: 4px; font-family: var(--fc-font-sans); font-size: 12px; font-weight: 600;">
-        Docket Number or Official Public URL
+        Docket Number or Official URL
         <input
           type="text"
           name="docket"
           required
-          placeholder="e.g., 25-Cr.-503 or https://www.justice.gov/..."
+          placeholder="25-Cr.-503 or https://www.justice.gov/..."
           style="border: 1px solid var(--fc-rule-medium); padding: 8px 10px; font-size: 13px;"
         />
       </label>
 
       <label style="display: flex; flex-direction: column; gap: 4px; font-family: var(--fc-font-sans); font-size: 12px; font-weight: 600;">
-        Brief Note (What makes the ratio notable?)
+        Why It Belongs on Page One
         <textarea
           name="note"
           rows="3"
           required
-          placeholder="Alleged amount, fine imposed, and whether executives faced personal charges..."
+          placeholder="Amount at stake, fine imposed, and whether anyone faced personal charges..."
           style="border: 1px solid var(--fc-rule-medium); padding: 8px 10px; font-size: 13px; resize: vertical;"
         ></textarea>
       </label>
 
       <button type="submit" class="fc-btn-slate" style="padding: 10px 14px; font-size: 11px;">
-        Submit Public Docket Tip
+        Submit Tip
       </button>
     </form>
 
@@ -166,10 +161,9 @@
       style="margin-top: 14px; padding: 12px 14px; background: var(--fc-bg-newsprint); border: 1px solid var(--fc-rule-strong); font-family: var(--fc-font-sans); font-size: 13px; line-height: 1.45;"
     >
       <strong style="display: block; font-family: var(--fc-font-mono); font-size: 11px; margin-bottom: 4px;">
-        TIP LOGGED FOR MORNING SWEEP REVIEW
+        TIP RECEIVED
       </strong>
-      Thank you. Our editors verify every tip against primary court and agency releases before
-      inclusion in the Running Ledger.
+      Logged for the 6:00 a.m. ET sweep. We verify every filing against primary court and agency releases.
     </div>
   </div>
 </dialog>
@@ -190,7 +184,7 @@
       } catch {}
       subForm.hidden = true;
       subSuccess.hidden = false;
-      subSuccessMsg.textContent = `Confirmed for ${email} (${edition.toUpperCase()} desk). Your credit card has been charged exactly $0.00 — roughly the same percentage of revenue many banks pay in AML settlements.`;
+      subSuccessMsg.textContent = `Logged for ${email} (${edition.toUpperCase()}). Charged $0.00 — roughly what major banks pay as a share of earnings in laundering settlements.`;
     });
   }
 

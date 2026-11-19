@@ -17,25 +17,25 @@
   "docket_number": "SDNY Indictment (Unsealed Nov. 2026)",
   "legal_stage": "indicted",
   "template": "news",
-  "eyebrow": "SOUTHERN DISTRICT OF NEW YORK",
+  "eyebrow": "MANHATTAN COURTS",
   "headline": "Firm Named ‘Backward Hat Capital’ Accused of Operating $600 Million Currency Ponzi Scheme",
-  "deck": "Federal prosecutors in Manhattan allege Phillip Williams and Devin Johnson solicited more than 2,000 retail investors with promises of over 6 percent monthly foreign-exchange returns.",
-  "byline": "By The Financial Crimes Courts Desk",
+  "deck": "Manhattan prosecutors say Phillip Williams and Devin Johnson took $600 million from 2,000 investors by promising 6% monthly forex returns.",
+  "byline": "By The Courts Desk",
   "dateline": "NEW YORK",
-  "read_time_min": 4,
+  "read_time_min": 2,
   "comment_count": 519,
   "layout_slot": "lead-live",
   "live_updates": [
     {
-      "text": "SDNY prosecutors unseal indictment charging Backward Hat Capital principals Phillip Williams and Devin Johnson over alleged $600M forex pool.",
+      "text": "SDNY unseals charges against Backward Hat Capital principals Phillip Williams and Devin Johnson over an alleged $600M forex pool.",
       "ago": "18m ago"
     },
     {
-      "text": "Filing notes promised returns exceeding 6% per month (>100% annualized) drew over 2,000 retail accounts before redemptions stalled.",
+      "text": "Promised returns topped 6% a month — over 100% annualized — across 2,000+ retail accounts, prosecutors say.",
       "ago": "1h ago"
     },
     {
-      "text": "Defendants retain presumption of innocence pending arraignment and bail proceedings in Manhattan federal court.",
+      "text": "Both defendants are presumed innocent ahead of trial in Manhattan federal court.",
       "ago": "2h ago"
     }
   ],
@@ -67,8 +67,8 @@
     "archetype": "ponzi-pyramid",
     "accent": "crimson",
     "theme": "newsprint",
-    "caption": "Simulated redemption-collapse model of an alleged >6%-per-month foreign-exchange pool. Click “Request Redemption” to trigger liquidity failure.",
-    "credit": "The Financial Crimes Graphics Desk",
+    "caption": "The New York Stock Exchange facade. Prosecutors allege Backward Hat Capital raised ~$600 million on promises of 6% monthly currency gains.",
+    "credit": "Oil Study · The Financial Crimes",
     "data": {
       "title": "Backward Hat Capital: Liquidity Tier Model",
       "promisedReturn": ">6% MONTHLY (>100% ANNUALIZED)",

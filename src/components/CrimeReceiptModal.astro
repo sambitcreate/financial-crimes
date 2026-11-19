@@ -1,5 +1,11 @@
 ---
 import type { ArticleRecord } from '../schemas/article';
+import {
+  formatBroadsheetDate,
+  formatFineRatio,
+  formatGuiltAdmission,
+  formatLegalStage,
+} from '../utils/format';
 
 interface Props {
   article: ArticleRecord;
@@ -8,14 +14,10 @@ interface Props {
 const { article } = Astro.props;
 const { financials } = article;
 
-const fineRatioText =
-  financials.fine_ratio_pct !== null ? `${financials.fine_ratio_pct.toFixed(2)}%` : 'PENDING';
-const guiltText =
-  financials.admitted_guilt === true
-    ? 'YES (PLEA / CONVICTION)'
-    : financials.admitted_guilt === false
-      ? 'NO ("NEITHER ADMIT NOR DENY")'
-      : 'PENDING LITIGATION';
+const formattedDate = formatBroadsheetDate(article.publish_date);
+const fineRatioText = formatFineRatio(financials.fine_ratio_pct, 'PENDING');
+const guiltText = formatGuiltAdmission(article);
+const legalStageText = formatLegalStage(article.legal_stage);
 const slapText =
   article.slap_on_wrist_score !== null ? `${article.slap_on_wrist_score} / 100` : 'PENDING';
 
@@ -51,10 +53,10 @@ const receiptPayload = JSON.stringify({
   headline: article.headline,
   city: article.city,
   venue: article.jurisdiction.venue,
-  agencies: article.agencies.join(' · '),
-  docket: article.docket_number ?? 'PUBLIC REGULATORY ORDER',
-  legalStage: article.legal_stage.toUpperCase(),
-  date: article.publish_date,
+  agencies: article.agencies.join(', '),
+  docket: article.docket_number ?? 'REGULATORY ORDER',
+  legalStage: legalStageText,
+  date: formattedDate,
   amount: financials.amount_display,
   fine: financials.fine_display,
   ratio: fineRatioText,
@@ -70,112 +72,147 @@ const receiptPayload = JSON.stringify({
   class="fc-dialog fc-dialog--receipt"
   aria-labelledby="fc-receipt-heading"
 >
-  <div class="fc-receipt-shell" id="fc-receipt-card" data-receipt-payload={receiptPayload}>
-    <button
-      type="button"
-      class="fc-dialog-close"
-      data-close-dialog
-      aria-label="Close Crime Receipt"
-      style="top: 8px; right: 8px; width: 26px; height: 26px; font-size: 14px;"
-    >
-      &times;
-    </button>
-
-    <div style="text-align: center; padding-right: 18px;">
-      <div style="font-family: var(--fc-font-masthead); font-size: 24px; line-height: 1.1; margin-bottom: 3px;">
-        The Financial Crimes
+  <div class="fc-printer" id="fc-receipt-printer" data-state="idle">
+    {/* Physical Brushed-Graphite Thermal Printer Slot Bezel */}
+    <div class="fc-printer-bezel">
+      <div class="fc-printer-top">
+        <span class="fc-printer-brand">FC-80 THERMAL</span>
+        <div class="fc-printer-status" aria-live="polite">
+          <span class="fc-printer-led" aria-hidden="true"></span>
+          <span class="fc-printer-status-text" id="fc-printer-status-text">READY</span>
+        </div>
+        <button
+          type="button"
+          class="fc-printer-close"
+          data-close-dialog
+          aria-label="Close Crime Receipt"
+        >
+          &times;
+        </button>
       </div>
-      <div style="font-size: 10px; letter-spacing: 0.1em; color: var(--fc-ink-muted);">
-        ITEMIZED PUBLIC DOCKET RECEIPT
+      <div class="fc-printer-slit" aria-hidden="true"></div>
+    </div>
+
+    {/* Overflow-Hidden Paper Chute with Inner Slit Cast Shadow */}
+    <div class="fc-printer-chute">
+      <div class="fc-printer-slit-shadow" aria-hidden="true"></div>
+      <div class="fc-receipt-sheet" id="fc-receipt-sheet">
+        <div class="fc-receipt-window" id="fc-receipt-window">
+          <div class="fc-receipt-paper" id="fc-receipt-card" data-receipt-payload={receiptPayload}>
+            <div class="fc-receipt-band" data-receipt-band="0">
+              <div style="text-align: center;">
+                <div style="font-family: var(--fc-font-masthead); font-size: 24px; line-height: 1.1; margin-bottom: 3px;">
+                  The Financial Crimes
+                </div>
+                <div style="font-size: 9.5px; letter-spacing: 0.12em; color: var(--fc-ink-muted);">
+                  PUBLIC DOCKET RECEIPT
+                </div>
+                <div style="font-size: 10px; color: var(--fc-ink-muted); margin-top: 1px;">
+                  {formattedDate.toUpperCase()} &middot; {article.city.toUpperCase()}
+                </div>
+              </div>
+            </div>
+
+            <div class="fc-receipt-band" data-receipt-band="1">
+              <hr class="fc-receipt-divider" />
+              <h2
+                id="fc-receipt-heading"
+                style="font-family: var(--fc-font-mono); font-size: 11.5px; font-weight: 700; line-height: 1.38; margin: 0 0 8px; text-transform: uppercase;"
+              >
+                {article.headline}
+              </h2>
+            </div>
+
+            <div class="fc-receipt-band" data-receipt-band="2">
+              <div class="fc-receipt-row">
+                <span class="fc-receipt-row-label">DOCKET</span>
+                <span class="fc-receipt-row-val">{article.docket_number ?? 'REGULATORY ORDER'}</span>
+              </div>
+              <div class="fc-receipt-row">
+                <span class="fc-receipt-row-label">AGENCIES</span>
+                <span class="fc-receipt-row-val">{article.agencies.join(', ')}</span>
+              </div>
+              <div class="fc-receipt-row">
+                <span class="fc-receipt-row-label">STATUS</span>
+                <span class="fc-receipt-row-val">{legalStageText}</span>
+              </div>
+            </div>
+
+            <div class="fc-receipt-band" data-receipt-band="3">
+              <hr class="fc-receipt-divider" />
+              <div class="fc-receipt-row">
+                <span class="fc-receipt-row-label">ALLEGED SCALE</span>
+                <span class="fc-receipt-row-val" style="font-weight: 700;">{financials.amount_display}</span>
+              </div>
+              <div class="fc-receipt-row">
+                <span class="fc-receipt-row-label">PENALTY</span>
+                <span class="fc-receipt-row-val" style="font-weight: 700;">{financials.fine_display}</span>
+              </div>
+              <div class="fc-receipt-row">
+                <span class="fc-receipt-row-label">FINE-TO-LOOT</span>
+                <span class="fc-receipt-row-val" style="font-weight: 700; color: var(--fc-art-crimson);">
+                  {fineRatioText}
+                </span>
+              </div>
+              <div class="fc-receipt-row">
+                <span class="fc-receipt-row-label">CUSTODY</span>
+                <span class="fc-receipt-row-val" style="font-weight: 700;">{financials.prison_display}</span>
+              </div>
+              <div class="fc-receipt-row">
+                <span class="fc-receipt-row-label">ADMITTED GUILT</span>
+                <span class="fc-receipt-row-val">{guiltText}</span>
+              </div>
+            </div>
+
+            <div class="fc-receipt-band" data-receipt-band="4">
+              <hr class="fc-receipt-divider" />
+              <div class="fc-receipt-row" style="font-size: 13px; font-weight: 700; margin-bottom: 0;">
+                <span>WRIST-SLAP INDEX</span>
+                <span style="color: var(--fc-art-crimson);">{slapText}</span>
+              </div>
+            </div>
+
+            <div class="fc-receipt-band" data-receipt-band="5">
+              <div style="margin: 12px 0 6px; display: flex; flex-direction: column; align-items: center;">
+                <svg
+                  width={svgWidth}
+                  height="32"
+                  viewBox={`0 0 ${svgWidth} 32`}
+                  role="img"
+                  aria-label={`Docket barcode ${article.id}`}
+                  style="max-width: 100%; height: 32px;"
+                >
+                  {barRects.map((b) => (
+                    <rect x={b.x} y="0" width={b.w} height="32" fill="#121212" />
+                  ))}
+                </svg>
+                <span style="font-size: 9px; letter-spacing: 0.16em; margin-top: 3px; color: var(--fc-ink-muted);">
+                  {article.id.toUpperCase()} &middot; FINANCIALCRIMES.NEWS
+                </span>
+              </div>
+            </div>
+
+            <div class="fc-receipt-band" data-receipt-band="6">
+              <p style="text-align: center; font-size: 9.5px; color: var(--fc-ink-muted); margin: 4px 0 0;">
+                ALL THE CRIMES FIT TO FINE. RETAIN FOR SHAREHOLDER DISCLOSURES.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="fc-receipt-serrated-bottom" aria-hidden="true"></div>
       </div>
-      <div style="font-size: 10px; color: var(--fc-ink-muted);">
-        {article.publish_date} · {article.city.toUpperCase()}
-      </div>
     </div>
 
-    <hr class="fc-receipt-divider" />
-
-    <h2
-      id="fc-receipt-heading"
-      style="font-family: var(--fc-font-mono); font-size: 12px; font-weight: 700; line-height: 1.38; margin: 0 0 8px; text-transform: uppercase;"
-    >
-      {article.headline}
-    </h2>
-
-    <div class="fc-receipt-row">
-      <span>DOCKET / REF</span>
-      <span style="text-align: right; font-weight: 600;">{article.docket_number ?? 'REGULATORY ORDER'}</span>
-    </div>
-    <div class="fc-receipt-row">
-      <span>AGENCIES</span>
-      <span style="text-align: right;">{article.agencies.join(', ')}</span>
-    </div>
-    <div class="fc-receipt-row">
-      <span>STATUS</span>
-      <span style="text-align: right; text-transform: uppercase;">{article.legal_stage}</span>
-    </div>
-
-    <hr class="fc-receipt-divider" />
-
-    <div class="fc-receipt-row">
-      <span>ALLEGED LOOT / SCALE</span>
-      <span style="font-weight: 700;">{financials.amount_display}</span>
-    </div>
-    <div class="fc-receipt-row">
-      <span>FINE / PENALTY</span>
-      <span style="font-weight: 700;">{financials.fine_display}</span>
-    </div>
-    <div class="fc-receipt-row">
-      <span>FINE-TO-LOOT RATIO</span>
-      <span style="font-weight: 700; color: var(--fc-art-crimson);">{fineRatioText}</span>
-    </div>
-    <div class="fc-receipt-row">
-      <span>PRISON SENTENCE</span>
-      <span style="font-weight: 700;">{financials.prison_display}</span>
-    </div>
-    <div class="fc-receipt-row">
-      <span>ADMITTED GUILT</span>
-      <span style="text-align: right;">{guiltText}</span>
-    </div>
-
-    <hr class="fc-receipt-divider" />
-
-    <div class="fc-receipt-row" style="font-size: 13px; font-weight: 700;">
-      <span>WRIST-SLAP INDEX</span>
-      <span style="color: var(--fc-art-crimson);">{slapText}</span>
-    </div>
-
-    <div style="margin: 12px 0 6px; display: flex; flex-direction: column; align-items: center;">
-      <svg
-        width={svgWidth}
-        height="34"
-        viewBox={`0 0 ${svgWidth} 34`}
-        role="img"
-        aria-label={`Docket barcode ${article.id}`}
-        style="max-width: 100%; height: 34px;"
-      >
-        {barRects.map((b) => (
-          <rect x={b.x} y="0" width={b.w} height="34" fill="#121212" />
-        ))}
-      </svg>
-      <span style="font-size: 9.5px; letter-spacing: 0.16em; margin-top: 3px; color: var(--fc-ink-muted);">
-        {article.id.toUpperCase()} · FINANCIALCRIMES.NEWS
-      </span>
-    </div>
-
-    <p style="text-align: center; font-size: 10px; color: var(--fc-ink-muted); margin: 6px 0 0;">
-      THANK YOU FOR YOUR COMPLIANCE. PLEASE RETAIN FOR SHAREHOLDER DISCLOSURES.
-    </p>
-
-    <div class="fc-receipt-actions">
-      <button type="button" class="fc-btn-slate" id="fc-receipt-download-png" style="flex: 1;">
-        Download PNG
+    {/* Post-Print Controls */}
+    <div class="fc-printer-actions" id="fc-receipt-actions">
+      <button type="button" class="fc-btn-slate fc-printer-btn-primary" id="fc-receipt-download-png">
+        Tear &amp; Save PNG
       </button>
-      <button type="button" class="fc-btn-outline" id="fc-receipt-copy-link">
+      <button type="button" class="fc-btn-outline fc-printer-btn-sec" id="fc-receipt-reprint">
+        Reprint
+      </button>
+      <button type="button" class="fc-btn-outline fc-printer-btn-sec" id="fc-receipt-copy-link">
         Copy Link
-      </button>
-      <button type="button" class="fc-btn-outline" data-close-dialog>
-        Close
       </button>
     </div>
   </div>
@@ -183,17 +220,151 @@ const receiptPayload = JSON.stringify({
 
 <script>
   const receiptDialog = document.getElementById('fc-receipt-dialog') as HTMLDialogElement | null;
+  const printerEl = document.getElementById('fc-receipt-printer');
+  const statusText = document.getElementById('fc-printer-status-text');
+  const receiptSheet = document.getElementById('fc-receipt-sheet');
+  const receiptWindow = document.getElementById('fc-receipt-window');
   const receiptCard = document.getElementById('fc-receipt-card');
   const downloadBtn = document.getElementById('fc-receipt-download-png');
+  const reprintBtn = document.getElementById('fc-receipt-reprint');
   const copyBtn = document.getElementById('fc-receipt-copy-link');
+  const bands = Array.from(document.querySelectorAll<HTMLElement>('[data-receipt-band]'));
+
+  const prefersReducedMotion = () =>
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let activeAnim: Animation | null = null;
+  let scheduledTimers: number[] = [];
+
+  function clearPrintTimers() {
+    scheduledTimers.forEach((id) => window.clearTimeout(id));
+    scheduledTimers = [];
+    if (activeAnim) {
+      activeAnim.cancel();
+      activeAnim = null;
+    }
+  }
+
+  function finishPrintImmediate() {
+    clearPrintTimers();
+    if (!printerEl || !receiptWindow) return;
+    receiptWindow.style.height = 'auto';
+    bands.forEach((b) => b.classList.add('is-inked'));
+    printerEl.setAttribute('data-state', 'printed');
+    if (statusText) statusText.textContent = 'PRINTED';
+  }
+
+  function runThermalPrint(retractFirst = false) {
+    if (!printerEl || !receiptWindow || !receiptCard) return;
+
+    if (prefersReducedMotion()) {
+      finishPrintImmediate();
+      return;
+    }
+
+    clearPrintTimers();
+
+    const startFeed = () => {
+      // Measure true natural height of the receipt paper
+      receiptWindow.style.height = 'auto';
+      const fullH = Math.max(receiptCard.scrollHeight, 320);
+
+      bands.forEach((b) => b.classList.remove('is-inked'));
+      printerEl.setAttribute('data-state', 'printing');
+      if (statusText) statusText.textContent = 'PRINTING…';
+
+      // Discrete mechanical ratchet stops mimicking a stepped thermal paper motor
+      const keyframes: Keyframe[] = [
+        { height: '0px', offset: 0 },
+        { height: `${Math.round(fullH * 0.16)}px`, offset: 0.09 },
+        { height: `${Math.round(fullH * 0.16)}px`, offset: 0.13 },
+        { height: `${Math.round(fullH * 0.31)}px`, offset: 0.23 },
+        { height: `${Math.round(fullH * 0.31)}px`, offset: 0.27 },
+        { height: `${Math.round(fullH * 0.46)}px`, offset: 0.39 },
+        { height: `${Math.round(fullH * 0.46)}px`, offset: 0.43 },
+        { height: `${Math.round(fullH * 0.68)}px`, offset: 0.58 },
+        { height: `${Math.round(fullH * 0.68)}px`, offset: 0.62 },
+        { height: `${Math.round(fullH * 0.8)}px`, offset: 0.74 },
+        { height: `${Math.round(fullH * 0.8)}px`, offset: 0.78 },
+        { height: `${Math.round(fullH * 0.93)}px`, offset: 0.9 },
+        { height: `${Math.round(fullH * 0.93)}px`, offset: 0.93 },
+        { height: `${fullH}px`, offset: 1 },
+      ];
+
+      const totalMs = 1420;
+      receiptWindow.style.height = '0px';
+
+      if (typeof receiptWindow.animate === 'function') {
+        activeAnim = receiptWindow.animate(keyframes, {
+          duration: totalMs,
+          easing: 'linear',
+          fill: 'forwards',
+        });
+        activeAnim.onfinish = () => {
+          receiptWindow.style.height = 'auto';
+          activeAnim = null;
+          printerEl.setAttribute('data-state', 'printed');
+          if (statusText) statusText.textContent = 'PRINTED';
+        };
+      } else {
+        receiptWindow.style.height = 'auto';
+      }
+
+      // Sync crisp thermal-ink band reveals to each mechanical ratchet step
+      const bandOffsets = [60, 260, 460, 690, 960, 1140, 1290];
+      bands.forEach((band, idx) => {
+        const delay = bandOffsets[idx] ?? Math.round((idx / Math.max(bands.length, 1)) * totalMs);
+        const t = window.setTimeout(() => {
+          band.classList.add('is-inked');
+        }, delay);
+        scheduledTimers.push(t);
+      });
+
+      const doneTimer = window.setTimeout(() => {
+        receiptWindow.style.height = 'auto';
+        bands.forEach((b) => b.classList.add('is-inked'));
+        printerEl.setAttribute('data-state', 'printed');
+        if (statusText) statusText.textContent = 'PRINTED';
+      }, totalMs + 30);
+      scheduledTimers.push(doneTimer);
+    };
+
+    if (retractFirst && typeof receiptWindow.animate === 'function') {
+      const currentH = receiptWindow.getBoundingClientRect().height || receiptCard.scrollHeight;
+      printerEl.setAttribute('data-state', 'printing');
+      if (statusText) statusText.textContent = 'FEEDING…';
+      activeAnim = receiptWindow.animate(
+        [{ height: `${currentH}px` }, { height: '0px' }],
+        { duration: 210, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' }
+      );
+      activeAnim.onfinish = () => {
+        activeAnim = null;
+        startFeed();
+      };
+    } else {
+      startFeed();
+    }
+  }
 
   document.addEventListener('click', (event) => {
     const target = event.target as HTMLElement | null;
     if (!target) return;
     if (target.closest('[data-open-receipt]') && receiptDialog) {
       event.preventDefault();
-      if (!receiptDialog.open) receiptDialog.showModal();
+      if (!receiptDialog.open) {
+        receiptDialog.showModal();
+        runThermalPrint(false);
+      }
     }
+  });
+
+  receiptDialog?.addEventListener('close', () => {
+    clearPrintTimers();
+    if (receiptSheet) receiptSheet.classList.remove('is-tearing');
+  });
+
+  reprintBtn?.addEventListener('click', () => {
+    runThermalPrint(true);
   });
 
   if (copyBtn) {
@@ -201,7 +372,7 @@ const receiptPayload = JSON.stringify({
       try {
         await navigator.clipboard.writeText(window.location.href);
         const orig = copyBtn.textContent;
-        copyBtn.textContent = 'Copied!';
+        copyBtn.textContent = 'Copied';
         setTimeout(() => {
           copyBtn.textContent = orig;
         }, 1600);
@@ -216,7 +387,7 @@ const receiptPayload = JSON.stringify({
     text: string,
     maxWidth: number
   ): string[] {
-    const words = text.split(/\s+/);
+    const words = text.split(/\s+/).filter(Boolean);
     const lines: string[] = [];
     let current = '';
     for (const word of words) {
@@ -232,158 +403,216 @@ const receiptPayload = JSON.stringify({
     return lines;
   }
 
-  if (downloadBtn && receiptCard) {
-    downloadBtn.addEventListener('click', () => {
-      const data = JSON.parse(receiptCard.getAttribute('data-receipt-payload') || '{}');
-      const W = 760;
-      const pad = 46;
-      const innerW = W - pad * 2;
+  async function exportReceiptPng() {
+    if (!receiptCard) return;
+    const data = JSON.parse(receiptCard.getAttribute('data-receipt-payload') || '{}');
 
-      // Measure wrapped headline lines first
-      const measureCanvas = document.createElement('canvas');
-      const mctx = measureCanvas.getContext('2d');
-      if (!mctx) return;
-      mctx.font = '700 22px "JetBrains Mono", ui-monospace, monospace';
-      const headLines = wrapCanvasText(mctx, String(data.headline || '').toUpperCase(), innerW);
+    if (document.fonts && document.fonts.ready) {
+      try {
+        await Promise.race([
+          document.fonts.ready,
+          new Promise((resolve) => setTimeout(resolve, 250)),
+        ]);
+      } catch {}
+    }
 
-      const H = 760 + headLines.length * 30;
-      const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = H;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+    const W = 840;
+    const pad = 54;
+    const innerW = W - pad * 2;
 
-      // Outer white editorial mat
-      ctx.fillStyle = '#ece9e1';
-      ctx.fillRect(0, 0, W, H);
+    const measureCanvas = document.createElement('canvas');
+    const mctx = measureCanvas.getContext('2d');
+    if (!mctx) return;
 
-      // Serrated thermal paper body
-      const rx = 24;
-      const ry = 26;
-      const rw = W - 48;
-      const rh = H - 52;
-      ctx.fillStyle = '#fbfaf6';
+    mctx.font = '700 22px "JetBrains Mono", ui-monospace, monospace';
+    const headLines = wrapCanvasText(mctx, String(data.headline || '').toUpperCase(), innerW);
+
+    const rowsSectionA = [
+      { label: 'DOCKET', val: String(data.docket || 'REGULATORY ORDER'), accent: false },
+      { label: 'AGENCIES', val: String(data.agencies || ''), accent: false },
+      { label: 'STATUS', val: String(data.legalStage || ''), accent: false },
+    ];
+
+    const rowsSectionB = [
+      { label: 'ALLEGED SCALE', val: String(data.amount || ''), accent: false },
+      { label: 'PENALTY', val: String(data.fine || ''), accent: false },
+      { label: 'FINE-TO-LOOT', val: String(data.ratio || ''), accent: true },
+      { label: 'CUSTODY', val: String(data.prison || ''), accent: false },
+      { label: 'ADMITTED GUILT', val: String(data.guilt || ''), accent: false },
+    ];
+
+    const measureRowLines = (label: string, val: string): string[] => {
+      mctx.font = '400 17px "JetBrains Mono", ui-monospace, monospace';
+      const labelW = mctx.measureText(label).width;
+      const availW = Math.max(240, innerW - labelW - 24);
+      mctx.font = '700 17px "JetBrains Mono", ui-monospace, monospace';
+      return wrapCanvasText(mctx, val, availW);
+    };
+
+    const countSectionLines = (rows: { label: string; val: string }[]) =>
+      rows.reduce((sum, r) => sum + Math.max(1, measureRowLines(r.label, r.val).length), 0);
+
+    const extraRowLines =
+      countSectionLines(rowsSectionA) - rowsSectionA.length +
+      countSectionLines(rowsSectionB) - rowsSectionB.length;
+
+    const H = 810 + headLines.length * 30 + extraRowLines * 24;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Warm newsprint outer mat
+    ctx.fillStyle = '#ece9e1';
+    ctx.fillRect(0, 0, W, H);
+
+    // Serrated thermal paper body
+    const rx = 28;
+    const ry = 28;
+    const rw = W - 56;
+    const rh = H - 56;
+    ctx.fillStyle = '#fbfaf6';
+    ctx.beginPath();
+    ctx.moveTo(rx, ry);
+    const teeth = 30;
+    const toothW = rw / teeth;
+    for (let i = 0; i < teeth; i++) {
+      ctx.lineTo(rx + i * toothW + toothW / 2, ry - 10);
+      ctx.lineTo(rx + (i + 1) * toothW, ry);
+    }
+    ctx.lineTo(rx + rw, ry + rh);
+    for (let i = teeth; i > 0; i--) {
+      ctx.lineTo(rx + i * toothW - toothW / 2, ry + rh + 10);
+      ctx.lineTo(rx + (i - 1) * toothW, ry + rh);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#121212';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    let y = ry + 56;
+    ctx.fillStyle = '#121212';
+    ctx.textAlign = 'center';
+    ctx.font = '400 44px "UnifrakturMaguntia", Georgia, serif';
+    ctx.fillText('The Financial Crimes', W / 2, y);
+
+    y += 28;
+    ctx.font = '600 14px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillStyle = '#5a5a5a';
+    ctx.fillText('PUBLIC DOCKET RECEIPT', W / 2, y);
+
+    y += 22;
+    ctx.fillText(
+      `${String(data.date || '').toUpperCase()} · ${String(data.city || '').toUpperCase()}`,
+      W / 2,
+      y
+    );
+
+    const drawDash = (yy: number) => {
+      ctx.save();
+      ctx.strokeStyle = '#666666';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 6]);
       ctx.beginPath();
-      ctx.moveTo(rx, ry);
-      const teeth = 28;
-      const toothW = rw / teeth;
-      for (let i = 0; i < teeth; i++) {
-        ctx.lineTo(rx + i * toothW + toothW / 2, ry - 10);
-        ctx.lineTo(rx + (i + 1) * toothW, ry);
-      }
-      ctx.lineTo(rx + rw, ry + rh);
-      for (let i = teeth; i > 0; i--) {
-        ctx.lineTo(rx + i * toothW - toothW / 2, ry + rh + 10);
-        ctx.lineTo(rx + (i - 1) * toothW, ry + rh);
-      }
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = '#121212';
-      ctx.lineWidth = 2;
+      ctx.moveTo(pad, yy);
+      ctx.lineTo(W - pad, yy);
       ctx.stroke();
+      ctx.restore();
+    };
 
-      let y = ry + 52;
-      ctx.fillStyle = '#121212';
-      ctx.textAlign = 'center';
-      ctx.font = '400 42px "UnifrakturMaguntia", Georgia, serif';
-      ctx.fillText('The Financial Crimes', W / 2, y);
+    y += 22;
+    drawDash(y);
+    y += 34;
 
-      y += 28;
-      ctx.font = '600 15px "JetBrains Mono", ui-monospace, monospace';
-      ctx.fillStyle = '#5a5a5a';
-      ctx.fillText('ITEMIZED PUBLIC DOCKET RECEIPT', W / 2, y);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#121212';
+    ctx.font = '700 22px "JetBrains Mono", ui-monospace, monospace';
+    for (const line of headLines) {
+      ctx.fillText(line, pad, y);
+      y += 30;
+    }
 
-      y += 22;
-      ctx.fillText(`${data.date || ''} · ${String(data.city || '').toUpperCase()}`, W / 2, y);
-
-      const drawDash = (yy: number) => {
-        ctx.save();
-        ctx.strokeStyle = '#666666';
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([6, 6]);
-        ctx.beginPath();
-        ctx.moveTo(pad, yy);
-        ctx.lineTo(W - pad, yy);
-        ctx.stroke();
-        ctx.restore();
-      };
-
-      y += 22;
-      drawDash(y);
-      y += 34;
-
+    y += 12;
+    const drawRow = (label: string, val: string, accent = false) => {
+      ctx.font = '400 17px "JetBrains Mono", ui-monospace, monospace';
+      const labelW = ctx.measureText(label).width;
+      ctx.fillStyle = '#555555';
       ctx.textAlign = 'left';
-      ctx.fillStyle = '#121212';
-      ctx.font = '700 22px "JetBrains Mono", ui-monospace, monospace';
-      for (const line of headLines) {
-        ctx.fillText(line, pad, y);
-        y += 30;
-      }
+      ctx.fillText(label, pad, y);
 
-      y += 12;
-      const drawRow = (label: string, val: string, accent = false, bold = false) => {
-        ctx.font = `${bold ? '700' : '400'} 17px "JetBrains Mono", ui-monospace, monospace`;
-        ctx.fillStyle = '#444444';
-        ctx.textAlign = 'left';
-        ctx.fillText(label, pad, y);
-        ctx.font = '700 17px "JetBrains Mono", ui-monospace, monospace';
-        ctx.fillStyle = accent ? '#a62626' : '#121212';
-        ctx.textAlign = 'right';
-        ctx.fillText(val, W - pad, y);
-        y += 32;
-      };
-
-      drawRow('DOCKET / REF', String(data.docket || 'REGULATORY ORDER').slice(0, 28));
-      drawRow('AGENCIES', String(data.agencies || '').slice(0, 32));
-      drawRow('STATUS', String(data.legalStage || ''));
-
-      y += 4;
-      drawDash(y);
-      y += 34;
-
-      drawRow('ALLEGED LOOT / SCALE', String(data.amount || ''));
-      drawRow('FINE / PENALTY', String(data.fine || ''));
-      drawRow('FINE-TO-LOOT RATIO', String(data.ratio || ''), true);
-      drawRow('PRISON SENTENCE', String(data.prison || ''));
-      drawRow('ADMITTED GUILT', String(data.guilt || '').slice(0, 28));
-
-      y += 4;
-      drawDash(y);
-      y += 38;
-
-      ctx.font = '700 22px "JetBrains Mono", ui-monospace, monospace';
-      ctx.fillStyle = '#121212';
-      ctx.textAlign = 'left';
-      ctx.fillText('WRIST-SLAP INDEX', pad, y);
-      ctx.fillStyle = '#a62626';
+      const availW = Math.max(240, innerW - labelW - 24);
+      ctx.font = '700 17px "JetBrains Mono", ui-monospace, monospace';
+      ctx.fillStyle = accent ? '#a62626' : '#121212';
       ctx.textAlign = 'right';
-      ctx.fillText(String(data.slap || 'PENDING'), W - pad, y);
-
-      // Draw crisp barcode
-      y += 34;
-      const bars: number[] = Array.isArray(data.bars) ? data.bars : [2, 1, 3, 2, 1, 2];
-      const totalBarUnits = bars.reduce((acc, w, i) => acc + w * 2 + (i % 2 === 0 ? 4 : 6), 0);
-      let bx = Math.max(pad, (W - totalBarUnits) / 2);
-      ctx.fillStyle = '#121212';
-      bars.forEach((w, i) => {
-        ctx.fillRect(bx, y, w * 2, 54);
-        bx += w * 2 + (i % 2 === 0 ? 4 : 6);
+      const lines = wrapCanvasText(ctx, val, availW);
+      lines.forEach((line, idx) => {
+        ctx.fillText(line, W - pad, y + idx * 24);
       });
+      y += 32 + (lines.length - 1) * 24;
+    };
 
-      y += 78;
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#5a5a5a';
-      ctx.font = '600 13px "JetBrains Mono", ui-monospace, monospace';
-      ctx.fillText(`${String(data.id || '').toUpperCase()} · FINANCIALCRIMES.NEWS`, W / 2, y);
+    for (const r of rowsSectionA) drawRow(r.label, r.val, r.accent);
 
-      y += 24;
-      ctx.font = '400 12px "JetBrains Mono", ui-monospace, monospace';
-      ctx.fillText('ALL THE CRIMES FIT TO FINE · RETAIN FOR SHAREHOLDER DISCLOSURES', W / 2, y);
+    y += 4;
+    drawDash(y);
+    y += 34;
 
-      const link = document.createElement('a');
-      link.download = `crime-receipt-${data.slug || 'docket'}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+    for (const r of rowsSectionB) drawRow(r.label, r.val, r.accent);
+
+    y += 4;
+    drawDash(y);
+    y += 40;
+
+    ctx.font = '700 23px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillStyle = '#121212';
+    ctx.textAlign = 'left';
+    ctx.fillText('WRIST-SLAP INDEX', pad, y);
+    ctx.fillStyle = '#a62626';
+    ctx.textAlign = 'right';
+    ctx.fillText(String(data.slap || 'PENDING'), W - pad, y);
+
+    // Crisp barcode
+    y += 36;
+    const barList: number[] = Array.isArray(data.bars) ? data.bars : [2, 1, 3, 2, 1, 2];
+    const totalBarUnits = barList.reduce((acc, w, i) => acc + w * 2 + (i % 2 === 0 ? 4 : 6), 0);
+    let bx = Math.max(pad, (W - totalBarUnits) / 2);
+    ctx.fillStyle = '#121212';
+    barList.forEach((w, i) => {
+      ctx.fillRect(bx, y, w * 2, 54);
+      bx += w * 2 + (i % 2 === 0 ? 4 : 6);
+    });
+
+    y += 78;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#5a5a5a';
+    ctx.font = '600 13px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillText(`${String(data.id || '').toUpperCase()} · FINANCIALCRIMES.NEWS`, W / 2, y);
+
+    y += 24;
+    ctx.font = '400 12px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillText('ALL THE CRIMES FIT TO FINE · RETAIN FOR SHAREHOLDER DISCLOSURES', W / 2, y);
+
+    const link = document.createElement('a');
+    link.download = `crime-receipt-${data.slug || 'docket'}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+      if (prefersReducedMotion() || !receiptSheet) {
+        exportReceiptPng();
+        return;
+      }
+      receiptSheet.classList.remove('is-tearing');
+      void receiptSheet.offsetWidth;
+      receiptSheet.classList.add('is-tearing');
+      window.setTimeout(() => {
+        receiptSheet.classList.remove('is-tearing');
+        exportReceiptPng();
+      }, 220);
     });
   }
 </script>

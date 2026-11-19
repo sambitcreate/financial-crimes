@@ -4,6 +4,7 @@ import CompactHeader from '../../components/CompactHeader.astro';
 import FcArt from '../../components/FcArt.astro';
 import { loadAllArticles, loadAllEditions, loadEdition, loadRollupStats } from '../../loaders/articles';
 import type { ArticleRecord, EditionManifest } from '../../schemas/article';
+import { formatBroadsheetDate } from '../../utils/format';
 
 export async function getStaticPaths() {
   const [editions, allArticles, rollup] = await Promise.all([
@@ -95,34 +96,32 @@ const pageBusiness = [
 const topicLinks = [
   { label: 'Front Page', href: '/' },
   { label: "Today's Docket", href: `/edition/${edition.edition_date}`, current: true },
-  { label: 'Searchable Ledger', href: '/ledger' },
+  { label: 'The Ledger', href: '/ledger' },
 ];
 ---
 
 <BaseLayout
-  title={`Today's Docket (${edition.display_date}) — The Financial Crimes`}
-  description={`Print-style daily edition snapshot for ${edition.display_date} (${edition.volume}) of The Financial Crimes.`}
+  title={`Today's Docket (${formatBroadsheetDate(edition.edition_date)}) — The Financial Crimes`}
+  description={`Daily print snapshot for ${formatBroadsheetDate(edition.edition_date)} (${edition.volume}).`}
 >
   <CompactHeader
     slot="header"
     showTopicBar={true}
-    topicTitle={`Edition Archive · ${edition.volume}`}
+    topicTitle={edition.volume}
     topicLinks={topicLinks}
   />
 
   <div class="fc-container" style="padding-top: 28px; padding-bottom: 56px;">
-    {/* Print Edition Masthead Box */}
+    {/* Edition Masthead */}
     <header style="text-align: center; padding-bottom: 20px; border-bottom: 4px double var(--fc-rule-strong);">
       <p class="fc-eyebrow" style="margin: 0 0 6px;">
-        {edition.volume} &middot; DAILY EDITION SNAPSHOT &middot; 7:00 A.M. ET PRESS RUN
+        {edition.volume} &middot; 7:00 A.M. ET EDITION
       </p>
-      <h1 style="font-family: var(--fc-font-headline); font-size: clamp(30px, 4.5vw, 46px); font-weight: 700; line-height: 1.08; margin: 0 0 8px;">
-        Today&rsquo;s Docket: {edition.display_date}
+      <h1 style="font-family: var(--fc-font-headline); font-size: clamp(30px, 4.5vw, 44px); font-weight: 700; line-height: 1.08; margin: 0 0 8px;">
+        {edition.display_date}
       </h1>
-      <p style="font-family: var(--fc-font-body); font-size: 16.5px; color: var(--fc-ink-muted); margin: 0 0 14px;">
-        &ldquo;{edition.tagline ?? 'All the Crimes Fit to Fine.'}&rdquo; &mdash;{' '}
-        {allArticles.length} verified public court and regulatory filings totaling{' '}
-        <strong>{rollup.total_loot_display}</strong> in alleged scale.
+      <p style="font-family: var(--fc-font-body); font-size: 16px; color: var(--fc-ink-muted); margin: 0 0 14px;">
+        {allArticles.length} filings totaling <strong>{rollup.total_loot_display}</strong> in alleged scale.
       </p>
 
       {allEditions.length > 1 && (
@@ -132,7 +131,7 @@ const topicLinks = [
               href={`/edition/${ed.edition_date}`}
               class={ed.edition_date === edition.edition_date ? 'fc-btn-slate' : 'fc-btn-outline'}
             >
-              {ed.edition_date}
+              {formatBroadsheetDate(ed.edition_date)}
             </a>
           ))}
         </div>
@@ -141,9 +140,9 @@ const topicLinks = [
 
     {/* Section A1: Lead Docket */}
     <section style="padding: 24px 0; border-bottom: 1px solid var(--fc-rule-strong);">
-      <p class="fc-eyebrow fc-eyebrow--crimson" style="margin: 0 0 4px;">SECTION A · PAGE A1</p>
-      <h2 style="font-family: var(--fc-font-headline); font-size: 26px; font-weight: 700; margin: 0 0 18px;">
-        Front-Page Lead Docket
+      <p class="fc-eyebrow fc-eyebrow--crimson" style="margin: 0 0 4px;">PAGE A1</p>
+      <h2 style="font-family: var(--fc-font-headline); font-size: 24px; font-weight: 700; margin: 0 0 18px;">
+        Front Page
       </h2>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 22px;">
@@ -152,6 +151,7 @@ const topicLinks = [
             <a href={item.url} style="border: 1px solid var(--fc-rule-light); display: block;" aria-label={item.headline}>
               <FcArt
                 id={`${item.id}-ed-a1`}
+                slug={item.slug}
                 spec={item.interactive_art_spec}
                 mode="thumb"
                 aspect="16/10"
@@ -167,19 +167,19 @@ const topicLinks = [
               {item.deck}
             </p>
             <div class="fc-ledger-card-stats">
-              <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
-              <span>FINE: <strong>{item.financials.fine_display}</strong></span>
+              <span><strong>{item.financials.amount_display}</strong></span>
+              <span>FINE <strong>{item.financials.fine_display}</strong></span>
             </div>
           </article>
         ))}
       </div>
     </section>
 
-    {/* Section A2: Investigations & Global Bureaus */}
+    {/* Section A2: Bureaus */}
     <section style="padding: 24px 0; border-bottom: 1px solid var(--fc-rule-strong);">
-      <p class="fc-eyebrow" style="margin: 0 0 4px;">SECTION A · PAGES A2–A6</p>
-      <h2 style="font-family: var(--fc-font-headline); font-size: 26px; font-weight: 700; margin: 0 0 18px;">
-        Wall Street, Global Bureaus &amp; Investigations
+      <p class="fc-eyebrow" style="margin: 0 0 4px;">PAGES A2&ndash;A6</p>
+      <h2 style="font-family: var(--fc-font-headline); font-size: 24px; font-weight: 700; margin: 0 0 18px;">
+        Wall Street &amp; Global Bureaus
       </h2>
 
       <div class="fc-ledger-strip-grid">
@@ -191,9 +191,9 @@ const topicLinks = [
             </h3>
             <p class="fc-ledger-card-deck">{item.deck}</p>
             <div class="fc-ledger-card-stats">
-              <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
-              <span>PENALTY: <strong>{item.financials.fine_display}</strong></span>
-              <span>CUSTODY: {item.financials.prison_display}</span>
+              <span><strong>{item.financials.amount_display}</strong></span>
+              <span>FINE <strong>{item.financials.fine_display}</strong></span>
+              <span>{item.financials.prison_display}</span>
             </div>
           </article>
         ))}
@@ -203,9 +203,9 @@ const topicLinks = [
     {/* Section A3: Opinion */}
     {pageOpinion.length > 0 && (
       <section style="padding: 24px 0; border-bottom: 1px solid var(--fc-rule-strong);">
-        <p class="fc-eyebrow fc-eyebrow--opinion" style="margin: 0 0 4px;">SECTION A · OP-ED</p>
-        <h2 style="font-family: var(--fc-font-headline); font-size: 26px; font-weight: 700; margin: 0 0 16px;">
-          Opinion &amp; Editorial Commentary
+        <p class="fc-eyebrow fc-eyebrow--opinion" style="margin: 0 0 4px;">OP-ED</p>
+        <h2 style="font-family: var(--fc-font-headline); font-size: 24px; font-weight: 700; margin: 0 0 16px;">
+          Opinion
         </h2>
         <div class="fc-ledger-strip-grid">
           {pageOpinion.map((op) => (
@@ -221,24 +221,24 @@ const topicLinks = [
       </section>
     )}
 
-    {/* Section B1: Business Day Running Ledger */}
+    {/* Section B: Ledger */}
     {pageBusiness.length > 0 && (
       <section style="padding: 24px 0;">
-        <p class="fc-eyebrow" style="margin: 0 0 4px;">SECTION B · BUSINESS DAY</p>
-        <h2 style="font-family: var(--fc-font-headline); font-size: 26px; font-weight: 700; margin: 0 0 16px;">
-          Additional Cases Logged in This Edition
+        <p class="fc-eyebrow" style="margin: 0 0 4px;">SECTION B</p>
+        <h2 style="font-family: var(--fc-font-headline); font-size: 24px; font-weight: 700; margin: 0 0 16px;">
+          The Ledger
         </h2>
         <div class="fc-ledger-strip-grid">
           {pageBusiness.map((item) => (
             <article class="fc-ledger-card">
-              <span class="fc-eyebrow">{item.city} &middot; {item.category}</span>
+              <span class="fc-eyebrow">{item.city} &middot; {item.agencies[0]}</span>
               <h3 class="fc-ledger-card-title">
                 <a href={item.url} class="fc-headline-link">{item.headline}</a>
               </h3>
-              <p class="fc-ledger-card-deck">{item.deck}</p>
               <div class="fc-ledger-card-stats">
-                <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
-                <span>FINE: <strong>{item.financials.fine_display}</strong></span>
+                <span><strong>{item.financials.amount_display}</strong></span>
+                <span>FINE <strong>{item.financials.fine_display}</strong></span>
+                <span>{item.financials.prison_display}</span>
               </div>
             </article>
           ))}

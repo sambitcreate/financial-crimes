@@ -18,10 +18,10 @@
   "template": "opinion",
   "eyebrow": "OPINION",
   "headline": "JPMorgan’s European Hub Takes Its Time Reporting Suspicious Money, Setting a German Fine Record",
-  "deck": "Germany’s financial watchdog issued its largest anti-money-laundering penalty ever — €45 million — for twelve months of delayed suspicious-transaction filings. Measured in parent-bank earnings, the record lasts about a workday.",
+  "deck": "BaFin hit J.P. Morgan SE with a record €45 million laundering penalty — roughly one workday of its parent bank’s global earnings.",
   "byline": "By The Editorial Board",
   "dateline": "FRANKFURT",
-  "read_time_min": 4,
+  "read_time_min": 2,
   "comment_count": 409,
   "layout_slot": "rail-opinion",
   "financials": {
@@ -52,8 +52,8 @@
     "archetype": "penalty-wheel",
     "accent": "gold",
     "theme": "monochrome",
-    "caption": "Monochrome deterrence gauge measuring BaFin’s all-time record €45 million AML penalty in hours of global JPMorgan Chase net income.",
-    "credit": "The Financial Crimes Opinion Art",
+    "caption": "Jamie Dimon, chief executive of JPMorgan Chase. Germany’s all-time record €45 million BaFin fine equals roughly eight hours of global parent profit.",
+    "credit": "Oil Study · The Financial Crimes",
     "data": {
       "title": "A German Record, Measured in Workday Hours",
       "subtitle": "Toggle views to measure Germany’s largest-ever BaFin AML penalty against corporate scale",

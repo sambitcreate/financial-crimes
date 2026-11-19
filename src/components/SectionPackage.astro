@@ -15,11 +15,6 @@ interface Props {
 }
 
 const { topicTitle, subLinks, leadArticle, companionArticles = [] } = Astro.props;
-
-function formatComments(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
-  return String(n);
-}
 ---
 
 <section class="fc-section-pkg" aria-label={topicTitle}>
@@ -31,25 +26,18 @@ function formatComments(n: number): string {
   </div>
 
   <div class="fc-section-grid">
-    {/* LEFT 35%: Analysis Column + Companion Stories */}
+    {/* LEFT 35%: Lead Dispatch + Headline-Only Companions */}
     <div class="fc-section-analysis">
       <article
         data-story-card
         data-edition={leadArticle.edition}
         data-city={leadArticle.city.toLowerCase()}
       >
-        <span class="fc-eyebrow">{leadArticle.eyebrow}</span>
-        <h2 class="fc-section-headline">
+        <h2 class="fc-section-headline" style="margin-top: 0;">
           <a href={leadArticle.url} class="fc-headline-link">{leadArticle.headline}</a>
         </h2>
         <p class="fc-section-deck">{leadArticle.deck}</p>
         <div class="fc-meta-row">
-          <span class="fc-comment-pill">
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z" stroke="currentColor" stroke-width="1.2" />
-            </svg>
-            {formatComments(leadArticle.comment_count)}
-          </span>
           <span class="fc-meta-readtime">{leadArticle.financials.amount_display}</span>
           <span class="fc-meta-readtime">{leadArticle.read_time_min} MIN READ</span>
         </div>
@@ -62,30 +50,26 @@ function formatComments(n: number): string {
           data-edition={sub.edition}
           data-city={sub.city.toLowerCase()}
         >
-          <span class="fc-eyebrow" style="display: block; margin-bottom: 3px;">
-            {sub.city} · {sub.agencies[0]}
-          </span>
           <h3 class="fc-section-substory-title">
             <a href={sub.url} class="fc-headline-link">{sub.headline}</a>
           </h3>
           <div class="fc-meta-row">
+            <span class="fc-meta-readtime">{sub.city}</span>
             <span class="fc-meta-readtime">{sub.financials.fine_display}</span>
-            <span class="fc-meta-readtime">{sub.read_time_min} MIN READ</span>
           </div>
         </article>
       ))}
     </div>
 
-    {/* RIGHT 65%: 16:9 Interactive JS Art Centerpiece */}
+    {/* RIGHT 65%: 16:9 Impasto Painting Centerpiece */}
     <div data-story-card data-edition={leadArticle.edition} data-city={leadArticle.city.toLowerCase()}>
       <FcArt
         id={leadArticle.id}
+        slug={leadArticle.slug}
         spec={leadArticle.interactive_art_spec}
         mode="inline"
         aspect="16/9"
-        dateline={leadArticle.city}
-        dateLabel="Nov. 19"
-        showChrome={true}
+        showChrome={false}
         showCaption={true}
       />
     </div>

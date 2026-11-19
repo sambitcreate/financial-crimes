@@ -1,13 +1,14 @@
 ---
 import '../art/runtime/fc-art.css';
-import { extractAccessibleTable, resolveArchetype } from '../art/shared/normalize';
-import type { ArtAspect, ArtMode, InteractiveArtSpec } from '../art/shared/types';
-import { renderStaticArtSvg } from '../art/ssr-svg/index';
+import { accentToMood } from '../painting/palette';
+import { resolvePaintRef } from '../painting/refs-loader';
+import type { PaintMode, PaintRefConfig, ToyKind } from '../painting/types';
 
 export interface Props {
   id: string;
+  slug?: string;
   spec: {
-    archetype: string;
+    archetype?: string;
     accent?: string;
     theme?: 'newsprint' | 'monochrome';
     caption?: string;
@@ -20,152 +21,142 @@ export interface Props {
   dateLabel?: string;
   showChrome?: boolean;
   showCaption?: boolean;
+  alt?: string;
 }
 
 const {
   id,
+  slug,
   spec,
   mode = 'inline',
-  aspect = '16/9',
-  dateline,
-  dateLabel,
-  showChrome,
+  aspect = '16/10',
   showCaption,
+  alt,
 } = Astro.props;
 
-const safeMode: ArtMode = mode === 'hero' || mode === 'thumb' ? mode : 'inline';
-const safeAspect: ArtAspect =
+const safeMode: PaintMode = mode === 'hero' || mode === 'thumb' ? mode : 'inline';
+const safeAspect =
   aspect === '4/5' || aspect === '16/9' || aspect === '16/10' || aspect === '1/1' || aspect === '4/3'
     ? aspect
-    : '16/9';
+    : '16/10';
 
-const normalizedSpec: InteractiveArtSpec = {
-  archetype: resolveArchetype(spec?.archetype),
-  accent: spec?.accent || 'crimson',
-  theme: spec?.theme === 'monochrome' ? 'monochrome' : 'newsprint',
-  caption: spec?.caption || '',
-  credit: spec?.credit || 'Interactive Illustration by The Financial Crimes',
-  data: spec?.data || {},
+const ASPECT_RATIO_MAP: Record<typeof safeAspect, number> = {
+  '4/5': 4 / 5,
+  '16/9': 16 / 9,
+  '16/10': 16 / 10,
+  '1/1': 1,
+  '4/3': 4 / 3,
 };
 
-const staticSvg = renderStaticArtSvg(normalizedSpec, id, safeMode, safeAspect);
-const tableData = safeMode === 'thumb' ? null : extractAccessibleTable(normalizedSpec);
+const { slug: resolvedSlug, entry } = await resolvePaintRef({
+  id,
+  slug,
+  caption: spec?.caption,
+});
 
-// Escape closing script tags safely for inline JSON
-const serializedSpec = JSON.stringify(normalizedSpec).replace(/</g, '\\u003c');
+const isMonochrome =
+  spec?.theme === 'monochrome' || entry?.paletteMood === 'monochrome-noir';
 
-const renderChrome = showChrome ?? safeMode !== 'thumb';
-const renderCaption = showCaption ?? (safeMode !== 'thumb' && Boolean(normalizedSpec.caption));
+const paletteMood = isMonochrome
+  ? 'monochrome-noir'
+  : (entry?.paletteMood ?? accentToMood(spec?.accent, spec?.theme));
+
+const toyKind: ToyKind = entry?.toyKind ?? 'stamp';
+
+const resolvedAlt =
+  alt ||
+  entry?.alt ||
+  (entry?.subject
+    ? `Impressionist oil painting of ${entry.subject}`
+    : spec?.caption || 'Impressionist editorial oil painting by The Financial Crimes');
+
+const paintingConfig: PaintRefConfig = {
+  slug: resolvedSlug,
+  refImage: entry?.refImage,
+  subject: entry?.subject,
+  isPortrait: entry?.isPortrait ?? true,
+  focalPoint: entry?.focalPoint,
+  paletteMood,
+  toyKind,
+  toyText: entry?.toyText,
+  toySubtext: entry?.toySubtext,
+  monochrome: isMonochrome,
+  aspect: ASPECT_RATIO_MAP[safeAspect],
+  mode: safeMode,
+  alt: resolvedAlt,
+};
+
+const serializedConfig = JSON.stringify(paintingConfig).replace(/</g, '\\u003c');
 const aspectCss = safeAspect.replace('/', ' / ');
+const isInteractive = safeMode !== 'thumb';
+const captionText = spec?.caption || '';
+const creditText =
+  spec?.credit && !spec.credit.startsWith('Interactive Illustration')
+    ? spec.credit
+    : 'Oil Study · The Financial Crimes';
+const renderCaption = showCaption ?? (safeMode !== 'thumb' && Boolean(captionText));
+
+const HINTS: Record<ToyKind, string> = {
+  stamp: 'Click to stamp · Hover to sharpen',
+  coins: 'Click to scatter · Hover to sharpen',
+  redaction: 'Click to redact · Hover to reveal',
+  'crash-line': 'Click to crash · Hover to sharpen',
+  envelopes: 'Click to serve · Hover to sharpen',
+  'gavel-ripple': 'Click to strike · Hover to sharpen',
+};
+const microHint = HINTS[toyKind] ?? 'Click to poke · Hover to sharpen';
 ---
 
-<figure class="fc-art-figure" data-archetype={normalizedSpec.archetype} data-mode={safeMode}>
-  <fc-art
-    class="fc-art-shell"
+<figure
+  class="fc-art-figure"
+  data-mode={safeMode}
+  data-slug={resolvedSlug}
+>
+  <fc-painting
+    class="fc-painting-shell"
     data-id={id}
-    data-archetype={normalizedSpec.archetype}
+    data-slug={resolvedSlug}
     data-mode={safeMode}
     data-aspect={safeAspect}
-    data-theme={normalizedSpec.theme}
+    data-theme={isMonochrome ? 'monochrome' : 'newsprint'}
     style={`--fc-art-aspect: ${aspectCss};`}
   >
-    {
-      (dateline || dateLabel) && safeMode !== 'thumb' && (
-        <div class="fc-art-dateline-pill">
-          {dateline && <span>{dateline}</span>}
-          {dateline && dateLabel && <span class="fc-art-dateline-sep">·</span>}
-          {dateLabel && <span>{dateLabel}</span>}
-        </div>
-      )
-    }
-
-    <div class="fc-art-mount" set:html={staticSvg} />
+    <div class="fc-painting-stage" role="img" aria-label={resolvedAlt}>
+      <canvas class="fc-painting-layer fc-painting-layer--ground" data-layer="ground" aria-hidden="true"></canvas>
+      <canvas class="fc-painting-layer fc-painting-layer--weave" data-layer="weave" aria-hidden="true"></canvas>
+      <canvas class="fc-painting-layer fc-painting-layer--live" data-layer="live" aria-hidden="true"></canvas>
+    </div>
 
     {
-      safeMode !== 'thumb' && (
-        <span class="fc-art-watermark" aria-hidden="true">FC</span>
-      )
-    }
-
-    {
-      renderChrome && (
-        <div class="fc-art-chrome" role="toolbar" aria-label="Illustration controls">
+      isInteractive && (
+        <>
+          <span class="fc-painting-hint" aria-hidden="true">{microHint}</span>
           <button
             type="button"
-            class="fc-art-chrome-btn"
-            data-fc-action="table"
-            aria-expanded="false"
-            title="View accessible data table"
-          >
-            Table
-          </button>
-          <button
-            type="button"
-            class="fc-art-chrome-btn"
-            data-fc-action="reset"
-            title="Reset or replay illustration"
-            aria-label="Reset or replay illustration"
+            class="fc-painting-repaint"
+            data-fc-repaint
+            aria-label="Repaint portrait"
+            title="Repaint portrait"
           >
             ↻
           </button>
-          <button
-            type="button"
-            class="fc-art-chrome-btn"
-            data-fc-action="expand"
-            title="Expand fullscreen"
-            aria-label="Expand illustration fullscreen"
-          >
-            ⤢
-          </button>
-        </div>
+        </>
       )
     }
 
-    {
-      tableData && (
-        <div class="fc-art-table-drawer" hidden>
-          <div class="fc-art-table-head">
-            <span class="fc-art-table-title">Underlying Docket Data · {normalizedSpec.archetype}</span>
-            <button type="button" class="fc-art-pill" data-fc-action="close-table">
-              Close Table
-            </button>
-          </div>
-          <table class="fc-art-data-table">
-            <caption class="sr-only">{tableData.caption}</caption>
-            <thead>
-              <tr>
-                {tableData.headers.map((h) => (
-                  <th scope="col">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.rows.map((row) => (
-                <tr>
-                  {row.map((cell) => (
-                    <td>{cell}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )
-    }
-
-    <script type="application/json" class="fc-art-spec" set:html={serializedSpec} />
-  </fc-art>
+    <script type="application/json" class="fc-painting-config" set:html={serializedConfig} />
+  </fc-painting>
 
   {
-    renderCaption && (
+    renderCaption && captionText && (
       <figcaption class="fc-art-figcaption">
-        <span class="fc-art-caption-text">{normalizedSpec.caption}</span>
-        {normalizedSpec.credit && <span class="fc-art-credit">{normalizedSpec.credit}</span>}
+        <span class="fc-art-caption-text">{captionText}</span>
+        {creditText && <span class="fc-art-credit">{creditText}</span>}
       </figcaption>
     )
   }
 </figure>
 
 <script>
-  import '../art/runtime/fc-art-element';
+  import '../painting/element';
 </script>

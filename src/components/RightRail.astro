@@ -9,70 +9,41 @@ interface Props {
 }
 
 const { featureArticle, miniArticles, opinionArticles } = Astro.props;
-
-// Build 4 synchronized collage cells for the top 2x2 spotlight (mirrors NYT Screenshot 1 right rail)
-const collageSpecs = [
-  featureArticle.interactive_art_spec,
-  miniArticles[0]?.interactive_art_spec ?? featureArticle.interactive_art_spec,
-  miniArticles[1]?.interactive_art_spec ?? featureArticle.interactive_art_spec,
-  {
-    ...featureArticle.interactive_art_spec,
-    theme: 'monochrome' as const,
-  },
-];
-
-function formatComments(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
-  return String(n);
-}
 ---
 
 <aside class="fc-right-rail" aria-label="Right Rail Features and Opinion">
-  {/* TOP: 2x2 Synchronized Mini-Canvas Feature Spotlight */}
+  {/* TOP: Single Clean Feature Portrait */}
   <article
     class="fc-rail-spotlight"
     data-story-card
     data-edition={featureArticle.edition}
     data-city={featureArticle.city.toLowerCase()}
   >
-    <a href={featureArticle.url} aria-label={featureArticle.headline}>
-      <div class="fc-rail-collage">
-        {collageSpecs.map((spec, idx) => (
-          <div class="fc-rail-collage-cell">
-            <FcArt
-              id={`${featureArticle.id}-quad-${idx}`}
-              spec={spec}
-              mode="thumb"
-              aspect="1/1"
-              showChrome={false}
-              showCaption={false}
-            />
-          </div>
-        ))}
-      </div>
-    </a>
-    <p class="fc-rail-credit">
-      {featureArticle.interactive_art_spec.credit ?? 'Interactive Exhibit for The Financial Crimes'}
-    </p>
+    <div class="fc-rail-feature-art">
+      <FcArt
+        id={featureArticle.id}
+        slug={featureArticle.slug}
+        spec={featureArticle.interactive_art_spec}
+        mode="inline"
+        aspect="4/3"
+        showChrome={false}
+        showCaption={false}
+      />
+    </div>
 
     <h2 class="fc-rail-feature-title">
       <a href={featureArticle.url} class="fc-headline-link">{featureArticle.headline}</a>
     </h2>
     <p class="fc-rail-feature-deck">{featureArticle.deck}</p>
     <div class="fc-meta-row">
+      <span class="fc-meta-readtime">{featureArticle.financials.amount_display}</span>
       <span class="fc-meta-readtime">{featureArticle.read_time_min} MIN READ</span>
-      <span class="fc-comment-pill">
-        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z" stroke="currentColor" stroke-width="1.2" />
-        </svg>
-        {formatComments(featureArticle.comment_count)}
-      </span>
     </div>
   </article>
 
-  {/* MIDDLE: 2-Column Visual Mini-Cards with Working ‹ › Carousel */}
+  {/* MIDDLE: 2-Column Visual Mini-Cards + ‹ › Carousel */}
   {miniArticles.length > 0 && (
-    <section class="fc-rail-carousel" aria-label="Visual Docket Dispatches" data-rail-carousel>
+    <section class="fc-rail-carousel" aria-label="Visual Dispatches" data-rail-carousel>
       <div class="fc-rail-mini-grid">
         {miniArticles.map((item, idx) => (
           <article
@@ -86,6 +57,7 @@ function formatComments(n: number): string {
             <a href={item.url} class="fc-rail-mini-art" aria-label={item.headline}>
               <FcArt
                 id={`${item.id}-rail`}
+                slug={item.slug}
                 spec={item.interactive_art_spec}
                 mode="thumb"
                 aspect="1/1"
@@ -97,17 +69,7 @@ function formatComments(n: number): string {
               <a href={item.url} class="fc-headline-link">{item.headline}</a>
             </h3>
             <div class="fc-meta-row">
-              <span class="fc-comment-pill">
-                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path
-                    d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z"
-                    stroke="currentColor"
-                    stroke-width="1.2"
-                  />
-                </svg>
-                {formatComments(item.comment_count)}
-              </span>
-              <span class="fc-meta-readtime">{item.read_time_min} MIN</span>
+              <span class="fc-meta-readtime">{item.financials.amount_display}</span>
             </div>
           </article>
         ))}
@@ -119,7 +81,7 @@ function formatComments(n: number): string {
             data-carousel-status
             style="font-family: var(--fc-font-mono); font-size: 10px; color: var(--fc-ink-muted); margin-right: auto;"
           >
-            1–2 OF {miniArticles.length}
+            1&ndash;2 OF {miniArticles.length}
           </span>
           <button
             type="button"
@@ -143,9 +105,9 @@ function formatComments(n: number): string {
     </section>
   )}
 
-  {/* BOTTOM: Opinion Section */}
+  {/* BOTTOM: Opinion Stack */}
   {opinionArticles.length > 0 && (
-    <section id="opinion-desk" aria-label="Opinion Columns">
+    <section id="opinion-desk" aria-label="Opinion">
       <h2 class="fc-rail-opinion-heading">Opinion</h2>
       {opinionArticles.map((op, idx) => (
         <article
@@ -159,16 +121,6 @@ function formatComments(n: number): string {
             <a href={op.url} class="fc-headline-link">{op.headline}</a>
           </h3>
           <div class="fc-meta-row">
-            <span class="fc-comment-pill">
-              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z"
-                  stroke="currentColor"
-                  stroke-width="1.2"
-                />
-              </svg>
-              {formatComments(op.comment_count)}
-            </span>
             <span class="fc-meta-readtime">{op.read_time_min} MIN READ</span>
           </div>
 
@@ -176,6 +128,7 @@ function formatComments(n: number): string {
             <a href={op.url} class="fc-rail-opinion-art" style="display: block;" aria-label={op.headline}>
               <FcArt
                 id={`${op.id}-opinion-rail`}
+                slug={op.slug}
                 spec={{ ...op.interactive_art_spec, theme: 'monochrome' }}
                 mode="thumb"
                 aspect="16/10"

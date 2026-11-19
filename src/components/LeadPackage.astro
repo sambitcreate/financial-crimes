@@ -1,5 +1,6 @@
 ---
 import type { ArticleRecord } from '../schemas/article';
+import { formatLegalStage } from '../utils/format';
 import FcArt from './FcArt.astro';
 
 interface Props {
@@ -17,11 +18,11 @@ const liveUpdates =
     ? leadLive.live_updates
     : [
         {
-          text: `Federal docket filed in ${leadLive.jurisdiction.venue}; ${leadLive.financials.amount_display} in alleged investor funds at issue.`,
+          text: `${leadLive.jurisdiction.venue}: ${leadLive.financials.amount_display} at issue.`,
           ago: '27m ago',
         },
         {
-          text: `Agencies involved: ${leadLive.agencies.join(', ')}. Legal stage: ${leadLive.legal_stage}.`,
+          text: `${leadLive.agencies.join(', ')} · ${formatLegalStage(leadLive.legal_stage)}.`,
           ago: '52m ago',
         },
       ];
@@ -30,20 +31,11 @@ const heroFineRatio =
   leadHero.financials.fine_ratio_pct !== null
     ? `${leadHero.financials.fine_ratio_pct.toFixed(1)}% OF LOOT`
     : 'CIVIL SETTLEMENT';
-
-function formatComments(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
-  return String(n);
-}
 ---
 
-<section class="fc-lead-box" aria-label="Featured Front-Page White-Collar Crime Package">
-  <p class="fc-lead-banner">
-    These white-collar crimes are <strong>free to read.</strong>
-  </p>
-
+<section class="fc-lead-box" aria-label="Front-Page Lead Docket">
   <div class="fc-lead-upper">
-    {/* LEFT COLUMN: LIVE stack + secondary blurb */}
+    {/* LEFT COLUMN: LIVE stack + crisp secondary headline */}
     <div class="fc-lead-left">
       <article data-story-card data-edition={leadLive.edition} data-city={leadLive.city.toLowerCase()}>
         <div class="fc-live-kicker">
@@ -66,7 +58,7 @@ function formatComments(n: number): string {
           ))}
         </ul>
 
-        <a href={leadLive.url} class="fc-see-more">See full docket &rsaquo;</a>
+        <a href={leadLive.url} class="fc-see-more">Full docket &rsaquo;</a>
       </article>
 
       {secondaryBlurb && (
@@ -76,28 +68,18 @@ function formatComments(n: number): string {
           data-edition={secondaryBlurb.edition}
           data-city={secondaryBlurb.city.toLowerCase()}
         >
-          <p class="fc-eyebrow" style="margin: 0 0 4px;">{secondaryBlurb.eyebrow}</p>
           <h3 class="fc-lead-secondary-title">
             <a href={secondaryBlurb.url} class="fc-headline-link">{secondaryBlurb.headline}</a>
           </h3>
           <div class="fc-meta-row">
-            <span class="fc-comment-pill" aria-label={`${secondaryBlurb.comment_count} comments`}>
-              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z"
-                  stroke="currentColor"
-                  stroke-width="1.2"
-                />
-              </svg>
-              {formatComments(secondaryBlurb.comment_count)}
-            </span>
-            <span class="fc-meta-readtime">{secondaryBlurb.read_time_min} MIN READ</span>
+            <span class="fc-meta-readtime">{secondaryBlurb.city}</span>
+            <span class="fc-meta-readtime">{secondaryBlurb.financials.amount_display}</span>
           </div>
         </article>
       )}
     </div>
 
-    {/* CENTER COLUMN: Tall 4:5 Hero Interactive JS Art + Lead Headline */}
+    {/* CENTER COLUMN: 4:5 Oil Portrait Centerpiece + Lead Headline */}
     <article
       class="fc-lead-center"
       id="interactive-exhibits"
@@ -107,13 +89,12 @@ function formatComments(n: number): string {
     >
       <FcArt
         id={leadHero.id}
+        slug={leadHero.slug}
         spec={leadHero.interactive_art_spec}
         mode="hero"
         aspect="4/5"
-        dateline={leadHero.city}
-        dateLabel="Nov. 19, 2026"
-        showChrome={true}
-        showCaption={true}
+        showChrome={false}
+        showCaption={false}
       />
 
       <h2 class="fc-lead-hero-headline">
@@ -122,12 +103,6 @@ function formatComments(n: number): string {
       <p class="fc-lead-hero-deck">{leadHero.deck}</p>
       <div class="fc-meta-row">
         <span class="fc-meta-readtime">{leadHero.read_time_min} MIN READ</span>
-        <span class="fc-comment-pill">
-          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z" stroke="currentColor" stroke-width="1.2" />
-          </svg>
-          {formatComments(leadHero.comment_count)}
-        </span>
         {leadHero.slap_on_wrist_score !== null && (
           <span
             class:list={[
@@ -141,46 +116,39 @@ function formatComments(n: number): string {
       </div>
     </article>
 
-    {/* RIGHT COLUMN: Live Fine-vs-Loot Ticker Box + International Lead */}
+    {/* RIGHT COLUMN: Compact Penalty Ratio Box + International Lead */}
     <div class="fc-lead-right">
-      <div class="fc-crime-ticker-box" aria-label="Lead case fine versus alleged scale">
-        <p class="fc-crime-ticker-title">Lead Fine-vs.-Loot Ledger:</p>
+      <div class="fc-crime-ticker-box" aria-label="Lead case penalty ratio">
+        <p class="fc-eyebrow" style="margin: 0 0 5px;">PENALTY RATIO</p>
         <div class="fc-crime-ticker-row">
           <span class="fc-crime-ticker-figure">{leadHero.financials.fine_display}</span>
           <span class="fc-crime-ticker-delta">{heroFineRatio}</span>
-          <span class="fc-crime-ticker-time">7:00 AM ET</span>
         </div>
         <p class="fc-crime-ticker-sub">
-          vs. <strong>{leadHero.financials.amount_display}</strong> alleged scale ·{' '}
+          vs. <strong>{leadHero.financials.amount_display}</strong> &middot;{' '}
           {leadHero.financials.prison_display}
         </p>
       </div>
 
       <article data-story-card data-edition={leadRight.edition} data-city={leadRight.city.toLowerCase()}>
         <p class="fc-eyebrow" style="margin: 0 0 5px;">
-          {leadRight.city} · {leadRight.agencies[0]}
+          {leadRight.city} &middot; {leadRight.agencies[0]}
         </p>
         <h2 class="fc-lead-right-title">
           <a href={leadRight.url} class="fc-headline-link">{leadRight.headline}</a>
         </h2>
         <p class="fc-lead-right-deck">{leadRight.deck}</p>
         <div class="fc-meta-row">
-          <span class="fc-comment-pill">
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z" stroke="currentColor" stroke-width="1.2" />
-            </svg>
-            {formatComments(leadRight.comment_count)}
-          </span>
           <span class="fc-meta-readtime">{leadRight.financials.amount_display}</span>
+          <span class="fc-meta-readtime">{leadRight.read_time_min} MIN READ</span>
         </div>
       </article>
     </div>
   </div>
 
-  {/* BOTTOM 2x2: "More to read for free." */}
+  {/* BOTTOM 2x2: Compact Secondary Dispatches */}
   {leadGrid.length > 0 && (
     <div class="fc-lead-more">
-      <p class="fc-lead-more-heading">More to read for free.</p>
       <div class="fc-lead-grid-2x2">
         {leadGrid.slice(0, 4).map((item) => (
           <article
@@ -190,35 +158,22 @@ function formatComments(n: number): string {
             data-city={item.city.toLowerCase()}
           >
             <div>
-              <span
-                class:list={[
-                  'fc-eyebrow',
-                  { 'fc-eyebrow--opinion': item.template === 'opinion' },
-                ]}
-              >
-                {item.template === 'opinion' ? 'OPINION' : item.eyebrow}
-              </span>
-              <h3 class="fc-lead-mini-title">
+              {item.template === 'opinion' && (
+                <span class="fc-eyebrow fc-eyebrow--opinion">OPINION</span>
+              )}
+              <h3 class="fc-lead-mini-title" style={item.template === 'opinion' ? undefined : 'margin-top: 0;'}>
                 <a href={item.url} class="fc-headline-link">{item.headline}</a>
               </h3>
               <div class="fc-meta-row">
-                <span class="fc-meta-readtime">{item.read_time_min} MIN READ</span>
-                <span class="fc-comment-pill">
-                  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path
-                      d="M2.5 3h11v8H6.8L3.5 13.8V11h-1V3z"
-                      stroke="currentColor"
-                      stroke-width="1.2"
-                    />
-                  </svg>
-                  {formatComments(item.comment_count)}
-                </span>
+                <span class="fc-meta-readtime">{item.city}</span>
+                <span class="fc-meta-readtime">{item.financials.amount_display}</span>
               </div>
             </div>
 
             <a href={item.url} class="fc-lead-mini-thumb" aria-label={item.headline}>
               <FcArt
                 id={`${item.id}-thumb`}
+                slug={item.slug}
                 spec={item.interactive_art_spec}
                 mode="thumb"
                 aspect="1/1"

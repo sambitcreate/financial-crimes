@@ -3,93 +3,97 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CompactHeader from '../components/CompactHeader.astro';
 import FcArt from '../components/FcArt.astro';
 import { loadAllArticles, loadRollupStats } from '../loaders/articles';
+import {
+  formatBroadsheetDate,
+  formatFineRatio,
+  formatLegalStage,
+  formatShortDate,
+} from '../utils/format';
 
 const [articles, rollup] = await Promise.all([loadAllArticles(), loadRollupStats()]);
 
 const categories = Array.from(new Set(articles.map((a) => a.category))).sort();
 const editions = [
   { key: 'all', label: 'All Bureaus' },
-  { key: 'us', label: 'U.S. (All)' },
+  { key: 'us', label: 'U.S.' },
   { key: 'new-york', label: 'New York' },
   { key: 'chicago', label: 'Chicago' },
   { key: 'los-angeles', label: 'Los Angeles' },
-  { key: 'london', label: 'London / UK' },
+  { key: 'london', label: 'London' },
   { key: 'india', label: 'India' },
   { key: 'europe', label: 'Europe' },
-  { key: 'global', label: 'Singapore & Hong Kong' },
+  { key: 'global', label: 'Singapore & HK' },
 ];
 
 const topicLinks = [
   { label: 'Front Page', href: '/' },
   { label: 'Full Ledger', href: '/ledger', current: true },
-  { label: '$1B+ Megacases', href: '/ledger?magnitude=1000000000' },
-  { label: 'Zero-Prison Deals', href: '/ledger?slap=zero-prison' },
+  { label: '$1B+ Cases', href: '/ledger?magnitude=1000000000' },
+  { label: 'Zero Prison', href: '/ledger?slap=zero-prison' },
   { label: "Today's Docket", href: `/edition/${rollup.edition_date}` },
 ];
 ---
 
 <BaseLayout
-  title="The Running Ledger — The Financial Crimes"
-  description="Searchable running ledger of global white-collar, corporate, regulatory, and billionaire financial crimes, fines, and sentencing outcomes."
+  title="The Ledger — The Financial Crimes"
+  description="Searchable ledger of global white-collar crime, fines, fine-to-loot ratios, and prison sentences."
 >
   <CompactHeader
     slot="header"
     showTopicBar={true}
-    topicTitle="The Running Ledger"
+    topicTitle="The Ledger"
     topicLinks={topicLinks}
   />
 
   <div class="fc-container" style="padding-bottom: 56px;">
     {/* Ledger Hero Header */}
     <header class="fc-ledger-hero">
-      <p class="fc-eyebrow">PERMANENT PUBLIC DOCKET &middot; VOL. I</p>
-      <h1 class="fc-ledger-title">The Running Ledger</h1>
-      <p style="font-family: var(--fc-font-body); font-size: 17px; color: var(--fc-ink-muted); max-width: 720px; margin: 0;">
-        Every white-collar indictment, regulatory consent order, fine-to-loot ratio, and custody
-        sentence indexed across U.S., Indian, British, European, and Asian financial hubs.
+      <h1 class="fc-ledger-title" style="margin-top: 0;">The Running Ledger</h1>
+      <p style="font-family: var(--fc-font-body); font-size: 16.5px; color: var(--fc-ink-muted); max-width: 640px; margin: 0;">
+        Every indictment, consent order, fine-to-loot ratio, and prison sentence on our docket.
       </p>
 
       {/* Live Dynamic Totals Strip */}
       <div class="fc-ledger-totals" aria-live="polite">
         <div>
-          <span class="fc-docket-stat-label">Cases Shown</span>
+          <span class="fc-docket-stat-label">Cases</span>
           <span class="fc-docket-stat-val" id="fc-ledger-total-count" style="font-size: 18px;">
             {articles.length}
           </span>
         </div>
         <div>
-          <span class="fc-docket-stat-label">Combined Alleged Scale</span>
+          <span class="fc-docket-stat-label">Alleged Scale</span>
           <span class="fc-docket-stat-val" id="fc-ledger-total-loot" style="font-size: 18px;">
             {rollup.total_loot_display}
           </span>
         </div>
         <div>
-          <span class="fc-docket-stat-label">Combined Penalties / Fines</span>
+          <span class="fc-docket-stat-label">Penalties</span>
           <span class="fc-docket-stat-val" id="fc-ledger-total-fines" style="font-size: 18px;">
             {rollup.total_fines_display}
           </span>
         </div>
         <div>
-          <span class="fc-docket-stat-label">Avg. Fine-to-Loot Ratio</span>
+          <span class="fc-docket-stat-label">Avg. Fine / Loot</span>
           <span
             class="fc-docket-stat-val"
             id="fc-ledger-avg-ratio"
             style="font-size: 18px; color: var(--fc-art-crimson);"
           >
-            {rollup.avg_fine_ratio_pct.toFixed(2)}%
+            {rollup.avg_fine_ratio_pct.toFixed(1)}%
           </span>
         </div>
       </div>
     </header>
 
     {/* Sticky Multi-Facet Filter Bar */}
-    <section class="fc-ledger-filterbar" aria-label="Filter and sort the Running Ledger">
+    <section class="fc-ledger-filterbar" aria-label="Filter and sort the Ledger">
       <div class="fc-ledger-controls">
         <label class="fc-sr-only" for="fc-ledger-search">Search cases</label>
         <input
           type="search"
           id="fc-ledger-search"
-          placeholder="Search defendants, agencies, dockets, cities..."
+          placeholder="Search defendants, agencies, dockets..."
         />
 
         <label class="fc-sr-only" for="fc-ledger-edition">Bureau</label>
@@ -101,13 +105,13 @@ const topicLinks = [
 
         <label class="fc-sr-only" for="fc-ledger-category">Category</label>
         <select id="fc-ledger-category">
-          <option value="all">All Categories</option>
+          <option value="all">All Desks</option>
           {categories.map((cat) => (
             <option value={cat}>{cat}</option>
           ))}
         </select>
 
-        <label class="fc-sr-only" for="fc-ledger-magnitude">Dollar magnitude</label>
+        <label class="fc-sr-only" for="fc-ledger-magnitude">Scale</label>
         <select id="fc-ledger-magnitude">
           <option value="0">Any Scale</option>
           <option value="10000000">$10M+</option>
@@ -116,27 +120,27 @@ const topicLinks = [
           <option value="1000000000">$1B+</option>
         </select>
 
-        <label class="fc-sr-only" for="fc-ledger-slap">Wrist-slap filter</label>
+        <label class="fc-sr-only" for="fc-ledger-slap">Outcome</label>
         <select id="fc-ledger-slap">
           <option value="all">All Outcomes</option>
           <option value="70">Wrist-Slap &ge; 70</option>
-          <option value="85">Extreme Wrist-Slap &ge; 85</option>
-          <option value="zero-prison">Zero Prison Days</option>
-          <option value="pending">Pending Litigation</option>
+          <option value="85">Wrist-Slap &ge; 85</option>
+          <option value="zero-prison">Zero Prison</option>
+          <option value="pending">Pending</option>
         </select>
 
         <label class="fc-sr-only" for="fc-ledger-sort">Sort order</label>
         <select id="fc-ledger-sort">
-          <option value="newest">Sort: Newest</option>
-          <option value="loot-desc">Largest Alleged Scale</option>
-          <option value="fine-desc">Largest Fine / Penalty</option>
-          <option value="slap-desc">Highest Wrist-Slap Score</option>
-          <option value="ratio-asc">Lowest Fine/Loot Ratio</option>
+          <option value="newest">Newest</option>
+          <option value="loot-desc">Largest Scale</option>
+          <option value="fine-desc">Largest Fine</option>
+          <option value="slap-desc">Highest Wrist-Slap</option>
+          <option value="ratio-asc">Lowest Fine Ratio</option>
         </select>
 
         <div class="fc-view-toggle" role="group" aria-label="Ledger display mode">
           <button type="button" id="fc-view-editorial" aria-pressed="true">Editorial</button>
-          <button type="button" id="fc-view-table" aria-pressed="false">Ledger</button>
+          <button type="button" id="fc-view-table" aria-pressed="false">Table</button>
         </div>
       </div>
     </section>
@@ -147,19 +151,16 @@ const topicLinks = [
       hidden
       style="padding: 40px 20px; text-align: center; border-bottom: 1px solid var(--fc-rule-column);"
     >
-      <p style="font-family: var(--fc-font-headline); font-size: 22px; margin: 0 0 8px;">
-        No public filings match those filters.
-      </p>
-      <p style="font-family: var(--fc-font-sans); font-size: 13px; color: var(--fc-ink-muted); margin: 0 0 14px;">
-        Try widening your dollar magnitude, bureau, or search query.
+      <p style="font-family: var(--fc-font-headline); font-size: 21px; margin: 0 0 10px;">
+        No filings match those filters.
       </p>
       <button type="button" class="fc-btn-outline" id="fc-ledger-reset-btn">
-        Reset All Filters
+        Reset Filters
       </button>
     </div>
 
-    {/* VIEW 1: Editorial List with 150x102 Mini-Canvas Previews */}
-    <section id="fc-ledger-list-view" class="fc-ledger-editorial-list" aria-label="Editorial case list">
+    {/* VIEW 1: Editorial List with Crisp Formatted Dates & Mini-Canvas Portraits */}
+    <section id="fc-ledger-list-view" class="fc-ledger-editorial-list" aria-label="Case list">
       {articles.map((item) => {
         const searchBlob = [
           item.headline,
@@ -191,8 +192,8 @@ const topicLinks = [
             data-prison={item.financials.prison_months ?? -1}
             data-slap={item.slap_on_wrist_score ?? -1}
           >
-            <div style="font-family: var(--fc-font-mono); font-size: 11px; color: var(--fc-ink-muted); padding-top: 2px;">
-              <div>{item.publish_date}</div>
+            <div class="fc-ledger-date-col">
+              <span class="fc-ledger-date-str">{formatShortDate(item.publish_date)}</span>
               <div style="margin-top: 4px; color: var(--fc-ink-primary); font-weight: 600;">
                 {item.city}
               </div>
@@ -219,36 +220,34 @@ const topicLinks = [
                   { 'fc-eyebrow--opinion': item.template === 'opinion' },
                 ]}
               >
-                {item.template === 'opinion' ? 'OPINION' : item.category} &middot;{' '}
-                {item.agencies.join(', ')}
+                {item.template === 'opinion' ? 'OPINION' : item.agencies.join(', ')}
               </span>
 
-              <h2 style="font-family: var(--fc-font-headline); font-size: 21px; font-weight: 700; line-height: 1.16; margin: 4px 0 6px;">
+              <h2 style="font-family: var(--fc-font-headline); font-size: 20px; font-weight: 700; line-height: 1.18; margin: 4px 0 6px;">
                 <a href={item.url} class="fc-headline-link">{item.headline}</a>
               </h2>
 
-              <p style="font-family: var(--fc-font-body); font-size: 14.5px; line-height: 1.44; color: var(--fc-ink-muted); margin: 0 0 8px;">
+              <p style="font-family: var(--fc-font-body); font-size: 14px; line-height: 1.42; color: var(--fc-ink-muted); margin: 0 0 8px;">
                 {item.deck}
               </p>
 
               <div class="fc-ledger-card-stats">
-                <span>SCALE: <strong>{item.financials.amount_display}</strong></span>
-                <span>PENALTY: <strong>{item.financials.fine_display}</strong></span>
+                <span>SCALE <strong>{item.financials.amount_display}</strong></span>
+                <span>FINE <strong>{item.financials.fine_display}</strong></span>
                 <span>
-                  RATIO:{' '}
+                  RATIO{' '}
                   <strong style="color: var(--fc-art-crimson);">
-                    {item.financials.fine_ratio_pct !== null
-                      ? `${item.financials.fine_ratio_pct.toFixed(2)}%`
-                      : 'Pending'}
+                    {formatFineRatio(item.financials.fine_ratio_pct, 'Pending')}
                   </strong>
                 </span>
-                <span>CUSTODY: {item.financials.prison_display}</span>
+                <span>{item.financials.prison_display}</span>
               </div>
             </div>
 
             <a href={item.url} class="fc-ledger-editorial-thumb" aria-label={item.headline}>
               <FcArt
                 id={`${item.id}-ledger`}
+                slug={item.slug}
                 spec={item.interactive_art_spec}
                 mode="thumb"
                 aspect="16/10"
@@ -261,17 +260,17 @@ const topicLinks = [
       })}
     </section>
 
-    {/* VIEW 2: Dense Spreadsheet Ledger */}
+    {/* VIEW 2: Spreadsheet Table */}
     <section id="fc-ledger-table-view" class="fc-ledger-table-wrap" hidden aria-label="Spreadsheet ledger">
       <table class="fc-ledger-table">
         <thead>
           <tr>
-            <th>Case / Headline</th>
+            <th>Case</th>
             <th>Bureau &amp; Agencies</th>
-            <th>Category</th>
-            <th>Alleged Scale</th>
-            <th>Fine / Penalty</th>
-            <th>Fine / Scale</th>
+            <th>Desk</th>
+            <th>Scale</th>
+            <th>Penalty</th>
+            <th>Ratio</th>
             <th>Custody</th>
             <th>Wrist-Slap</th>
           </tr>
@@ -315,7 +314,7 @@ const topicLinks = [
                     {item.headline}
                   </a>
                   <span style="font-family: var(--fc-font-mono); font-size: 10.5px; color: var(--fc-ink-muted);">
-                    {item.docket_number ?? item.legal_stage} &middot; {item.publish_date}
+                    {item.docket_number ?? formatLegalStage(item.legal_stage)} &middot; {formatBroadsheetDate(item.publish_date)}
                   </span>
                 </td>
                 <td>
@@ -328,9 +327,7 @@ const topicLinks = [
                 <td class="fc-ledger-num"><strong>{item.financials.amount_display}</strong></td>
                 <td class="fc-ledger-num">{item.financials.fine_display}</td>
                 <td class="fc-ledger-num" style="color: var(--fc-art-crimson); font-weight: 600;">
-                  {item.financials.fine_ratio_pct !== null
-                    ? `${item.financials.fine_ratio_pct.toFixed(2)}%`
-                    : '—'}
+                  {formatFineRatio(item.financials.fine_ratio_pct, '—')}
                 </td>
                 <td class="fc-ledger-num">{item.financials.prison_display}</td>
                 <td class="fc-ledger-num">
@@ -381,7 +378,6 @@ const topicLinks = [
   const listItems = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-item]'));
   const tableRows = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-row]'));
 
-  // Optional Pagefind full-text index enhancement when built in dist/pagefind
   let pagefindApi: any = null;
   let pagefindSlugs: Set<string> | null = null;
 
@@ -495,8 +491,8 @@ const topicLinks = [
     if (lootOut) lootOut.textContent = formatUsdShort(totalLoot);
     if (finesOut) finesOut.textContent = formatUsdShort(totalFines);
     if (ratioOut) {
-      const avg = ratioCount > 0 ? ratioSum / ratioCount : totalLoot > 0 ? (totalFines / totalLoot) * 100 : 0;
-      ratioOut.textContent = `${avg.toFixed(2)}%`;
+      const aggregateRatio = totalLoot > 0 ? (totalFines / totalLoot) * 100 : ratioCount > 0 ? ratioSum / ratioCount : 0;
+      ratioOut.textContent = `${aggregateRatio.toFixed(1)}%`;
     }
   }
 
@@ -553,7 +549,6 @@ const topicLinks = [
     applyAll();
   });
 
-  // Hydrate initial filters from URL query string
   const params = new URLSearchParams(window.location.search);
   if (params.get('q') && searchInput) searchInput.value = params.get('q')!;
   if (params.get('edition') && editionSel) editionSel.value = params.get('edition')!.toLowerCase();
