@@ -24,7 +24,6 @@
   "byline": "By The Digital Assets Desk",
   "dateline": "NEW YORK",
   "read_time_min": 2,
-  "comment_count": 615,
   "layout_slot": "lead-grid",
   "financials": {
     "amount_usd": 40000000000,
@@ -51,30 +50,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "scale-of-impunity",
     "accent": "crimson",
     "theme": "newsprint",
     "caption": "Do Kwon, co-founder of Terraform Labs. His 15-year federal term equals roughly $7.3 million in vanished investor wealth per day behind bars.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "Dollars per Prison Day: Terraform Labs",
-      "subtitle": "Drop the penalty counterweight to compare $40B in investor losses against 5,475 days sentenced",
-      "lootLabel": "TerraUSD / LUNA Wipeout",
-      "lootDisplay": "$40.0B",
-      "lootUsd": 40000000000,
-      "fineLabel": "Civil Judgment / Forfeiture",
-      "fineDisplay": "$4.47B",
-      "fineUsd": 4470000000,
-      "ratioDisplay": "$7.3M LOSS / PRISON DAY",
-      "stampText": "15 YEARS IMPOSED",
-      "gridRatioPct": 11.18,
-      "streetComparison": {
-        "label": "Median Retail Register Theft",
-        "amountDisplay": "$1,800",
-        "sentenceDisplay": "24 Months ($2.47/day)",
-        "execSentenceDisplay": "15 Years ($7.3M/day)"
-      }
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

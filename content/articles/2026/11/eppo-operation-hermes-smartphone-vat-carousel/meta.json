@@ -23,7 +23,6 @@
   "byline": "By The European Bureau",
   "dateline": "LUXEMBOURG",
   "read_time_min": 2,
-  "comment_count": 356,
   "layout_slot": "secondary-2",
   "financials": {
     "amount_usd": 445000000,
@@ -50,141 +49,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "offshore-flight-map",
     "accent": "slate",
     "theme": "newsprint",
     "caption": "European Chief Prosecutor Laura Codruța Kövesi. Operation Hermes spanned eight E.U. nations in an alleged €410 million smartphone V.A.T. loop.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "Operation Hermes: The 8-Nation VAT Carousel",
-      "subtitle": "Inspect how smartphone invoice chains allegedly looped across eight EU jurisdictions",
-      "region": "europe",
-      "waypoints": [
-        {
-          "id": "pt",
-          "label": "Lisbon (PT)",
-          "lat": 38.72,
-          "lon": -9.14,
-          "role": "Missing Trader Hub",
-          "amount": "Raids Executed",
-          "status": "Operation Hermes Node"
-        },
-        {
-          "id": "es",
-          "label": "Madrid (ES)",
-          "lat": 40.42,
-          "lon": -3.7,
-          "role": "Buffer Conduit",
-          "amount": "62 Detained EU-Wide",
-          "status": "Pre-Trial Freezes"
-        },
-        {
-          "id": "fr",
-          "label": "Paris (FR)",
-          "lat": 48.86,
-          "lon": 2.35,
-          "role": "Invoice Relay",
-          "amount": "300+ Dawn Raids",
-          "status": "Oct. 7, 2026 Action"
-        },
-        {
-          "id": "nl",
-          "label": "Amsterdam (NL)",
-          "lat": 52.37,
-          "lon": 4.9,
-          "role": "Logistics Clearing",
-          "amount": "€410M+ Est. Loss",
-          "status": "VAT Refund Claims"
-        },
-        {
-          "id": "de",
-          "label": "Frankfurt (DE)",
-          "lat": 50.11,
-          "lon": 8.68,
-          "role": "Broker Node",
-          "amount": "€310M Frozen",
-          "status": "EPPO Freezing Orders"
-        },
-        {
-          "id": "at",
-          "label": "Vienna (AT)",
-          "lat": 48.21,
-          "lon": 16.37,
-          "role": "Transit Shell",
-          "amount": "€9M Seized",
-          "status": "Physical Seizures"
-        },
-        {
-          "id": "it",
-          "label": "Milan (IT)",
-          "lat": 45.46,
-          "lon": 9.19,
-          "role": "Syndicate Hub",
-          "amount": "2 Syndicates",
-          "status": "Pre-Trial Detentions"
-        },
-        {
-          "id": "mt",
-          "label": "Valletta (MT)",
-          "lat": 35.9,
-          "lon": 14.51,
-          "role": "Offshore Relay",
-          "amount": "Carousel Return",
-          "status": "Active Investigation"
-        }
-      ],
-      "routes": [
-        {
-          "from": "pt",
-          "to": "es",
-          "amount": "0% Intra-EU",
-          "label": "Hop 1"
-        },
-        {
-          "from": "es",
-          "to": "fr",
-          "amount": "VAT Claim",
-          "label": "Hop 2"
-        },
-        {
-          "from": "fr",
-          "to": "nl",
-          "amount": "Paper Crate",
-          "label": "Hop 3"
-        },
-        {
-          "from": "nl",
-          "to": "de",
-          "amount": "VAT Claim",
-          "label": "Hop 4"
-        },
-        {
-          "from": "de",
-          "to": "at",
-          "amount": "Invoice Loop",
-          "label": "Hop 5"
-        },
-        {
-          "from": "at",
-          "to": "it",
-          "amount": "Missing Trader",
-          "label": "Hop 6"
-        },
-        {
-          "from": "it",
-          "to": "mt",
-          "amount": "Re-Export",
-          "label": "Hop 7"
-        },
-        {
-          "from": "mt",
-          "to": "pt",
-          "amount": "€410M+ Total",
-          "label": "Carousel Reset",
-          "loop": true
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

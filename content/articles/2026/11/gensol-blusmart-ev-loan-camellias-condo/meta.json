@@ -17,7 +17,7 @@
     "SFIO"
   ],
   "docket_number": "SEBI Confirmatory Order (July 30, 2025)",
-  "legal_stage": "regulatory_order",
+  "legal_stage": "interim_order",
   "template": "news",
   "eyebrow": "INDIA",
   "headline": "Borrowed for Electric Cabs, Parked in Gurugram’s Most Exclusive Driveway",
@@ -25,7 +25,6 @@
   "byline": "By The South Asia Bureau",
   "dateline": "GURUGRAM, India",
   "read_time_min": 2,
-  "comment_count": 421,
   "layout_slot": "rail-mini",
   "financials": {
     "amount_usd": 114000000,
@@ -52,90 +51,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "shell-network",
     "accent": "sage",
     "theme": "newsprint",
     "caption": "D.L.F. luxury towers in Gurugram. SEBI traced ₹42.94 crore in public electric-vehicle loans toward a DLF The Camellias apartment.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "Follow the Green Rupee",
-      "subtitle": "Click nodes to trace state EV loans from public lenders to DLF The Camellias",
-      "nodes": [
-        {
-          "id": "lenders",
-          "label": "IREDA & PFC (State Lenders)",
-          "role": "EV Fleet Loans",
-          "amount": "₹977.75 Cr (~$114M)",
-          "jurisdiction": "New Delhi",
-          "kind": "source",
-          "note": "Public-sector green-energy lenders extended term loans earmarked for electric cabs."
-        },
-        {
-          "id": "gensol",
-          "label": "Gensol Engineering",
-          "role": "Listed Borrower",
-          "amount": "₹977.75 Cr",
-          "jurisdiction": "Ahmedabad / Gurugram",
-          "kind": "bank",
-          "note": "SEBI confirmed market and director bans on promoters Anmol and Puneet Jaggi on July 30, 2025."
-        },
-        {
-          "id": "goauto",
-          "label": "Go-Auto (EV Dealer)",
-          "role": "Dealership Conduit",
-          "amount": "₹42.94 Cr Routed",
-          "jurisdiction": "India",
-          "kind": "intermediary",
-          "note": "Regulators traced EV purchase remittances routed back toward promoter-linked entities."
-        },
-        {
-          "id": "capbridge",
-          "label": "Capbridge Ventures",
-          "role": "Promoter Entity",
-          "amount": "₹42.94 Cr (~$5M)",
-          "jurisdiction": "Gurugram",
-          "kind": "shell",
-          "note": "Identified in SEBI orders as recipient of diverted loan proceeds."
-        },
-        {
-          "id": "camellias",
-          "label": "DLF The Camellias Flat",
-          "role": "Luxury Condo & Golf Set",
-          "amount": "₹42.94 Cr + Gear",
-          "jurisdiction": "Gurugram",
-          "kind": "asset",
-          "note": "Ultra-luxury residential purchase and high-end golf clubs cited in regulatory findings."
-        }
-      ],
-      "edges": [
-        {
-          "from": "lenders",
-          "to": "gensol",
-          "amount": "₹977.75 Cr",
-          "label": "State EV Loans"
-        },
-        {
-          "from": "gensol",
-          "to": "goauto",
-          "amount": "Vehicle Orders",
-          "label": "Dealer Remittances"
-        },
-        {
-          "from": "goauto",
-          "to": "capbridge",
-          "amount": "₹42.94 Cr",
-          "label": "Circular Transfer",
-          "dashed": true
-        },
-        {
-          "from": "capbridge",
-          "to": "camellias",
-          "amount": "~$5M",
-          "label": "Condo & Luxury Spend",
-          "dashed": true
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

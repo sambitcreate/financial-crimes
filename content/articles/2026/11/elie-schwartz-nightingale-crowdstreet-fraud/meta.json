@@ -24,7 +24,6 @@
   "byline": "By The Real Estate Desk",
   "dateline": "ATLANTA",
   "read_time_min": 2,
-  "comment_count": 263,
   "layout_slot": "ledger",
   "financials": {
     "amount_usd": 62800000,
@@ -57,90 +56,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "shell-network",
     "accent": "gold",
     "theme": "newsprint",
     "caption": "A gold Swiss dress watch. Prosecutors traced CrowdStreet office-tower escrow funds to luxury watches and brokerage margin losses.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "Escrow Promise vs. Bank Trace",
-      "subtitle": "Click entities to inspect how $62.8M in real-estate crowdfunding proceeds was diverted",
-      "nodes": [
-        {
-          "id": "crowd",
-          "label": "800+ CrowdStreet Investors",
-          "role": "Retail & Accredited",
-          "amount": "$62.8M Raised",
-          "jurisdiction": "U.S. Crowdfunding",
-          "kind": "source",
-          "note": "Capital earmarked to acquire and renovate an Atlanta office tower and Miami Beach property."
-        },
-        {
-          "id": "nightingale",
-          "label": "Nightingale Entities",
-          "role": "Sponsor Accounts",
-          "amount": "$62.8M Inflow",
-          "jurisdiction": "New York",
-          "kind": "shell",
-          "note": "Funds swept out of deal-specific accounts controlled by Elie Schwartz."
-        },
-        {
-          "id": "watches",
-          "label": "Luxury Watches & Spending",
-          "role": "Personal Assets",
-          "amount": "Diverted Funds",
-          "jurisdiction": "New York",
-          "kind": "asset",
-          "note": "Court filings cited luxury watch purchases and personal expenses."
-        },
-        {
-          "id": "margin",
-          "label": "Brokerage Margin Trades",
-          "role": "Equities & Options",
-          "amount": "Speculative Losses",
-          "jurisdiction": "New York",
-          "kind": "bank",
-          "note": "Substantial sums lost in brokerage margin trading rather than property acquisition."
-        },
-        {
-          "id": "court",
-          "label": "N.D. Ga. Sentencing",
-          "role": "87 Months Prison",
-          "amount": "$45M+ Restitution",
-          "jurisdiction": "Atlanta",
-          "kind": "regulator",
-          "note": "Guilty plea resulted in May 2025 sentence of 87 months."
-        }
-      ],
-      "edges": [
-        {
-          "from": "crowd",
-          "to": "nightingale",
-          "amount": "$62.8M",
-          "label": "Escrow Deposits"
-        },
-        {
-          "from": "nightingale",
-          "to": "watches",
-          "amount": "Personal Draw",
-          "label": "Luxury Purchases",
-          "dashed": true
-        },
-        {
-          "from": "nightingale",
-          "to": "margin",
-          "amount": "Margin Calls",
-          "label": "Brokerage Wires",
-          "dashed": true
-        },
-        {
-          "from": "court",
-          "to": "nightingale",
-          "amount": "$45M+",
-          "label": "Restitution Order"
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

@@ -24,7 +24,6 @@
   "byline": "By The Wall Street Desk",
   "dateline": "NEW YORK",
   "read_time_min": 2,
-  "comment_count": 504,
   "layout_slot": "ledger",
   "financials": {
     "amount_usd": 175000000,
@@ -51,42 +50,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "redacted-dossier",
     "accent": "crimson",
     "theme": "newsprint",
     "caption": "JPMorgan Chase headquarters at 270 Park Avenue. Over 70 percent of the bank’s post-close test emails to Frank’s customer roster bounced.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "exhibitLabel": "EXHIBIT F // M&A DILIGENCE AUDIT",
-      "docketNumber": "S.D.N.Y. — U.S. v. JAVICE & AMAR",
-      "subject": "Frank Customer Roster Verification ($175M Acquisition)",
-      "subtitle": "Declassify the diligence audit behind 4.25 million purported student users",
-      "icon": "shredder",
-      "stamp": "85 MONTHS IMPOSED",
-      "excerpts": [
-        {
-          "label": "ACQUISITION PITCH",
-          "prefix": "Frank represented a user base of more than ",
-          "redacted": "4.25 million college students to justify a $175 million buyout",
-          "suffix": " by JPMorgan Chase.",
-          "note": "Actual customer count stood below 300,000, trial evidence showed."
-        },
-        {
-          "label": "DATA VENDOR RECEIPT",
-          "prefix": "Synthetic student rows were generated via an outside data scientist for ",
-          "redacted": "$18,000 — yielding roughly $41.18 in buyout value per fake row",
-          "suffix": ".",
-          "note": "Convictions returned March 2025 for Charlie Javice and Olivier Amar."
-        },
-        {
-          "label": "POST-CLOSE TEST CAMPAIGN",
-          "prefix": "When JPMorgan sent marketing test emails to 400,000 rows, ",
-          "redacted": "over 70 percent bounced as undeliverable addresses",
-          "suffix": ".",
-          "note": "Judge Hellerstein sentenced Javice to 85 months on Sept. 29, 2025."
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

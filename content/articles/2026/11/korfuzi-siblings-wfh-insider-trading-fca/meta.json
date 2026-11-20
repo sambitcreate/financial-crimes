@@ -23,7 +23,6 @@
   "byline": "By The London Bureau",
   "dateline": "LONDON",
   "read_time_min": 2,
-  "comment_count": 238,
   "layout_slot": "ledger",
   "financials": {
     "amount_usd": 1250000,
@@ -50,59 +49,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "offshore-flight-map",
     "accent": "crimson",
     "theme": "newsprint",
     "caption": "Southwark Crown Court in London, where Redinel and Oerta Korfuzi received the Financial Conduct Authority’s longest combined insider-trading sentence.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "From Home Desk to Knightsbridge Vault & Albania",
-      "subtitle": "Click waypoints to inspect the FCA insider-dealing and 173-cash-deposit money-laundering trail",
-      "region": "europe",
-      "waypoints": [
-        {
-          "id": "lon",
-          "label": "London (WFH Desk)",
-          "lat": 51.51,
-          "lon": -0.13,
-          "role": "Analyst Terminal",
-          "amount": "~£1M Profit",
-          "status": "Convicted June 2025"
-        },
-        {
-          "id": "knights",
-          "label": "Knightsbridge Vault",
-          "lat": 51.5,
-          "lon": -0.16,
-          "role": "Cash Storage",
-          "amount": "173 Deposits",
-          "status": "POCA Confiscation 2026"
-        },
-        {
-          "id": "tir",
-          "label": "Albania Corridor",
-          "lat": 41.33,
-          "lon": 19.82,
-          "role": "Cash Destination",
-          "amount": "Laundered Proceeds",
-          "status": "11 Combined Yrs Sentenced"
-        }
-      ],
-      "routes": [
-        {
-          "from": "lon",
-          "to": "knights",
-          "amount": "CFDs / Bets",
-          "label": "Minutes After Confidential Emails"
-        },
-        {
-          "from": "knights",
-          "to": "tir",
-          "amount": "173 Deposits",
-          "label": "Cash Laundering Trail"
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

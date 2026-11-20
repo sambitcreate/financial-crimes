@@ -24,7 +24,6 @@
   "byline": "By The Technology Desk",
   "dateline": "NEW YORK",
   "read_time_min": 2,
-  "comment_count": 528,
   "layout_slot": "lead-grid",
   "financials": {
     "amount_usd": 42000000,
@@ -57,40 +56,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "editorial-vignette",
     "accent": "slate",
     "theme": "newsprint",
     "caption": "Metro Manila at night. Federal filings allege overseas contractors manually typed customer checkouts behind Nate’s purported neural network.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "The 0% Artificial Intelligence Engine",
-      "subtitle": "Toggle X-Ray to peel back claimed neural-net automation and view filing allegations",
-      "scene": "server_vault",
-      "xrayLabel": "Toggle Neural-Net X-Ray",
-      "hotspots": [
-        {
-          "title": "Venture Pitch Claim",
-          "figure": "93%–97% A.I.",
-          "note": "Prosecutors allege investor decks touted proprietary neural-network checkout automation to raise $42M+.",
-          "x": 32,
-          "y": 48
-        },
-        {
-          "title": "Alleged Actual Automation",
-          "figure": "~0% Automated",
-          "note": "According to SDNY and SEC complaints, the real automation rate hovered near zero percent.",
-          "x": 55,
-          "y": 52
-        },
-        {
-          "title": "Manual Checkout Shifts",
-          "figure": "Manila & Romania",
-          "note": "Human contractors manually typed customer orders behind the scenes while the app displayed A.I. processing screens, filings allege.",
-          "x": 72,
-          "y": 62
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

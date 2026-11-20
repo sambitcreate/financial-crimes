@@ -24,7 +24,6 @@
   "byline": "By The Legal Desk",
   "dateline": "BOSTON",
   "read_time_min": 2,
-  "comment_count": 412,
   "layout_slot": "secondary-1",
   "financials": {
     "amount_usd": 50000000,
@@ -57,90 +56,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "shell-network",
     "accent": "slate",
     "theme": "newsprint",
     "caption": "John Joseph Moakley U.S. Courthouse in Boston, where prosecutors unsealed indictments against 30 defendants in the merger-leak ring.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "Confidential Merger Leak Chain",
-      "subtitle": "Click or drag nodes to trace alleged non-public deal tips to downstream traders",
-      "nodes": [
-        {
-          "id": "lawfirms",
-          "label": "BigLaw Deal Rooms",
-          "role": "Confidential Files",
-          "amount": "$140B+ Deals",
-          "jurisdiction": "New York / Global",
-          "kind": "source",
-          "note": "Merger drafts covering roughly 30 corporate acquisitions including Anadarko, Express Scripts, and iRobot."
-        },
-        {
-          "id": "tippers",
-          "label": "Inside Tippers",
-          "role": "Source Conduit",
-          "amount": "~30 Transactions",
-          "jurisdiction": "U.S. / Abroad",
-          "kind": "person",
-          "note": "Prosecutors allege privileged deal timelines leaked ahead of public announcements."
-        },
-        {
-          "id": "brokers",
-          "label": "Nourafchan & Yadgarov",
-          "role": "Alleged Hubs",
-          "amount": "Multi-Year Ring",
-          "jurisdiction": "D. Mass. / NY",
-          "kind": "intermediary",
-          "note": "Named among 30 defendants unsealed in May 2026; presumption of innocence applies to pending charges."
-        },
-        {
-          "id": "accounts",
-          "label": "30 Trading Accounts",
-          "role": "Options & Equity",
-          "amount": "Tens of Millions",
-          "jurisdiction": "Cross-Border",
-          "kind": "shell",
-          "note": "19 defendants arrested, 2 fugitives abroad, and 1 guilty plea recorded as of filing."
-        },
-        {
-          "id": "regulators",
-          "label": "DOJ & SEC Enforcement",
-          "role": "Parallel Actions",
-          "amount": "May 2026 Unseal",
-          "jurisdiction": "Boston / D.C.",
-          "kind": "regulator",
-          "note": "Coordinated criminal indictments in D. Mass. alongside parallel SEC civil complaints."
-        }
-      ],
-      "edges": [
-        {
-          "from": "lawfirms",
-          "to": "tippers",
-          "amount": "~30 Deals",
-          "label": "Confidential M&A Dates"
-        },
-        {
-          "from": "tippers",
-          "to": "brokers",
-          "amount": "Pre-Announcement",
-          "label": "Alleged Tips",
-          "dashed": true
-        },
-        {
-          "from": "brokers",
-          "to": "accounts",
-          "amount": "Tens of Millions",
-          "label": "Coordinated Trades"
-        },
-        {
-          "from": "regulators",
-          "to": "brokers",
-          "amount": "19 Arrested",
-          "label": "May 2026 Takedown",
-          "dashed": true
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

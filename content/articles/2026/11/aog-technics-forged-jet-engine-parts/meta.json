@@ -23,7 +23,6 @@
   "byline": "By The London Bureau",
   "dateline": "LONDON",
   "read_time_min": 2,
-  "comment_count": 467,
   "layout_slot": "rail-mini",
   "financials": {
     "amount_usd": 50000000,
@@ -50,42 +49,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "redacted-dossier",
     "accent": "slate",
     "theme": "newsprint",
     "caption": "A commercial CFM56 turbofan engine. AOG Technics supplied over 60,000 parts backed by forged Form 1 airworthiness certificates.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "exhibitLabel": "EXHIBIT J // FORGED AIRWORTHINESS FORM",
-      "docketNumber": "SOUTHWARK CROWN COURT — UK SFO",
-      "subject": "AOG Technics Authorized Release Certificate Audit",
-      "subtitle": "Hover or click ink redactions to inspect verified SFO sentencing facts",
-      "icon": "jet",
-      "stamp": "4 YRS 8 MOS PRISON",
-      "excerpts": [
-        {
-          "label": "PARTS VOLUME",
-          "prefix": "Defendant admitted fabricating airworthiness documentation across ",
-          "redacted": "more than 60,000 commercial jet engine parts valued at £39.3 million",
-          "suffix": ".",
-          "note": "Triggered global airline inspections and aircraft groundings."
-        },
-        {
-          "label": "HEADQUARTERS",
-          "prefix": "Despite an appearance of an international aerospace supplier, AOG Technics operated from ",
-          "redacted": "a spare bedroom in Surrey with fictitious staff profiles",
-          "suffix": ".",
-          "note": "Jose Alejandro Zamora Yrala pleaded guilty in December 2025."
-        },
-        {
-          "label": "SENTENCE — FEB. 23, 2026",
-          "prefix": "Southwark Crown Court imposed a custodial sentence of ",
-          "redacted": "4 years and 8 months (56 months) imprisonment",
-          "suffix": ".",
-          "note": "Prosecuted by the UK Serious Fraud Office."
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

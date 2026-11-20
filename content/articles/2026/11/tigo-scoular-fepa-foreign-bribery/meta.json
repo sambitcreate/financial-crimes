@@ -23,7 +23,6 @@
   "byline": "By The Washington Bureau",
   "dateline": "MIAMI",
   "read_time_min": 2,
-  "comment_count": 198,
   "layout_slot": "ledger",
   "financials": {
     "amount_usd": 128380000,
@@ -56,74 +55,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "offshore-flight-map",
     "accent": "sage",
     "theme": "newsprint",
     "caption": "Deputy Attorney General Todd Blanche. Under the department’s revised bribery priorities, enforcement has zeroed in on border and cartel corridors.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "The Post-Moratorium Bribery Corridor",
-      "subtitle": "Click regional waypoints to inspect TIGO, Scoular, and first-ever FEPA filings",
-      "region": "americas",
-      "waypoints": [
-        {
-          "id": "gua",
-          "label": "Guatemala City",
-          "lat": 14.63,
-          "lon": -90.51,
-          "role": "TIGO Guatemala",
-          "amount": "$118.2M DPA",
-          "status": "50% Discount / No Monitor (Nov. 2025)"
-        },
-        {
-          "id": "mex",
-          "label": "Mexico Border",
-          "lat": 25.68,
-          "lon": -100.31,
-          "role": "The Scoular Co.",
-          "amount": "$10.18M DPA",
-          "status": "Border Bribery Resolution (July 2026)"
-        },
-        {
-          "id": "mia",
-          "label": "Miami (S.D. Fla.)",
-          "lat": 25.76,
-          "lon": -80.19,
-          "role": "Enforcement Venue",
-          "amount": "First FEPA Charge",
-          "status": "Filed Nov. 2026"
-        },
-        {
-          "id": "wdc",
-          "label": "Washington, D.C.",
-          "lat": 38.9,
-          "lon": -77.04,
-          "role": "DOJ Fraud Section",
-          "amount": "Cartel Priority",
-          "status": "Selective FCPA Resumption"
-        }
-      ],
-      "routes": [
-        {
-          "from": "gua",
-          "to": "mia",
-          "amount": "$118.2M",
-          "label": "Cash Bags & Cartel Link"
-        },
-        {
-          "from": "mex",
-          "to": "wdc",
-          "amount": "$10.18M",
-          "label": "Scoular DPA"
-        },
-        {
-          "from": "mia",
-          "to": "wdc",
-          "amount": "FEPA 2026",
-          "label": "First Demand-Side Charge"
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

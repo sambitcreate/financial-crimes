@@ -23,7 +23,6 @@
   "byline": "By The Mumbai Bureau",
   "dateline": "MUMBAI",
   "read_time_min": 2,
-  "comment_count": 648,
   "layout_slot": "lead-right",
   "financials": {
     "amount_usd": 553000000,
@@ -56,90 +55,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "pump-dump-ticker",
     "accent": "crimson",
     "theme": "newsprint",
     "caption": "Phiroze Jeejeebhoy Towers on Dalal Street, Mumbai. SEBI impounded ₹4,843.57 crore in escrow while Jane Street affiliates contest the order.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "Bank Nifty Expiry-Day Seesaw Profile",
-      "ticker": "BANKNIFTY EXPIRY",
-      "currency": "₹",
-      "unit": " pts",
-      "drawdownLabel": "₹4,843.57 Cr ESCROW",
-      "peakIndex": 4,
-      "troughIndex": 10,
-      "points": [
-        {
-          "label": "09:15 IST",
-          "value": 48200
-        },
-        {
-          "label": "09:45 IST",
-          "value": 48540
-        },
-        {
-          "label": "10:15 IST",
-          "value": 48890
-        },
-        {
-          "label": "10:45 IST",
-          "value": 49210
-        },
-        {
-          "label": "11:15 IST",
-          "value": 49480
-        },
-        {
-          "label": "12:00 IST",
-          "value": 49220
-        },
-        {
-          "label": "12:45 IST",
-          "value": 48860
-        },
-        {
-          "label": "13:30 IST",
-          "value": 48490
-        },
-        {
-          "label": "14:15 IST",
-          "value": 48120
-        },
-        {
-          "label": "14:45 IST",
-          "value": 47840
-        },
-        {
-          "label": "15:15 IST",
-          "value": 47690
-        },
-        {
-          "label": "15:30 IST",
-          "value": 47710
-        }
-      ],
-      "events": [
-        {
-          "index": 2,
-          "label": "Morning Cash Surge",
-          "detail": "SEBI alleges aggressive morning buying across Bank Nifty constituent stocks and futures.",
-          "kind": "pump"
-        },
-        {
-          "index": 4,
-          "label": "Short-Option Build",
-          "detail": "Regulator alleges outsized short-call / long-put index options established near intraday peak.",
-          "kind": "sell"
-        },
-        {
-          "index": 9,
-          "label": "Afternoon Unwind",
-          "detail": "Alleged reversal of cash positions as retail options expire; contested by Jane Street affiliates at SAT.",
-          "kind": "enforcement"
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

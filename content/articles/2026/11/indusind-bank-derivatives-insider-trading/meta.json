@@ -25,7 +25,6 @@
   "byline": "By The Mumbai Bureau",
   "dateline": "MUMBAI",
   "read_time_min": 2,
-  "comment_count": 312,
   "layout_slot": "ledger",
   "financials": {
     "amount_usd": 230000000,
@@ -52,78 +51,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "pump-dump-ticker",
     "accent": "slate",
     "theme": "newsprint",
     "caption": "Bandra Kurla Complex in Mumbai. IndusInd Bank shares plunged 27% when the ₹2,000 crore derivatives shortfall finally reached the public.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "IndusInd Bank: Pre-Disclosure Sales vs. -27% Cliff",
-      "ticker": "INDUSINDBK",
-      "currency": "₹",
-      "unit": "",
-      "drawdownLabel": "-27% DISCLOSURE CLIFF",
-      "peakIndex": 2,
-      "troughIndex": 8,
-      "points": [
-        {
-          "label": "Q4-23",
-          "value": 1520
-        },
-        {
-          "label": "Q1-24",
-          "value": 1560
-        },
-        {
-          "label": "Q2-24",
-          "value": 1495
-        },
-        {
-          "label": "Q3-24",
-          "value": 1420
-        },
-        {
-          "label": "Q4-24",
-          "value": 1050
-        },
-        {
-          "label": "Feb-25",
-          "value": 990
-        },
-        {
-          "label": "Mar-10",
-          "value": 900
-        },
-        {
-          "label": "Mar-11",
-          "value": 656
-        },
-        {
-          "label": "May-25",
-          "value": 685
-        }
-      ],
-      "events": [
-        {
-          "index": 1,
-          "label": "Internal FX Warnings",
-          "detail": "SEBI order cites unpublished internal emails flagging internal derivative-accounting gaps.",
-          "kind": "warning"
-        },
-        {
-          "index": 2,
-          "label": "Exec Share Sales",
-          "detail": "₹19.78 Cr (~$2.3M) in alleged avoided losses by 5 executives later impounded.",
-          "kind": "sell"
-        },
-        {
-          "index": 7,
-          "label": "-27% Disclosure Plunge",
-          "detail": "Public disclosure of ~₹2,000 Cr (~$230M) net-worth impact triggers single-day selloff.",
-          "kind": "enforcement"
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

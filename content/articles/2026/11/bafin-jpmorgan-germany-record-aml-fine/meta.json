@@ -22,7 +22,6 @@
   "byline": "By The Editorial Board",
   "dateline": "FRANKFURT",
   "read_time_min": 2,
-  "comment_count": 409,
   "layout_slot": "rail-opinion",
   "financials": {
     "amount_usd": 490000000,
@@ -49,42 +48,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "penalty-wheel",
     "accent": "gold",
     "theme": "monochrome",
     "caption": "Jamie Dimon, chief executive of JPMorgan Chase. Germany’s all-time record €45 million BaFin fine equals roughly eight hours of global parent profit.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "A German Record, Measured in Workday Hours",
-      "subtitle": "Toggle views to measure Germany’s largest-ever BaFin AML penalty against corporate scale",
-      "score": 93,
-      "verdict": "ROUNDING ERROR",
-      "fineDisplay": "€45M (~$49M)",
-      "lootDisplay": "12-Mo STR Delays",
-      "comparisons": [
-        {
-          "id": "hours",
-          "label": "Hours of Profit",
-          "value": "~8 Hours",
-          "detail": "Approximate hours of global parent net income required to absorb Germany’s all-time record AML fine.",
-          "score": 93
-        },
-        {
-          "id": "months",
-          "label": "Duration of Lapses",
-          "value": "12 Months",
-          "detail": "BaFin cited systematic failure to submit Suspicious Transaction Reports without undue delay over a full year.",
-          "score": 86
-        },
-        {
-          "id": "execs",
-          "label": "Executives Charged",
-          "value": "0 Individuals",
-          "detail": "Final binding Oct. 30, 2025 administrative order assessed solely against the corporate entity.",
-          "score": 96
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

@@ -23,7 +23,6 @@
   "byline": "By The New Delhi Bureau",
   "dateline": "NEW DELHI",
   "read_time_min": 2,
-  "comment_count": 589,
   "layout_slot": "lead-grid",
   "financials": {
     "amount_usd": 115000,
@@ -50,40 +49,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "editorial-vignette",
     "accent": "gold",
     "theme": "newsprint",
     "caption": "Shastri Bhawan in New Delhi, home to India’s Ministry of Corporate Affairs, where S.F.I.O. operates.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "The Enforcement Matryoshka",
-      "subtitle": "Select nested layers to trace the DHFL probe into the Oct. 2026 CBI bribery trap",
-      "scene": "matryoshka",
-      "xrayLabel": "Cycle Nested Layers",
-      "hotspots": [
-        {
-          "title": "Outer Layer: DHFL Corporate Collapse",
-          "figure": "Multi-Thousand Cr",
-          "note": "One of India’s largest non-bank housing-finance fraud investigations assigned to the SFIO.",
-          "x": 22,
-          "y": 58
-        },
-        {
-          "title": "Middle Layer: SFIO Investigator",
-          "figure": "₹1 Cr (~$115K) Alleged",
-          "note": "CBI alleges SFIO Deputy Director Harish Kumar Tanwar (IRS) sought a ₹1 crore bribe to shield accused parties.",
-          "x": 48,
-          "y": 55
-        },
-        {
-          "title": "Inner Layer: CBI Trap & Remand",
-          "figure": "₹20L ($23K) Seized",
-          "note": "Arrested red-handed Oct. 12–13, 2026 and remanded in custody by Rouse Avenue Court; presumption of innocence applies pending trial.",
-          "x": 74,
-          "y": 56
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

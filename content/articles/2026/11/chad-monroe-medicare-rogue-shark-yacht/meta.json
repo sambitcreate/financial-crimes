@@ -24,7 +24,6 @@
   "byline": "By The Enforcement Desk",
   "dateline": "TAMPA, Fla.",
   "read_time_min": 2,
-  "comment_count": 376,
   "layout_slot": "rail-mini",
   "financials": {
     "amount_usd": 42000000,
@@ -57,40 +56,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "editorial-vignette",
     "accent": "gold",
     "theme": "newsprint",
     "caption": "Motor yacht underway at sea. Federal prosecutors moved to forfeit Chad Monroe’s 47-foot vessel, “The Rogue Shark,” in his $42 million Medicare plea.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "Anatomy of a Medicare Yacht",
-      "subtitle": "Select numbered pins to inspect billing volume, asset seizure, and national sweep totals",
-      "scene": "marina_yacht",
-      "xrayLabel": "Inspect Forfeiture Pins",
-      "hotspots": [
-        {
-          "title": "“The Rogue Shark” (47-Foot Vessel)",
-          "figure": "Seized Asset",
-          "note": "Federal authorities moved to forfeit the 47-foot yacht acquired with proceeds of the Maksix Medical scheme.",
-          "x": 35,
-          "y": 58
-        },
-        {
-          "title": "Phantom Braces & Genetic Tests",
-          "figure": "$42 Million",
-          "note": "Chad Monroe pleaded guilty on Nov. 13, 2026 in M.D. Fla. to billing Medicare for medically unnecessary braces and tests.",
-          "x": 62,
-          "y": 46
-        },
-        {
-          "title": "2026 National Takedown",
-          "figure": "$6.5B+ / 455 Defs",
-          "note": "Announced June 23, 2026 across 56 federal districts ($21.1B combined with the 2025 sweep).",
-          "x": 76,
-          "y": 68
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

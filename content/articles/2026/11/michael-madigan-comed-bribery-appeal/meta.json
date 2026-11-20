@@ -24,7 +24,6 @@
   "byline": "By The Midwest Bureau",
   "dateline": "CHICAGO",
   "read_time_min": 2,
-  "comment_count": 294,
   "layout_slot": "ledger",
   "financials": {
     "amount_usd": 150000000,
@@ -57,74 +56,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "shell-network",
     "accent": "gold",
     "theme": "newsprint",
     "caption": "Former Illinois House Speaker Michael J. Madigan. The Seventh Circuit affirmed his 92-month federal bribery sentence in April 2026.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "The Outsourced Patronage Payroll",
-      "subtitle": "Inspect how electric-utility retainers flowed through intermediaries toward Springfield legislation",
-      "nodes": [
-        {
-          "id": "comed",
-          "label": "Commonwealth Edison",
-          "role": "Electric Utility",
-          "amount": "$200M DPA Fine",
-          "jurisdiction": "Illinois",
-          "kind": "source",
-          "note": "Utility sought favorable rate and energy legislation valued at $150M+."
-        },
-        {
-          "id": "intermediary",
-          "label": "Subcontractor Conduit",
-          "role": "No-Show Retainers",
-          "amount": "~$1.3M Jobs",
-          "jurisdiction": "Chicago",
-          "kind": "intermediary",
-          "note": "Funneled payments to politically loyal subcontractors performing little or no work."
-        },
-        {
-          "id": "captains",
-          "label": "13th Ward Associates",
-          "role": "Political Loyalists",
-          "amount": "Payroll Stipends",
-          "jurisdiction": "Chicago",
-          "kind": "person",
-          "note": "Associates tied to Madigan’s political operation placed on utility-funded contracts."
-        },
-        {
-          "id": "springfield",
-          "label": "Speaker’s Office",
-          "role": "Legislative Control",
-          "amount": "$150M+ Bills",
-          "jurisdiction": "Springfield, IL",
-          "kind": "asset",
-          "note": "7th Circuit affirmed Madigan’s conviction and 92-month sentence in April 2026."
-        }
-      ],
-      "edges": [
-        {
-          "from": "comed",
-          "to": "intermediary",
-          "amount": "~$1.3M",
-          "label": "Consulting Contracts"
-        },
-        {
-          "from": "intermediary",
-          "to": "captains",
-          "amount": "No-Show Pay",
-          "label": "Ward Stipends",
-          "dashed": true
-        },
-        {
-          "from": "springfield",
-          "to": "comed",
-          "amount": "$150M+ Value",
-          "label": "Utility Legislation"
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

@@ -23,7 +23,6 @@
   "byline": "By The Courts Desk",
   "dateline": "NEW YORK",
   "read_time_min": 2,
-  "comment_count": 684,
   "layout_slot": "rail-feature",
   "financials": {
     "amount_usd": 150000000,
@@ -56,42 +55,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "redacted-dossier",
     "accent": "slate",
     "theme": "newsprint",
     "caption": "Thurgood Marshall U.S. Courthouse in Manhattan, where Judge Jed Rakoff ruled consumer chatbot prompts carry zero attorney-client privilege.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "exhibitLabel": "EXHIBIT A // PRIVILEGE RULING",
-      "docketNumber": "25-CR.-503 (JSR) — S.D.N.Y.",
-      "subject": "Attorney-Client Privilege vs. Consumer A.I. Prompts",
-      "subtitle": "Scratch or click ink bars to reveal verified docket milestones",
-      "icon": "chip",
-      "stamp": "CONVICTED ALL COUNTS",
-      "excerpts": [
-        {
-          "label": "RULING — PRIVILEGE",
-          "prefix": "Judge Rakoff held that prompts entered into a commercial A.I. chatbot ",
-          "redacted": "do not enjoy attorney-client privilege or work-product protection",
-          "suffix": ".",
-          "note": "Consumer chatbot terms do not establish a confidential attorney-client relationship."
-        },
-        {
-          "label": "DOCKET — FUND FLOW",
-          "prefix": "Trial evidence established more than ",
-          "redacted": "$150 million diverted from bankrupt GWG L-Bond investors into shell entity HCLP",
-          "suffix": ".",
-          "note": "Retail L-Bond holders suffered severe losses following GWG Holdings’ bankruptcy."
-        },
-        {
-          "label": "VERDICT — MAY 7, 2026",
-          "prefix": "Manhattan federal jury returned a verdict of ",
-          "redacted": "GUILTY ON ALL COUNTS",
-          "suffix": "; sentencing remains pending.",
-          "note": "Docket 25-Cr.-503, Southern District of New York."
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

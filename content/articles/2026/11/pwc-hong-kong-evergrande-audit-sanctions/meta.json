@@ -24,7 +24,6 @@
   "byline": "By The Asia Bureau",
   "dateline": "HONG KONG",
   "read_time_min": 2,
-  "comment_count": 388,
   "layout_slot": "rail-mini",
   "financials": {
     "amount_usd": 8400000000,
@@ -51,30 +50,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "scale-of-impunity",
     "accent": "gold",
     "theme": "newsprint",
     "caption": "China Evergrande founder Hui Ka Yan. PwC Hong Kong’s $167 million regulatory bill equals less than two cents on the dollar of liquidators’ $8.4 billion claim.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "Evergrande’s Audit Tab: $167M Paid vs. $8.4B Claimed",
-      "subtitle": "Compare the April 2026 SFC/AFRC sanctions against the active High Court liquidator suit",
-      "lootLabel": "Liquidators’ High Court Claim",
-      "lootDisplay": "US$8.40B",
-      "lootUsd": 8400000000,
-      "fineLabel": "HK$1.3B SFC + AFRC Package",
-      "fineDisplay": "US$167M",
-      "fineUsd": 167000000,
-      "ratioDisplay": "1.99% OF CLAIM",
-      "stampText": "6-MONTH TIMEOUT",
-      "gridRatioPct": 1.99,
-      "streetComparison": {
-        "label": "Regulatory Package Breakdown",
-        "amountDisplay": "$8.4B Claim",
-        "sentenceDisplay": "HK$300M AFRC + HK$1B SFC Fund",
-        "execSentenceDisplay": "0 Criminal Charges"
-      }
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

@@ -23,7 +23,6 @@
   "byline": "By The Courts Desk",
   "dateline": "NEW YORK",
   "read_time_min": 2,
-  "comment_count": 519,
   "layout_slot": "lead-live",
   "live_updates": [
     {
@@ -64,47 +63,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "ponzi-pyramid",
     "accent": "crimson",
     "theme": "newsprint",
     "caption": "The New York Stock Exchange facade. Prosecutors allege Backward Hat Capital raised ~$600 million on promises of 6% monthly currency gains.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "Backward Hat Capital: Liquidity Tier Model",
-      "promisedReturn": ">6% MONTHLY (>100% ANNUALIZED)",
-      "totalRaised": "~$600M ALLEGEDLY RAISED",
-      "collapseStamp": "REDEMPTIONS FROZEN",
-      "tiers": [
-        {
-          "label": "Principals & Promoters",
-          "count": "2 Indicted Principals",
-          "inflow": "$0 Net Trading",
-          "payout": "Alleged Diversions",
-          "note": "Prosecutors allege investor funds covered disbursements rather than profitable FX trading."
-        },
-        {
-          "label": "Early Referral Accounts",
-          "count": "Early Cohorts",
-          "inflow": "Initial Capital",
-          "payout": "Lulling Payouts",
-          "note": "Early withdrawals funded by subsequent retail deposits, according to the indictment."
-        },
-        {
-          "label": "Mid-Cycle Retail Pool",
-          "count": "Hundreds of Investors",
-          "inflow": "Mid-Cycle Wires",
-          "payout": "Paper Balances",
-          "note": "Account statements allegedly reflected fabricated compounding gains above 6% monthly."
-        },
-        {
-          "label": "Late-Stage Retail Investors",
-          "count": "2,000+ Total Investors",
-          "inflow": "~$600M Cumulative",
-          "payout": "Unmet Redemptions",
-          "note": "At 6% monthly compounding, $600M would theoretically eclipse global GDP within 18 years."
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

@@ -24,7 +24,6 @@
   "byline": "By The Banking Desk",
   "dateline": "WASHINGTON",
   "read_time_min": 2,
-  "comment_count": 842,
   "layout_slot": "lead-hero",
   "financials": {
     "amount_usd": 5000000000,
@@ -63,42 +62,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "penalty-wheel",
     "accent": "crimson",
     "theme": "newsprint",
     "caption": "Brian Moynihan, chief executive of Bank of America. Federal regulators trimmed $750 million off the bank’s $1.96 billion laundering tally.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "The Regulatory Coupon Clipper",
-      "subtitle": "Toggle between stacked assessments, bundled credit, and net-income duration",
-      "score": 77,
-      "verdict": "COST OF DOING BUSINESS",
-      "fineDisplay": "$1.21B Net",
-      "lootDisplay": "$5.0B+ Late SARs",
-      "comparisons": [
-        {
-          "id": "bundled",
-          "label": "Bundled Net Fine",
-          "value": "$1.21B",
-          "detail": "OCC’s $750M assessment credited against FinCEN’s $1.2B civil money penalty, saving $750M.",
-          "score": 77
-        },
-        {
-          "id": "stacked",
-          "label": "Unbundled Total",
-          "value": "$1.96B",
-          "detail": "Combined statutory assessments across FinCEN ($1.2B), OCC ($750M), and OFAC before inter-agency credit.",
-          "score": 61
-        },
-        {
-          "id": "income",
-          "label": "Days of Net Income",
-          "value": "~15 Days",
-          "detail": "Approximate share of annual parent-company profit absorbed by the coordinated civil settlement.",
-          "score": 88
-        }
-      ]
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }

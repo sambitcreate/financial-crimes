@@ -1,18 +1,31 @@
 import { z } from 'zod';
+import { isSafeHttpsUrl } from '../utils/sanitize';
 
-export const ART_ARCHETYPES = [
-  'shell-network',
-  'scale-of-impunity',
-  'redacted-dossier',
-  'pump-dump-ticker',
-  'ponzi-pyramid',
-  'offshore-flight-map',
-  'editorial-vignette',
-  'penalty-wheel',
+export const HttpsUrlSchema = z
+  .string()
+  .trim()
+  .url('Must be a valid URL')
+  .refine(isSafeHttpsUrl, 'URL must use the https:// protocol');
+
+export const LEGAL_STAGES = [
+  'investigation',
+  'civil_complaint',
+  'indicted',
+  'arrested',
+  'interim_order',
+  'guilty_plea',
+  'convicted',
+  'sentenced',
+  'settlement',
+  'regulatory_order',
+  'dpa',
+  'appeal',
+  'dismissed',
+  'acquitted',
 ] as const;
 
-export const ArtArchetypeSchema = z.enum(ART_ARCHETYPES);
-export type ArtArchetype = z.infer<typeof ArtArchetypeSchema>;
+export const LegalStageSchema = z.enum(LEGAL_STAGES);
+export type LegalStage = z.infer<typeof LegalStageSchema>;
 
 export const ART_ACCENTS = ['crimson', 'slate', 'gold', 'sage'] as const;
 export const ArtAccentSchema = z.enum(ART_ACCENTS);
@@ -21,6 +34,26 @@ export type ArtAccent = z.infer<typeof ArtAccentSchema>;
 export const ART_THEMES = ['newsprint', 'monochrome'] as const;
 export const ArtThemeSchema = z.enum(ART_THEMES);
 export type ArtTheme = z.infer<typeof ArtThemeSchema>;
+
+export const PALETTE_MOODS = [
+  'verdict-crimson',
+  'bullion-gold',
+  'subpoena-cobalt',
+  'banknote-emerald',
+  'courtroom-ochre',
+  'monochrome-noir',
+] as const;
+export const PaletteMoodSchema = z.enum(PALETTE_MOODS);
+
+export const TOY_KINDS = [
+  'stamp',
+  'coins',
+  'redaction',
+  'crash-line',
+  'envelopes',
+  'gavel-ripple',
+] as const;
+export const ToyKindSchema = z.enum(TOY_KINDS);
 
 export const LAYOUT_SLOTS = [
   'lead-hero',
@@ -53,6 +86,13 @@ export const LiveUpdateSchema = z.object({
 });
 export type LiveUpdate = z.infer<typeof LiveUpdateSchema>;
 
+export const CorrectionEntrySchema = z.object({
+  date: z.string().min(1),
+  note: z.string().min(1),
+  type: z.enum(['correction', 'clarification', 'update']).optional(),
+});
+export type CorrectionEntry = z.infer<typeof CorrectionEntrySchema>;
+
 export const FinancialsSchema = z.object({
   amount_usd: z.number().nullable(),
   amount_display: z.string().min(1),
@@ -75,18 +115,16 @@ export type StreetCrimeCompare = z.infer<typeof StreetCrimeCompareSchema>;
 export const SourceCitationSchema = z.object({
   title: z.string().min(1),
   agency: z.string().min(1),
-  url: z.string().url(),
+  url: HttpsUrlSchema,
   date: z.string().min(1),
 });
 export type SourceCitation = z.infer<typeof SourceCitationSchema>;
 
 export const InteractiveArtSpecSchema = z.object({
-  archetype: ArtArchetypeSchema,
   accent: ArtAccentSchema,
   theme: ArtThemeSchema.optional(),
   caption: z.string().min(1),
   credit: z.string().optional(),
-  data: z.record(z.string(), z.any()),
 });
 export type InteractiveArtSpec = z.infer<typeof InteractiveArtSpecSchema>;
 
@@ -104,7 +142,7 @@ export const ArticleMetaSchema = z.object({
   category: z.string().min(1),
   agencies: z.array(z.string().min(1)).min(1),
   docket_number: z.string().nullable(),
-  legal_stage: z.string().min(1),
+  legal_stage: LegalStageSchema,
   template: ArticleTemplateSchema,
   eyebrow: z.string().min(1),
   headline: z.string().min(1),
@@ -112,9 +150,9 @@ export const ArticleMetaSchema = z.object({
   byline: z.string().min(1),
   dateline: z.string().min(1),
   read_time_min: z.number().int().positive(),
-  comment_count: z.number().int().nonnegative(),
   layout_slot: LayoutSlotSchema,
   live_updates: z.array(LiveUpdateSchema).optional(),
+  corrections: z.array(CorrectionEntrySchema).optional(),
   financials: FinancialsSchema,
   slap_on_wrist_score: z.number().min(0).max(100).nullable(),
   street_crime_compare: StreetCrimeCompareSchema,
@@ -130,6 +168,33 @@ export interface ArticleRecord extends ArticleMeta {
   url: string;
   contentDir: string;
 }
+
+export const PaintRefEntrySchema = z.object({
+  refImage: z
+    .string()
+    .min(1)
+    .regex(/^\/paint-refs\/[a-z0-9-]+\.jpg$/, 'refImage must be /paint-refs/<slug>.jpg'),
+  subject: z.string().min(1),
+  sourceUrl: HttpsUrlSchema,
+  sourceLicense: z.string().min(1),
+  isPortrait: z.boolean(),
+  focalPoint: z.object({
+    u: z.number().min(0).max(1),
+    v: z.number().min(0).max(1),
+  }),
+  paletteMood: PaletteMoodSchema,
+  toyKind: ToyKindSchema,
+  toyText: z.string().min(1),
+  toySubtext: z.string().min(1),
+  alt: z.string().min(1),
+});
+export type PaintRefEntry = z.infer<typeof PaintRefEntrySchema>;
+
+export const PaintRefsManifestSchema = z.record(
+  z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'paint-ref key must be lowercase kebab-case'),
+  PaintRefEntrySchema
+);
+export type PaintRefsManifest = z.infer<typeof PaintRefsManifestSchema>;
 
 export const EditionSlotsSchema = z.object({
   lead_hero: z.string().min(1),

@@ -1,28 +1,61 @@
 #!/usr/bin/env node
 /**
- * Fast content validator for The Financial Crimes.
- * Validates every content/articles/<yyyy>/<mm>/<slug>/{meta.json, body.html},
- * every edition manifest under content/editions/, and content/ledger/rollup-stats.json.
+ * Strict content & security validator for The Financial Crimes.
+ * Validates:
+ *  - Every content/articles/<yyyy>/<mm>/<slug>/{meta.json, body.html}
+ *  - Strict sanitize-html allowlist & HTML5 AST violation detection on body.html
+ *  - Strict https:// URL enforcement on sources[] and paint-refs.json
+ *  - 1:1 paint-refs.json + public/paint-refs/<slug>.jpg coverage, size (> 5 KB), and JPEG magic bytes
+ *  - Edition manifests under content/editions/ (including YYYY-MM-DD filename <-> edition_date match)
+ *  - content/ledger/rollup-stats.json
  */
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import sanitizeHtml from 'sanitize-html';
 import { z } from 'zod';
 
 const PROJECT_ROOT = process.cwd();
 const ARTICLES_ROOT = path.join(PROJECT_ROOT, 'content', 'articles');
 const EDITIONS_ROOT = path.join(PROJECT_ROOT, 'content', 'editions');
 const ROLLUP_PATH = path.join(PROJECT_ROOT, 'content', 'ledger', 'rollup-stats.json');
+const PAINT_REFS_JSON_PATH = path.join(PROJECT_ROOT, 'content', 'paint-refs.json');
+const PAINT_REFS_DIR = path.join(PROJECT_ROOT, 'public', 'paint-refs');
+const MIN_PAINT_REF_BYTES = 5 * 1024;
 
-const ArtArchetypeSchema = z.enum([
-  'shell-network',
-  'scale-of-impunity',
-  'redacted-dossier',
-  'pump-dump-ticker',
-  'ponzi-pyramid',
-  'offshore-flight-map',
-  'editorial-vignette',
-  'penalty-wheel',
+function isSafeHttpsUrl(url) {
+  if (typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (!trimmed) return false;
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === 'https:' && parsed.hostname.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+const HttpsUrlSchema = z
+  .string()
+  .trim()
+  .url('Must be a valid URL')
+  .refine(isSafeHttpsUrl, 'URL must use the https:// protocol');
+
+const LegalStageSchema = z.enum([
+  'investigation',
+  'civil_complaint',
+  'indicted',
+  'arrested',
+  'interim_order',
+  'guilty_plea',
+  'convicted',
+  'sentenced',
+  'settlement',
+  'regulatory_order',
+  'dpa',
+  'appeal',
+  'dismissed',
+  'acquitted',
 ]);
 
 const ArticleMetaSchema = z.object({
@@ -39,7 +72,7 @@ const ArticleMetaSchema = z.object({
   category: z.string().min(1),
   agencies: z.array(z.string().min(1)).min(1),
   docket_number: z.string().nullable(),
-  legal_stage: z.string().min(1),
+  legal_stage: LegalStageSchema,
   template: z.enum(['news', 'opinion']),
   eyebrow: z.string().min(1),
   headline: z.string().min(1),
@@ -47,7 +80,6 @@ const ArticleMetaSchema = z.object({
   byline: z.string().min(1),
   dateline: z.string().min(1),
   read_time_min: z.number().int().positive(),
-  comment_count: z.number().int().nonnegative(),
   layout_slot: z.enum([
     'lead-hero',
     'lead-live',
@@ -62,6 +94,15 @@ const ArticleMetaSchema = z.object({
   ]),
   live_updates: z
     .array(z.object({ text: z.string().min(1), ago: z.string().min(1) }))
+    .optional(),
+  corrections: z
+    .array(
+      z.object({
+        date: z.string().min(1),
+        note: z.string().min(1),
+        type: z.enum(['correction', 'clarification', 'update']).optional(),
+      })
+    )
     .optional(),
   financials: z.object({
     amount_usd: z.number().nullable(),
@@ -84,21 +125,51 @@ const ArticleMetaSchema = z.object({
       z.object({
         title: z.string().min(1),
         agency: z.string().min(1),
-        url: z.string().url(),
+        url: HttpsUrlSchema,
         date: z.string().min(1),
       })
     )
     .min(1),
   interactive_art_spec: z.object({
-    archetype: ArtArchetypeSchema,
     accent: z.enum(['crimson', 'slate', 'gold', 'sage']),
     theme: z.enum(['newsprint', 'monochrome']).optional(),
     caption: z.string().min(1),
     credit: z.string().optional(),
-    data: z.record(z.string(), z.any()),
   }),
   status: z.literal('published'),
 });
+
+const PaintRefEntrySchema = z.object({
+  refImage: z
+    .string()
+    .min(1)
+    .regex(/^\/paint-refs\/[a-z0-9-]+\.jpg$/, 'refImage must be /paint-refs/<slug>.jpg'),
+  subject: z.string().min(1),
+  sourceUrl: HttpsUrlSchema,
+  sourceLicense: z.string().min(1),
+  isPortrait: z.boolean(),
+  focalPoint: z.object({
+    u: z.number().min(0).max(1),
+    v: z.number().min(0).max(1),
+  }),
+  paletteMood: z.enum([
+    'verdict-crimson',
+    'bullion-gold',
+    'subpoena-cobalt',
+    'banknote-emerald',
+    'courtroom-ochre',
+    'monochrome-noir',
+  ]),
+  toyKind: z.enum(['stamp', 'coins', 'redaction', 'crash-line', 'envelopes', 'gavel-ripple']),
+  toyText: z.string().min(1),
+  toySubtext: z.string().min(1),
+  alt: z.string().min(1),
+});
+
+const PaintRefsManifestSchema = z.record(
+  z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  PaintRefEntrySchema
+);
 
 const EditionManifestSchema = z.object({
   edition_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -145,37 +216,95 @@ const RollupStatsSchema = z.object({
   regions: z.record(z.string(), RegionalRollupSchema),
 });
 
-const ALLOWED_BODY_TAGS = new Set([
-  'p', 'h2', 'h3', 'h4', 'span', 'strong', 'em', 'b', 'i', 'a', 'ul', 'ol', 'li',
-  'blockquote', 'br', 'hr', 'sup', 'sub', 'cite', 'abbr', 'small', 'code',
-  'figure', 'figcaption', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
-]);
-const ALLOWED_BODY_ATTRS = new Set(['class', 'href', 'title', 'id', 'lang', 'rel', 'target', 'cite']);
+const ALLOWED_ARTICLE_TAGS = [
+  'p',
+  'h2',
+  'h3',
+  'blockquote',
+  'ul',
+  'ol',
+  'li',
+  'strong',
+  'em',
+  'b',
+  'i',
+  'a',
+  'br',
+  'code',
+  'sup',
+  'sub',
+  'span',
+];
 
-/** Problems with article body markup that would be unsafe to inject with set:html. */
-function findUnsafeMarkup(html) {
-  const problems = [];
-  const tagRe = /<\s*([a-zA-Z][\w:-]*)([^>]*)>/g;
-  let m;
-  while ((m = tagRe.exec(html))) {
-    const tag = m[1].toLowerCase();
-    if (!ALLOWED_BODY_TAGS.has(tag)) {
-      problems.push(`disallowed <${tag}> tag`);
-      continue;
-    }
-    const attrRe = /([^\s=/]+)(?:\s*=\s*("[^"]*"|'[^']*'|[^\s>]+))?/g;
-    let a;
-    while ((a = attrRe.exec(m[2]))) {
-      const name = a[1].toLowerCase();
-      const value = (a[2] ?? '').replace(/^["']|["']$/g, '');
-      if (!ALLOWED_BODY_ATTRS.has(name) && !name.startsWith('data-') && !name.startsWith('aria-')) {
-        problems.push(`disallowed attribute "${name}" on <${tag}>`);
-      } else if ((name === 'href' || name === 'cite') && !/^(https?:|mailto:|\/|#)/i.test(value.trim())) {
-        problems.push(`unsafe ${name} "${value}" on <${tag}> (only http(s), mailto, / and # links)`);
-      }
-    }
+const ALLOWED_ARTICLE_ATTRIBUTES = {
+  a: ['href', 'title', 'rel', 'target'],
+  p: ['class'],
+  span: ['class'],
+  blockquote: ['class'],
+};
+
+const STRICT_SANITIZE_OPTIONS = {
+  allowedTags: ALLOWED_ARTICLE_TAGS,
+  allowedAttributes: ALLOWED_ARTICLE_ATTRIBUTES,
+  allowedSchemes: ['https', 'http', 'mailto'],
+  allowedSchemesByTag: {
+    a: ['https', 'http', 'mailto'],
+  },
+  allowProtocolRelative: false,
+  disallowedTagsMode: 'discard',
+};
+
+const ALLOWED_TAG_SET = new Set(ALLOWED_ARTICLE_TAGS);
+
+/**
+ * AST-backed HTML security check using sanitize-html (htmlparser2) — immune to regex
+ * attribute-quote bypasses like <a title=">" onclick="alert(1)" href="#">.
+ */
+function findHtmlSecurityViolations(html) {
+  const violations = [];
+
+  const passthrough = sanitizeHtml(html, {
+    allowedTags: false,
+    allowedAttributes: false,
+    allowVulnerableTags: true,
+    transformTags: {
+      '*': (tagName, attribs) => {
+        const tag = tagName.toLowerCase();
+        if (!ALLOWED_TAG_SET.has(tag)) {
+          violations.push(`disallowed tag <${tag}>`);
+        }
+
+        const allowedForTag = new Set(ALLOWED_ARTICLE_ATTRIBUTES[tag] ?? []);
+        for (const [rawName, rawVal] of Object.entries(attribs)) {
+          const name = rawName.toLowerCase();
+          if (name.startsWith('on')) {
+            violations.push(`disallowed event handler "${name}" on <${tag}>`);
+          } else if (!allowedForTag.has(name)) {
+            violations.push(`disallowed attribute "${name}" on <${tag}>`);
+          } else if (name === 'href') {
+            const cleaned = String(rawVal ?? '').replace(/[\u0000-\u0020]+/g, '');
+            if (cleaned.startsWith('//')) {
+              violations.push(`disallowed protocol-relative href "${rawVal}" on <${tag}>`);
+            } else if (
+              /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(cleaned) &&
+              !/^(https?:|mailto:)/i.test(cleaned)
+            ) {
+              violations.push(`disallowed href scheme "${rawVal}" on <${tag}>`);
+            }
+          }
+        }
+
+        return { tagName, attribs };
+      },
+    },
+  }).trim();
+
+  const sanitized = sanitizeHtml(html, STRICT_SANITIZE_OPTIONS).trim();
+  if (violations.length === 0 && sanitized !== passthrough) {
+    violations.push('HTML contains constructs stripped or mutated by sanitize-html');
   }
-  return problems;
+
+  return violations;
 }
 
 async function pathExists(target) {
@@ -253,16 +382,67 @@ async function main() {
       if (!html.includes('<p')) {
         errors.push(`${relDir}/body.html: must contain at least one <p> paragraph`);
       }
-      if (/<img\b/i.test(html)) {
-        errors.push(`${relDir}/body.html: contains forbidden <img> tag (zero real photos policy)`);
-      }
-      if (/<script\b/i.test(html)) {
-        errors.push(`${relDir}/body.html: contains forbidden <script> tag`);
-      }
-      // body.html is rendered with set:html, so allow-list markup rather than block-list it
-      for (const problem of findUnsafeMarkup(html)) {
+      for (const problem of findHtmlSecurityViolations(html)) {
         errors.push(`${relDir}/body.html: ${problem}`);
       }
+    }
+  }
+
+  // Validate content/paint-refs.json & public/paint-refs/*.jpg 1:1 against every article slug
+  let paintRefCount = 0;
+  if (!(await pathExists(PAINT_REFS_JSON_PATH))) {
+    errors.push('content/paint-refs.json: missing manifest file');
+  } else {
+    try {
+      const rawRefs = await fs.readFile(PAINT_REFS_JSON_PATH, 'utf-8');
+      const manifest = PaintRefsManifestSchema.parse(JSON.parse(rawRefs));
+      const manifestSlugs = new Set(Object.keys(manifest));
+      paintRefCount = manifestSlugs.size;
+
+      for (const slug of slugs) {
+        const entry = manifest[slug];
+        if (!entry) {
+          errors.push(`content/paint-refs.json: missing paint-ref entry for article slug "${slug}"`);
+          continue;
+        }
+
+        const expectedRefImage = `/paint-refs/${slug}.jpg`;
+        if (entry.refImage !== expectedRefImage) {
+          errors.push(
+            `content/paint-refs.json[${slug}]: refImage "${entry.refImage}" must match "${expectedRefImage}"`
+          );
+        }
+
+        const jpgPath = path.join(PAINT_REFS_DIR, `${slug}.jpg`);
+        if (!(await pathExists(jpgPath))) {
+          errors.push(`public/paint-refs/${slug}.jpg: missing reference JPEG`);
+          continue;
+        }
+
+        const buf = await fs.readFile(jpgPath);
+        if (buf.byteLength <= MIN_PAINT_REF_BYTES) {
+          errors.push(
+            `public/paint-refs/${slug}.jpg: file too small (${buf.byteLength} bytes; must be > ${MIN_PAINT_REF_BYTES} bytes)`
+          );
+        }
+        if (buf.byteLength < 3 || buf[0] !== 0xff || buf[1] !== 0xd8 || buf[2] !== 0xff) {
+          errors.push(
+            `public/paint-refs/${slug}.jpg: invalid JPEG magic bytes (expected FF D8 FF)`
+          );
+        }
+      }
+
+      for (const manifestSlug of manifestSlugs) {
+        if (slugs.size > 0 && !slugs.has(manifestSlug)) {
+          errors.push(
+            `content/paint-refs.json: orphaned entry "${manifestSlug}" has no matching article`
+          );
+        }
+      }
+    } catch (err) {
+      errors.push(
+        `content/paint-refs.json: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
 
@@ -277,6 +457,13 @@ async function main() {
         const raw = await fs.readFile(fullPath, 'utf-8');
         const manifest = EditionManifestSchema.parse(JSON.parse(raw));
         editionCount++;
+
+        const datedMatch = /^(\d{4}-\d{2}-\d{2})\.json$/.exec(file);
+        if (datedMatch && manifest.edition_date !== datedMatch[1]) {
+          errors.push(
+            `${relPath}: filename date "${datedMatch[1]}" does not match internal edition_date "${manifest.edition_date}"`
+          );
+        }
 
         const referenced = [
           manifest.slots.lead_hero,
@@ -309,7 +496,12 @@ async function main() {
   if (await pathExists(ROLLUP_PATH)) {
     try {
       const raw = await fs.readFile(ROLLUP_PATH, 'utf-8');
-      RollupStatsSchema.parse(JSON.parse(raw));
+      const rollup = RollupStatsSchema.parse(JSON.parse(raw));
+      if (articleDirs.length > 0 && rollup.total_cases !== articleDirs.length) {
+        errors.push(
+          `content/ledger/rollup-stats.json: total_cases (${rollup.total_cases}) does not match article count (${articleDirs.length})`
+        );
+      }
     } catch (err) {
       errors.push(
         `content/ledger/rollup-stats.json: ${err instanceof Error ? err.message : String(err)}`
@@ -332,7 +524,7 @@ async function main() {
   }
 
   console.log(
-    `✅ Content validation passed: ${articleDirs.length} article(s), ${editionCount} edition manifest(s).`
+    `✅ Content validation passed: ${articleDirs.length} article(s), ${paintRefCount} paint-ref(s), ${editionCount} edition manifest(s).`
   );
 }
 

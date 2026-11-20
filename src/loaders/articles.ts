@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { formatUsdShort } from '../utils/format';
+import { sanitizeArticleHtml } from '../utils/sanitize';
 import {
   ArticleMetaSchema,
   EditionManifestSchema,
@@ -17,6 +18,32 @@ const CONTENT_ROOT = path.join(PROJECT_ROOT, 'content');
 const ARTICLES_ROOT = path.join(CONTENT_ROOT, 'articles');
 const EDITIONS_ROOT = path.join(CONTENT_ROOT, 'editions');
 const ROLLUP_PATH = path.join(CONTENT_ROOT, 'ledger', 'rollup-stats.json');
+
+const REGION_LABELS: Record<string, string> = {
+  us: 'U.S.',
+  'new-york': 'NEW YORK',
+  chicago: 'CHICAGO',
+  'los-angeles': 'L.A.',
+  london: 'LONDON',
+  india: 'INDIA',
+  europe: 'EUROPE',
+  global: 'GLOBAL',
+};
+
+const REGION_ORDER = ['us', 'new-york', 'chicago', 'los-angeles', 'london', 'india', 'europe'] as const;
+const US_EDITIONS = new Set(['us', 'new-york', 'chicago', 'los-angeles']);
+
+let cachedArticlesPromise: Promise<ArticleRecord[]> | null = null;
+let cachedEditionsPromise: Promise<EditionManifest[]> | null = null;
+let cachedRollupPromise: Promise<RollupStats> | null = null;
+const cachedEditionByDate = new Map<string, Promise<EditionManifest | null>>();
+
+export function clearArticleCache(): void {
+  cachedArticlesPromise = null;
+  cachedEditionsPromise = null;
+  cachedRollupPromise = null;
+  cachedEditionByDate.clear();
+}
 
 export function getArticleHref(article: Pick<ArticleMeta, 'slug' | 'template'>): string {
   return article.template === 'opinion'
@@ -59,7 +86,14 @@ function aggregateRatioPct(fines: number, loot: number): number | null {
   return loot > 0 ? Number(((fines / loot) * 100).toFixed(2)) : null;
 }
 
-export function computeRollupFromArticles(articles: ArticleRecord[]): RollupStats {
+function formatRollupUsd(value: number): string {
+  return formatUsdShort(value, { B: 2, M: 1, K: 0 });
+}
+
+export function computeRollupFromArticles(
+  articles: ArticleRecord[],
+  asOf?: string
+): RollupStats {
   const totalLootUsd = articles.reduce((sum, a) => sum + (a.financials.amount_usd ?? 0), 0);
   const totalFinesUsd = articles.reduce((sum, a) => sum + (a.financials.fine_usd ?? 0), 0);
 
@@ -80,22 +114,37 @@ export function computeRollupFromArticles(articles: ArticleRecord[]): RollupStat
   const regionBuckets = new Map<string, ArticleRecord[]>();
   for (const article of articles) {
     const key = article.edition.toLowerCase();
-    const bucket = regionBuckets.get(key) ?? [];
-    bucket.push(article);
-    regionBuckets.set(key, bucket);
+    const bucketKeys = new Set<string>([key]);
+    if (US_EDITIONS.has(key)) {
+      bucketKeys.add('us');
+    }
+    for (const bucketKey of bucketKeys) {
+      if (bucketKey === 'global') continue;
+      const bucket = regionBuckets.get(bucketKey) ?? [];
+      bucket.push(article);
+      regionBuckets.set(bucketKey, bucket);
+    }
   }
 
+  const orderedKeys = [
+    ...REGION_ORDER.filter((k) => regionBuckets.has(k)),
+    ...[...regionBuckets.keys()].filter(
+      (k) => !(REGION_ORDER as readonly string[]).includes(k)
+    ).sort(),
+  ];
+
   const regions: Record<string, RegionalRollup> = {};
-  for (const [key, list] of regionBuckets.entries()) {
+  for (const key of orderedKeys) {
+    const list = regionBuckets.get(key) ?? [];
     const loot = list.reduce((sum, a) => sum + (a.financials.amount_usd ?? 0), 0);
     const fines = list.reduce((sum, a) => sum + (a.financials.fine_usd ?? 0), 0);
     regions[key] = {
-      label: key.toUpperCase(),
+      label: REGION_LABELS[key] ?? key.toUpperCase(),
       case_count: list.length,
       total_loot_usd: loot,
-      total_loot_display: formatUsdShort(loot),
+      total_loot_display: formatRollupUsd(loot),
       total_fines_usd: fines,
-      total_fines_display: formatUsdShort(fines),
+      total_fines_display: formatRollupUsd(fines),
       avg_fine_ratio_pct: aggregateRatioPct(fines, loot),
     };
   }
@@ -104,22 +153,22 @@ export function computeRollupFromArticles(articles: ArticleRecord[]): RollupStat
     label: 'GLOBAL',
     case_count: articles.length,
     total_loot_usd: totalLootUsd,
-    total_loot_display: formatUsdShort(totalLootUsd),
+    total_loot_display: formatRollupUsd(totalLootUsd),
     total_fines_usd: totalFinesUsd,
-    total_fines_display: formatUsdShort(totalFinesUsd),
+    total_fines_display: formatRollupUsd(totalFinesUsd),
     avg_fine_ratio_pct: avgFineRatioPct,
   };
 
   const latestEditionDate = articles[0]?.edition_date ?? '2026-11-19';
 
   return {
-    as_of: new Date().toISOString(),
+    as_of: asOf ?? new Date().toISOString(),
     edition_date: latestEditionDate,
     total_cases: articles.length,
     total_loot_usd: totalLootUsd,
-    total_loot_display: formatUsdShort(totalLootUsd),
+    total_loot_display: formatRollupUsd(totalLootUsd),
     total_fines_usd: totalFinesUsd,
-    total_fines_display: formatUsdShort(totalFinesUsd),
+    total_fines_display: formatRollupUsd(totalFinesUsd),
     avg_fine_ratio_pct: avgFineRatioPct,
     avg_slap_on_wrist_score: avgSlapScore,
     zero_prison_cases: zeroPrisonCases,
@@ -127,7 +176,7 @@ export function computeRollupFromArticles(articles: ArticleRecord[]): RollupStat
   };
 }
 
-export async function loadAllArticles(): Promise<ArticleRecord[]> {
+async function readAllArticlesFromDisk(): Promise<ArticleRecord[]> {
   const dirs = await findArticleDirs(ARTICLES_ROOT);
   const articles: ArticleRecord[] = [];
 
@@ -135,7 +184,7 @@ export async function loadAllArticles(): Promise<ArticleRecord[]> {
     const metaPath = path.join(dir, 'meta.json');
     const bodyPath = path.join(dir, 'body.html');
 
-    const [rawMeta, bodyHtml] = await Promise.all([
+    const [rawMeta, rawHtml] = await Promise.all([
       fs.readFile(metaPath, 'utf-8'),
       fs.readFile(bodyPath, 'utf-8'),
     ]);
@@ -145,7 +194,7 @@ export async function loadAllArticles(): Promise<ArticleRecord[]> {
 
     articles.push({
       ...meta,
-      bodyHtml: bodyHtml.trim(),
+      bodyHtml: sanitizeArticleHtml(rawHtml),
       url: getArticleHref(meta),
       contentDir: path.relative(PROJECT_ROOT, dir),
     });
@@ -158,7 +207,17 @@ export async function loadAllArticles(): Promise<ArticleRecord[]> {
   });
 }
 
-export async function loadEdition(date?: string): Promise<EditionManifest | null> {
+export function loadAllArticles(): Promise<ArticleRecord[]> {
+  if (!cachedArticlesPromise) {
+    cachedArticlesPromise = readAllArticlesFromDisk().catch((err) => {
+      cachedArticlesPromise = null;
+      throw err;
+    });
+  }
+  return cachedArticlesPromise;
+}
+
+async function readEditionFromDisk(date?: string): Promise<EditionManifest | null> {
   if (!(await pathExists(EDITIONS_ROOT))) {
     return null;
   }
@@ -192,7 +251,20 @@ export async function loadEdition(date?: string): Promise<EditionManifest | null
   return EditionManifestSchema.parse(JSON.parse(raw));
 }
 
-export async function loadAllEditions(): Promise<EditionManifest[]> {
+export function loadEdition(date?: string): Promise<EditionManifest | null> {
+  const key = date ?? '__latest__';
+  let promise = cachedEditionByDate.get(key);
+  if (!promise) {
+    promise = readEditionFromDisk(date).catch((err) => {
+      cachedEditionByDate.delete(key);
+      throw err;
+    });
+    cachedEditionByDate.set(key, promise);
+  }
+  return promise;
+}
+
+async function readAllEditionsFromDisk(): Promise<EditionManifest[]> {
   if (!(await pathExists(EDITIONS_ROOT))) {
     return [];
   }
@@ -210,12 +282,20 @@ export async function loadAllEditions(): Promise<EditionManifest[]> {
   return editions;
 }
 
-export async function loadRollupStats(): Promise<RollupStats> {
+export function loadAllEditions(): Promise<EditionManifest[]> {
+  if (!cachedEditionsPromise) {
+    cachedEditionsPromise = readAllEditionsFromDisk().catch((err) => {
+      cachedEditionsPromise = null;
+      throw err;
+    });
+  }
+  return cachedEditionsPromise;
+}
+
+async function readRollupStatsFromDisk(): Promise<RollupStats> {
   if (await pathExists(ROLLUP_PATH)) {
     const raw = await fs.readFile(ROLLUP_PATH, 'utf-8');
     const rollup = RollupStatsSchema.parse(JSON.parse(raw));
-    // Regions in the file carry a mean of per-case ratios; normalise to the site-wide sum/sum
-    // definition so the ticker, drawer and ledger filters agree on the same cases.
     for (const region of Object.values(rollup.regions)) {
       region.avg_fine_ratio_pct =
         aggregateRatioPct(region.total_fines_usd, region.total_loot_usd) ?? region.avg_fine_ratio_pct;
@@ -224,4 +304,14 @@ export async function loadRollupStats(): Promise<RollupStats> {
   }
   const articles = await loadAllArticles();
   return computeRollupFromArticles(articles);
+}
+
+export function loadRollupStats(): Promise<RollupStats> {
+  if (!cachedRollupPromise) {
+    cachedRollupPromise = readRollupStatsFromDisk().catch((err) => {
+      cachedRollupPromise = null;
+      throw err;
+    });
+  }
+  return cachedRollupPromise;
 }

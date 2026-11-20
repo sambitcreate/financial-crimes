@@ -17,7 +17,7 @@
       "total_loot_display": "$46.45B",
       "total_fines_usd": 6393280000,
       "total_fines_display": "$6.39B",
-      "avg_fine_ratio_pct": 70.86
+      "avg_fine_ratio_pct": 13.76
     },
     "new-york": {
       "label": "NEW YORK",
@@ -26,7 +26,7 @@
       "total_loot_display": "$41.08B",
       "total_fines_usd": 4802500000,
       "total_fines_display": "$4.80B",
-      "avg_fine_ratio_pct": 60.95
+      "avg_fine_ratio_pct": 11.69
     },
     "chicago": {
       "label": "CHICAGO",
@@ -53,7 +53,7 @@
       "total_loot_display": "$51.3M",
       "total_fines_usd": 1250000,
       "total_fines_display": "$1.3M",
-      "avg_fine_ratio_pct": 50
+      "avg_fine_ratio_pct": 2.44
     },
     "india": {
       "label": "INDIA",
@@ -62,7 +62,7 @@
       "total_loot_display": "$897.1M",
       "total_fines_usd": 555300000,
       "total_fines_display": "$555.3M",
-      "avg_fine_ratio_pct": 50.5
+      "avg_fine_ratio_pct": 61.9
     },
     "europe": {
       "label": "EUROPE",
@@ -71,7 +71,7 @@
       "total_loot_display": "$935.0M",
       "total_fines_usd": 385000000,
       "total_fines_display": "$385.0M",
-      "avg_fine_ratio_pct": 10
+      "avg_fine_ratio_pct": 41.18
     },
     "global": {
       "label": "GLOBAL",
@@ -80,7 +80,7 @@
       "total_loot_display": "$58.98B",
       "total_fines_usd": 7523330000,
       "total_fines_display": "$7.52B",
-      "avg_fine_ratio_pct": 50.71
+      "avg_fine_ratio_pct": 12.76
     }
   }
 }

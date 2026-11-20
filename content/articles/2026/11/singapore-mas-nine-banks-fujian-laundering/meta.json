@@ -23,7 +23,6 @@
   "byline": "By The Asia Bureau",
   "dateline": "SINGAPORE",
   "read_time_min": 2,
-  "comment_count": 712,
   "layout_slot": "lead-grid",
   "financials": {
     "amount_usd": 2250000000,
@@ -56,30 +55,10 @@
     }
   ],
   "interactive_art_spec": {
-    "archetype": "scale-of-impunity",
     "accent": "crimson",
     "theme": "newsprint",
     "caption": "Marina Bay in Singapore. Nine banks paid a combined S$27.45 million after S$3 billion in Fujian laundering funds moved through the city-state.",
-    "credit": "Oil Study · The Financial Crimes",
-    "data": {
-      "title": "The 0.915% Rounding Error",
-      "subtitle": "Nine banks moved S$3.0B in Fujian gang funds; combined MAS fines occupy less than one percent of the grid",
-      "lootLabel": "Laundered Volume (Fujian Case)",
-      "lootDisplay": "S$3.0B (~$2.25B)",
-      "lootUsd": 2250000000,
-      "fineLabel": "9-Bank Combined MAS Fines",
-      "fineDisplay": "S$27.45M (~$21.5M)",
-      "fineUsd": 21500000,
-      "ratioDisplay": "0.915% OF LOOT",
-      "stampText": "ROUNDING ERROR",
-      "gridRatioPct": 0.915,
-      "streetComparison": {
-        "label": "Equivalent 0.915% Fine on $1,800",
-        "amountDisplay": "$1,800",
-        "sentenceDisplay": "24 Mos Prison (or $16.47 at Bank Rate)",
-        "execSentenceDisplay": "0 Bank Executives Jailed"
-      }
-    }
+    "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
 }
