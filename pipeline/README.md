@@ -1,58 +1,77 @@
-# The Financial Crimes — Phase 2 Daily Remote Sweep Pipeline
+# The Financial Crimes — Editorial Scoring & Daily Sweep Pipeline
 
-This directory contains the blueprint and CLI entry point for **The Financial Crimes** autonomous daily broadsheet production pipeline.
+This directory holds the **Slap-on-the-Wrist Score** Gemini judge (`judge-wrist-slap.mjs`), the machine-readable art & scoring prompts (`prompts/`), and the **Phase 2** daily sweep orchestrator (`run-sweep.mjs`).
 
-## Schedule (DST-Safe `America/New_York`)
+---
+
+## Implementation Status (Phase 1 vs. Phase 2 vs. Phase 3)
+
+| Capability | File / Workflow | Status |
+| :--- | :--- | :--- |
+| **Gemini Slap-on-the-Wrist Score Judge** | `pipeline/judge-wrist-slap.mjs` + `prompts/wrist-slap-judge.md` | **Implemented (Phase 1)** — scores resolved cases (`settlement`, `regulatory_order`, `sentenced`, `dpa`) and writes `null` (`PENDING`) for unresolved stages. |
+| **Impasto Painting Prompt & `paint-refs.json` Audit** | `pipeline/run-sweep.mjs` + `prompts/js-painting-prompt.md` | **Implemented (Phase 1)** — `--mode dry-run` verifies prompt integrity, 1:1 coverage between `content/articles/` and `content/paint-refs.json`, `https://` `sourceUrl` + `sourceLicense` attribution, JPEG existence (`> 5 KB`), and mood/toy enums. |
+| **Global Regulator Feed Fetchers & Automated Drafting** | `pipeline/fetchers/` (planned) | **Stubbed for Phase 2** — `GLOBAL_REGULATOR_FEEDS` is cataloged in `run-sweep.mjs`; live feed fetchers, automated Wikimedia 320px portrait normalization, and article drafting are not yet wired. |
+| **Automated Daily Cron & Git Commit / PR Publishing** | `.github/workflows/daily-sweep.yml` | **Paused for Phase 2** — `schedule:` cron triggers are commented out so scheduled runs do not burn Gemini API quota and discard results; manual `workflow_dispatch` remains available. |
+| **7:00 AM ET *Morning Docket* Email Newsletter** | Cloudflare Email Service (GA) | **Deferred to Phase 3** — Phase 1 and Phase 2 are website-only (RSS at `/rss.xml` is live now). |
+
+---
+
+## Target Phase 2 Schedule (DST-Safe `America/New_York`)
+
+Once Phase 2 feed fetchers and the git commit/PR step are wired, `.github/workflows/daily-sweep.yml` will re-enable two daily beats:
 
 | Beat | Local Time (ET) | Mode | Purpose |
 | :--- | :--- | :--- | :--- |
-| **Morning Research & Art Sweep** | **6:00 AM ET** | `--mode sweep` | Polls 25+ global court & regulator feeds (DOJ, SEC, CFTC, CourtListener, FinCEN/OCC/OFAC, SEBI, ED/CBI, UK SFO/FCA, EU EPPO, BaFin, MAS, HK SFC), runs **Gemini 4 Hydrogen** deep research + Atomic Fact Ledger verification + deadpan NYT-register drafting + custom interactive JS editorial painting spec generation (`interactive_art_spec`), validates all schemas, and stages the daily edition. |
-| **Morning Press Auto-Publish** | **7:00 AM ET** | `--mode publish` | Performs a fast pre-press delta check, updates `content/editions/YYYY-MM-DD.json`, `content/editions/latest.json`, and `content/ledger/rollup-stats.json`, verifies `validate:content` + `check` + `build`, and pushes to `main` so GitHub + Cloudflare CI/CD auto-deploys `dist/` to Cloudflare Workers with Static Assets. |
+| **Morning Research & Art Sweep** | **6:00 AM ET** | `--mode sweep` | Polls global court & regulator feeds (DOJ, SEC, CFTC, CourtListener, FinCEN/OCC/OFAC, SEBI, ED/CBI, UK SFO/FCA, EU EPPO, BaFin, MAS, HK SFC), drafts primary-sourced `meta.json` + sanitized `body.html`, sources & normalizes a 320px reference portrait into `public/paint-refs/<slug>.jpg`, generates the `content/paint-refs.json` impasto painting entry via `pipeline/prompts/js-painting-prompt.md`, scores resolved cases via `judge-wrist-slap.mjs`, and stages the daily edition. |
+| **Morning Press Auto-Publish** | **7:00 AM ET** | `--mode publish` | Runs pre-press validation (`validate:content`, `test`, `check`, `build`), updates `content/editions/YYYY-MM-DD.json`, `content/editions/latest.json`, and `content/ledger/rollup-stats.json`, and opens/merges the edition PR to `main` so Cloudflare Workers Static Assets deploys `dist/`. |
 
-## AI Engine Architecture
+---
 
-Both editorial journalism and visual storytelling are powered by **Gemini 4 Hydrogen** via the **Gemini API** or an **Antigravity managed remote agent**:
+## Editorial & Visual Contracts
 
-1. **White-Collar Research & Drafting (`GEMINI_MODEL=gemini-4-hydrogen`):**
-   - Strictly enforces the **Hard Fact/Satire Wall** (zero fabricated quotes, charges, defendants, or figures).
-   - Grounded exclusively in primary public filings, indictments, consent orders, and regulatory dockets.
-   - Outputs valid `meta.json` (matching `src/schemas/article.ts`) and semantic `body.html` (`<p>`, `<h2>`, `<blockquote>`, `<aside class="fc-factbox">`, zero `<img>` tags).
-2. **Custom Interactive JavaScript Editorial Paintings (`GEMINI_MODEL=gemini-4-hydrogen`):**
-   - Zero real photographs or stock images anywhere on the site.
-   - For every story, Gemini 4 Hydrogen selects one of the 8 editorial archetypes (`shell-network`, `scale-of-impunity`, `redacted-dossier`, `pump-dump-ticker`, `ponzi-pyramid`, `offshore-flight-map`, `editorial-vignette`, `penalty-wheel`) and generates a case-specific `interactive_art_spec` JSON payload populated with verified entity names, dollar amounts, timestamps, court quotes, and geographic routes.
+1. **White-Collar Research & Sanitized HTML Drafting:**
+   - Enforces the **Hard Fact/Satire Wall** (zero fabricated quotes, charges, defendants, or figures) and strict `legal_stage` enum (`src/schemas/article.ts`).
+   - Every `sources[].url` MUST use `https://`.
+   - `body.html` MUST use allowlisted broadsheet HTML tags only (`<p>`, `<h2>`, `<h3>`, `<blockquote>`, `<ul>`, `<ol>`, `<li>`, `<strong>`, `<em>`, `<b>`, `<i>`, `<a>`, `<br>`, `<code>`, `<sup>`, `<sub>`, `<span>`) — **never** `<img>`, `<script>`, `<aside>`, inline event handlers, or `javascript:`/`data:` URLs. All `body.html` is sanitized at build time by `src/utils/sanitize.ts` and validated by `scripts/validate-content.mjs`.
+2. **Canvas 2D Impasto Portrait Paintings (`src/painting/`):**
+   - **Zero `<img>` elements in the DOM:** Every story pairs an entry in `content/paint-refs.json` with a normalized open-license RGB JPEG at `public/paint-refs/<slug>.jpg` (**max `320px` longest edge, `> 5 KB`**), decoded strictly in memory via `loadPixels(url, 180)`.
+   - **Mandatory CC Attribution:** Every `content/paint-refs.json` entry requires a valid `https://` `sourceUrl` and `sourceLicense` (`Public Domain`, `CC0`, `CC BY *`, `CC BY-SA *`, `OGL *`, `GODL-India`), rendered automatically in `FcArt.astro` captions and aggregated on `/about`.
+   - **Wet-Oil & Archival Exhibit Grammar (v1.3+):** 6 `FC_OIL` palette moods (`verdict-crimson`, `bullion-gold`, `subpoena-cobalt`, `banknote-emerald`, `courtroom-ochre`, and mandatory `monochrome-noir` for Opinion pieces) paired with 6 dignified surface reactions (`stamp`, `coins`, `redaction`, `crash-line`, `envelopes`, `gavel-ripple`) and a single shared lower-left Archival Exhibit Plate (`drawArchivalPlate`). See [`docs/PAINTING_PROMPT.md`](../docs/PAINTING_PROMPT.md).
 
-## Slap-on-the-Wrist Score (Gemini-judged)
+---
 
-Scores are never hand-entered. `pipeline/judge-wrist-slap.mjs` sends each case's facts to Gemini with the
-PRD §2.3 rubric in `pipeline/prompts/wrist-slap-judge.md` and writes `slap_on_wrist_score` to `meta.json`.
-Only resolved stages (`settlement`, `regulatory_order`, `sentenced`, `dpa`) get a score; every other stage is
-written as `null` and renders PENDING. The 6:00 AM sweep re-judges every case when `GEMINI_API_KEY` is set.
+## Slap-on-the-Wrist Score (Gemini-Judged)
+
+Scores are never hand-entered. `pipeline/judge-wrist-slap.mjs` sends each resolved case's verified facts to Gemini with the PRD §2.3 rubric in `pipeline/prompts/wrist-slap-judge.md` and writes `slap_on_wrist_score` (`0–100`) to `meta.json`.
+
+- **Scored stages:** `settlement`, `regulatory_order`, `sentenced`, `dpa`
+- **Unresolved stages:** written as `null` and rendered as `PENDING`
 
 ```bash
-GEMINI_API_KEY=... npm run judge:slap              # dry run, prints scores and rationale
-GEMINI_API_KEY=... npm run judge:slap -- --write   # write meta.json
+GEMINI_API_KEY=... npm run judge:slap                       # dry run: prints scores & rationale
+GEMINI_API_KEY=... npm run judge:slap -- --write            # updates meta.json for all stories
 GEMINI_API_KEY=... npm run judge:slap -- --slug <slug> --write
 ```
 
-## Required Secrets (Phase 2 Activation)
+Override the Gemini model with `GEMINI_MODEL` (e.g. `GEMINI_MODEL=gemini-2.5-pro`).
 
-Configure these in GitHub Actions Repository Secrets when enabling Phase 2:
+---
 
-- `GEMINI_API_KEY` — Gemini API key with access to `gemini-4-hydrogen`.
-- `ANTIGRAVITY_AGENT_ENDPOINT` *(optional)* — Managed Antigravity remote agent endpoint if delegating the multi-step sweep to an Antigravity remote worker.
-- `ANTIGRAVITY_AGENT_TOKEN` *(optional)* — Auth token for the managed Antigravity remote agent.
-- `CLOUDFLARE_API_TOKEN` & `CLOUDFLARE_ACCOUNT_ID` — For Wrangler Static Assets deployment (or connect the GitHub repo directly in Cloudflare Workers Builds).
-
-## Newsletter (Phase 3 — Deferred)
-
-Phase 1 and Phase 2 remain **website-only**. Automated 7:00 AM ET **Morning Docket** email delivery is planned for **Phase 3** using **Cloudflare Email Service (GA)**.
-
-## Running Locally
+## Running `run-sweep.mjs` Locally
 
 ```bash
-# Dry-run blueprint check (no API key required)
-node pipeline/run-sweep.mjs --mode dry-run --date 2026-11-19
+# Dry-run audit (no API key required; verifies prompt + 1:1 paint-refs + JPEGs + https:// attribution)
+node pipeline/run-sweep.mjs --mode dry-run
 
-# Sweep stage (requires GEMINI_API_KEY when Phase 2 fetchers are wired)
-GEMINI_API_KEY=... node pipeline/run-sweep.mjs --mode sweep --date 2026-11-19
+# Sweep mode (with GEMINI_API_KEY, runs judgeAll({ write: true }) to refresh meta.json scores;
+# Phase 2 feed fetchers & remote article drafting remain scaffolded)
+GEMINI_API_KEY=... GEMINI_MODEL=gemini-2.5-pro node pipeline/run-sweep.mjs --mode sweep
 ```
+
+---
+
+## Configuration (Secrets & Variables)
+
+See [`.env.example`](../.env.example) for the complete list:
+- **Repository Secrets:** `GEMINI_API_KEY`, optional `ANTIGRAVITY_AGENT_ENDPOINT` & `ANTIGRAVITY_AGENT_TOKEN`, plus `CLOUDFLARE_API_TOKEN` & `CLOUDFLARE_ACCOUNT_ID` (if deploying via GitHub Actions).
+- **Repository Variables:** `GEMINI_MODEL` (defaults to `gemini-2.5-pro` in `daily-sweep.yml`), `CLOUDFLARE_DEPLOY_ENABLED` (`true` to enable GitHub Actions deploy in `ci.yml`).

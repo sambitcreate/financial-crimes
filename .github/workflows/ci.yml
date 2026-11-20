@@ -1,4 +1,4 @@
-name: CI — Validate, Check & Build
+name: CI — Validate, Test, Check & Build
 
 on:
   pull_request:
@@ -6,13 +6,16 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   verify:
-    name: Content Validation, Typecheck & Build
+    name: Content Validation, Unit Tests, Typecheck & Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -21,14 +24,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate content schemas & edition manifests
+      - name: Validate content schemas, HTML security & paint-refs
         run: npm run validate:content
+
+      - name: Run Vitest unit tests
+        run: npm test
 
       - name: Astro & TypeScript check
         run: npm run check
@@ -42,29 +48,32 @@ jobs:
           test -d dist/pagefind
           echo "Build artifacts and Pagefind index verified."
 
+      - name: Upload built site artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-site
+          path: dist/
+          retention-days: 1
+
   deploy-cloudflare:
     name: Deploy to Cloudflare Workers Static Assets
     needs: verify
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.CLOUDFLARE_DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (for wrangler.jsonc)
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Download verified build artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build static site & Pagefind index
-        run: npm run build
+          name: dist-site
+          path: dist
 
       - name: Deploy with Wrangler
         uses: cloudflare/wrangler-action@v3
         with:
+          wranglerVersion: '4'
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

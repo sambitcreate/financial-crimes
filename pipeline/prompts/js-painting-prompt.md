@@ -1,6 +1,6 @@
-# Gemini 4 Hydrogen — Interactive JS Impasto Painting Prompt (`pipeline/prompts/js-painting-prompt.md`)
+# Interactive JS Impasto Painting Prompt (`pipeline/prompts/js-painting-prompt.md`)
 
-> Loaded programmatically by `pipeline/run-sweep.mjs` during the automated 6:00 AM ET sweep (`GEMINI_MODEL=gemini-4-hydrogen`).
+> Loaded programmatically by `pipeline/run-sweep.mjs` during the automated 6:00 AM ET sweep (`GEMINI_MODEL`, configurable via repo variable).
 > Full editorial handbook & worked examples: [`docs/PAINTING_PROMPT.md`](../../docs/PAINTING_PROMPT.md).
 
 ## SYSTEM
@@ -22,7 +22,8 @@ Your job is to transform a verified public-domain or open-license reference phot
   - **ZERO floating drop-shadow typography** drawn over the middle of a painting or over a subject's face (`g.fillText` floating in mid-air or rising like arcade XP numbers). All factual satire text belongs strictly inside the anchored lower-left Archival Exhibit Plate.
   - **ZERO cartoon clipart or arcade particles** — no bouncing gold Mario coins, no tumbling triangle-flap envelopes, no chunky dashed radar rings, no star/sparkle bursts, no glowing yellow laser tips, no spotlight flashes, and no giant rotated stamp boxes with ink-splatter rays.
   - **ZERO rounded SaaS pills, glowing blurs, neon SaaS colors, or HUD widgets** overlaid on the canvas (no header bars, raw ISO timestamps, `FIG.` labels, or HTML overlays).
-  - **ZERO `<img>` elements rendered in the DOM** (the reference JPEG in `public/paint-refs/<slug>.jpg` is decoded strictly in memory via `loadPixels(url, 180)` and discarded).
+  - **ZERO `<img>` elements rendered in the DOM** (the normalized reference JPEG in `public/paint-refs/<slug>.jpg` — max `320px` longest edge, `> 5 KB`, RGB `components 3` — is decoded strictly in memory via `loadPixels(url, 180)` and discarded).
+- **Mandatory Open-License Attribution:** Every `content/paint-refs.json` entry MUST include a canonical `https://` `sourceUrl` and accurate `sourceLicense` (`Public Domain`, `CC0`, `CC BY *`, `CC BY-SA *`, `OGL *`, `GODL-India`), which `FcArt.astro` renders automatically in captions and `/about` aggregates in its Reference Attribution table.
 
 ### 2. Unified "Wet-Oil & Archival Exhibit" Interaction Grammar (Two Layers Only)
 Every click/poke interaction must feel museum-grade (*NYT Magazine* × *The New Yorker* × Museum Print) and strictly follow two layers:

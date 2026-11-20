@@ -1,34 +1,37 @@
 name: Daily Broadsheet Sweep & Auto-Publish (6:00 AM / 7:00 AM ET)
 
 on:
-  schedule:
-    # 6:00 AM ET (DST-safe via America/New_York): global court/regulator sweep,
-    # Gemini 4 Hydrogen research, drafting, and custom interactive JS painting spec generation.
-    - cron: '0 6 * * *'
-      timezone: 'America/New_York'
-    # 7:00 AM ET (DST-safe via America/New_York): auto-publish verified daily edition
-    # to main, triggering Cloudflare Workers Static Assets CI/CD deployment.
-    - cron: '0 7 * * *'
-      timezone: 'America/New_York'
+  # Paused until Phase 2 feed fetchers + git commit/PR step are implemented, so
+  # scheduled runs don't burn Gemini API quota and discard results; re-enable
+  # once Phase 2 is wired.
+  # schedule:
+  #   # 6:00 AM ET (DST-safe via America/New_York): global court/regulator sweep,
+  #   # research, drafting, impasto painting config generation, and wrist-slap scoring.
+  #   - cron: '0 6 * * *'
+  #     timezone: 'America/New_York'
+  #   # 7:00 AM ET (DST-safe via America/New_York): auto-publish verified daily edition
+  #   # to main, triggering Cloudflare Workers Static Assets CI/CD deployment.
+  #   - cron: '0 7 * * *'
+  #     timezone: 'America/New_York'
   workflow_dispatch:
     inputs:
       mode:
         description: 'Pipeline stage to execute'
         required: true
-        default: 'sweep'
+        default: 'dry-run'
         type: choice
         options:
+          - dry-run
           - sweep
           - publish
-          - dry-run
       edition_date:
         description: 'Optional YYYY-MM-DD override (defaults to today in America/New_York)'
         required: false
         default: ''
 
+# Least-privilege permissions until Phase 2 git commit/PR publishing is wired.
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: daily-broadsheet-pipeline
@@ -36,14 +39,10 @@ concurrency:
 
 jobs:
   run-pipeline:
-    name: Gemini 4 Hydrogen Daily Sweep / Auto-Publish
+    name: Daily Sweep / Publish Pipeline
     runs-on: ubuntu-latest
     env:
       TZ: America/New_York
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_MODEL: gemini-4-hydrogen
-      ANTIGRAVITY_AGENT_ENDPOINT: ${{ secrets.ANTIGRAVITY_AGENT_ENDPOINT }}
-      ANTIGRAVITY_AGENT_TOKEN: ${{ secrets.ANTIGRAVITY_AGENT_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,7 +52,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
@@ -89,14 +88,20 @@ jobs:
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "edition_date=$EDITION_DATE" >> "$GITHUB_OUTPUT"
 
-      - name: Run Gemini 4 Hydrogen sweep / publish pipeline
+      - name: Run sweep / publish pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-2.5-pro' }}
+          ANTIGRAVITY_AGENT_ENDPOINT: ${{ secrets.ANTIGRAVITY_AGENT_ENDPOINT }}
+          ANTIGRAVITY_AGENT_TOKEN: ${{ secrets.ANTIGRAVITY_AGENT_TOKEN }}
         run: |
           node pipeline/run-sweep.mjs \
             --mode "${{ steps.stage.outputs.mode }}" \
             --date "${{ steps.stage.outputs.edition_date }}"
 
-      - name: Validate generated content & build check
+      - name: Validate content, run tests & build check
         run: |
           npm run validate:content
+          npm test
           npm run check
           npm run build

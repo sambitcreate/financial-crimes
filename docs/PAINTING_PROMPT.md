@@ -3,8 +3,8 @@
 > **Purpose:** Reusable editorial + engineering prompt for **Gemini 4 Hydrogen** (both in the automated 6:00 AM ET daily sweep and for manual/agent art direction) to transform a real public-domain / Wikimedia reference photograph of a white-collar crime subject into an interactive Canvas 2D impressionist oil painting in the `sambitbiswas.com` impasto brushstroke style—with **The Financial Crimes'** own broadsheet editorial voice.
 >
 > **Companion Machine Prompt:** [`pipeline/prompts/js-painting-prompt.md`](../pipeline/prompts/js-painting-prompt.md) (loaded programmatically by `pipeline/run-sweep.mjs`).
-> **Runtime Engine:** `src/painting/` (`types.ts`, `palette.ts`, `brush.ts`, `weave.ts`, `engine.ts`, `loop.ts`, `portrait-scene.ts`, `element.ts`).
-> **Manifest & Reference Pool:** `content/paint-refs.json` + `public/paint-refs/<slug>.jpg`.
+> **Runtime Engine:** `src/painting/` (`types.ts`, `palette.ts`, `color.ts`, `noise.ts`, `brush.ts`, `weave.ts`, `pixel-field.ts`, `archival-plate.ts`, `toys.ts`, `portrait-scene.ts`, `engine.ts`, `loop.ts`, `element.ts`).
+> **Manifest & Reference Pool:** `content/paint-refs.json` + `public/paint-refs/<slug>.jpg` (max `320px`, `> 5 KB` RGB JPEG).
 
 ---
 
@@ -54,33 +54,35 @@ Every scene and mood grade derives exclusively from these pigments (`src/paintin
 All paintings run inside our three-canvas stack inside `<fc-painting>` (`src/painting/element.ts`):
 1. **`ground` canvas** — Holds permanent cumulative oil strokes laid down by `Painter` (underpainting + continuous maintenance + focal sharpening).
 2. **`weave` canvas** — Static 180×180 procedural linen warp/weft tile (`paintWeave`, `src/painting/weave.ts`) composited via CSS `mix-blend-mode: multiply`.
-3. **`live` canvas** — Cleared and redrawn at 60fps every frame by `scene.live(g, width, height, t)` for dignified fine-print editorial marks (subtle circular letterpress registration seal, delicate flat metallic foil flecks, fine-nib engraving plunge curves, forensic architectural routing arcs, razor-thin hairline chiaroscuro rings) plus the single shared lower-left **Archival Exhibit Plate** (`drawArchivalPlate`). Never used for floating center typography or arcade particles.
+3. **`live` canvas** — Cleared and redrawn at 60fps every frame by `scene.live(g, width, height, t, dpr)` (returning `true` when anything was drawn) for dignified fine-print editorial marks (subtle circular letterpress registration seal, delicate flat metallic foil flecks, fine-nib engraving plunge curves, forensic architectural routing arcs, razor-thin hairline chiaroscuro rings) plus the single shared lower-left **Archival Exhibit Plate** (`drawArchivalPlate`). Never used for floating center typography or arcade particles.
 
 ### Core TypeScript Interfaces (`src/painting/types.ts`)
 
 ```ts
+/** Hue (degrees 0..360), saturation (0..100), lightness (0..100). */
 export type HSL = readonly [h: number, s: number, l: number];
 
 export interface Sample {
   color: HSL;
-  /** Stroke direction in radians. Omit to use the painter's gentle default fbm flow field. */
+  /** Stroke direction in radians. Omit to use the painter's gentle default flow field. */
   angle?: number;
-  /** Scales colour jitter. 1 = default; lower (0.45–0.7) for skin/sky, higher (1.1–1.5) for foliage/crowds. */
+  /** Scales colour jitter. 1 = default; lower is smoother, higher is more broken colour. */
   jitter?: number;
-  /** True for monochrome Opinion portraits (suppresses stray rainbow broken-color flecks). */
+  /** Keep brush strokes in rich charcoal/sepia chiaroscuro without chromatic flecks. */
   monochrome?: boolean;
 }
 
 export interface Hotspot {
-  u: number;        // Normalized X centre (0..1)
-  v: number;        // Normalized Y centre (0..1)
-  r: number;        // Radius as fraction of painting width
-  detail?: number;  // Dab size multiplier (< 1 paints finer portrait detail, e.g. 0.45)
+  /** Centre in normalised coordinates (0..1). */
+  u: number;
+  v: number;
+  /** Radius as a fraction of the painting width. */
+  r: number;
+  /** Dab size multiplier inside the hotspot (default 1). Lower paints finer detail. */
+  detail?: number;
 }
 
 export interface SceneContext {
-  visible: boolean;
-  lastPlayed: number;
   reducedMotion: boolean;
 }
 
@@ -102,16 +104,57 @@ export type ToyKind =
   | 'envelopes'
   | 'gavel-ripple';
 
+export type PaintMode = 'hero' | 'inline' | 'thumb';
+
+export interface PaintRefManifestEntry {
+  refImage: string;
+  subject?: string;
+  sourceUrl?: string;
+  sourceLicense?: string;
+  isPortrait?: boolean;
+  focalPoint?: { u: number; v: number };
+  paletteMood?: PaletteMood;
+  toyKind?: ToyKind;
+  toyText?: string;
+  toySubtext?: string;
+  alt?: string;
+}
+
+export interface PaintRefConfig {
+  slug?: string;
+  refImage?: string;
+  isPortrait?: boolean;
+  focalPoint?: { u: number; v: number };
+  paletteMood?: PaletteMood;
+  toyKind?: ToyKind;
+  toyText?: string;
+  toySubtext?: string;
+  monochrome?: boolean;
+  aspect?: number;
+  mode?: PaintMode;
+  seed?: number;
+}
+
+/** Describes a painting as colour fields. The painter keeps sampling it, so changes get painted in. */
 export interface Scene {
-  aspect: number; // width / height
-  alt: string;
+  /** Colour at (u, v) in 0..1 at loop time t, or null for "leave this spot unpainted". */
   sample(u: number, v: number, t: number): Sample | null;
+  /** Where maintenance dabs should concentrate right now. */
   hotspots?(t: number): Hotspot[];
   update?(t: number, dt: number, ctx: SceneContext): void;
-  live?(g: CanvasRenderingContext2D, width: number, height: number, t: number): void;
-  pointer?(kind: PointerKind, u: number, v: number, t: number): void;
-  pointerEverywhere?: boolean;
+  /** Redrawn from scratch every frame on the live layer. Returns true when anything was drawn. */
+  live?(g: CanvasRenderingContext2D, width: number, height: number, t: number, dpr: number): boolean;
+  /** Returns true when the pointer visibly changed the painting (keeps reduced-motion repainting alive). */
+  pointer?(kind: PointerKind, u: number, v: number, t: number): boolean | void;
+  /** Called with the real canvas size (device px) whenever it changes, so crops follow the CSS aspect. */
+  resize?(width: number, height: number): void;
+  /** True while any interaction effect is still animating or healing. */
+  busy?(): boolean;
+  /** Bumps when the source pixels change (e.g. a late image load); the painter then restarts. */
+  revision?(): number;
+  /** When defined, the painter waits for true before painting (image-based scenes). */
   ready?(): boolean;
+  /** Optional reset hook when the viewer clicks Repaint. */
   reset?(): void;
 }
 ```
@@ -154,11 +197,13 @@ Follow this exact 5-step editorial workflow for every new story:
   1. **Actual portrait of the named principal** (defendant, bank CEO, regulator, judge, or chief prosecutor *explicitly named in the story*) from Wikimedia Commons, Wikipedia, or US/UK/EU/India government releases (`Public Domain`, `CC0`, `CC BY`, `CC BY-SA`, `OGL`, `GODL-India`).
   2. **Iconic real photograph of the exact venue, institution, or object in the filing** (e.g., the specific federal courthouse, stock exchange tower, CFM56 jet engine, luxury watch, motor yacht, or headquarters tower) whenever a private defendant has no verified public portrait.
 - **Never use:** Logos, SVG graphics, watermarked agency wire photos (Getty/AP/Reuters), black-and-white archival negatives (unless intentional), or blurry low-res crops under 250px wide.
-- **Normalize locally (macOS `sips` or Sharp/ImageMagick):**
+- **Normalize locally (max `320px` longest edge, `> 5 KB` RGB JPEG — painter samples at 180px):**
   ```bash
-  sips -Z 420 -s format jpeg -s formatOptions 82 raw_input --out public/paint-refs/<slug>.jpg
-  file public/paint-refs/<slug>.jpg   # Must report: JPEG image data, ..., components 3 (RGB), >15KB
+  # macOS (sips)
+  sips -Z 320 -s format jpeg -s formatOptions 80 raw_input --out public/paint-refs/<slug>.jpg
+  file public/paint-refs/<slug>.jpg   # Must report: JPEG image data, ..., components 3 (RGB), > 5 KB, max 320px
   ```
+- **Mandatory Open-License / CC Attribution:** Every entry in `content/paint-refs.json` **MUST** populate both `sourceUrl` (valid `https://` canonical Wikimedia Commons or government release page) and `sourceLicense` (`Public Domain`, `CC0`, `CC BY *`, `CC BY-SA *`, `OGL *`, `GODL-India`). `src/components/FcArt.astro` automatically renders the reference license attribution link inside editorial captions, and `/about` publishes the full Reference Portrait Attribution table — ensuring 100% CC BY / CC BY-SA compliance.
 - **Visual Inspection Gate:** Always visually inspect the normalized JPEG before finalizing `focalPoint` so you know the exact eye/subject coordinates and confirm zero cropping artifacts.
 
 ### Step 2 — Set `focalPoint` (`{ u, v }`) with Precision
@@ -310,7 +355,7 @@ Return a single TypeScript module exporting `createScene(config: PaintRefConfig)
 3. Targets `config.focalPoint` in `hotspots(t)` (`r: 0.14`, `detail: 0.45`), follows the reader's pointer seamlessly, and concentrates maintenance dabs over any active wet-oil glaze/gilding/redaction/chiaroscuro region.
 4. Implements the Two-Layer "Wet-Oil & Archival Exhibit" interaction grammar ONLY:
    - Layer 1: Anchors `toyText` + `toySubtext` in the lower-left `drawArchivalPlate()` cotton-rag exhibit tag (max 1 active plate, 0px corners, 1px `#121212` border, 3px left pigment bar, Newsreader 600 + JetBrains Mono 500, zero floating center/face text).
-   - Layer 2: A dignified wet-oil modulation in `sample(u, v, t)` and/or fine-print engraving mark in `live(g, w, h, t)` (zero cartoon clipart, zero arcade particles, zero DOM overlays), honoring `ctx.reducedMotion` and providing `reset()`.
+   - Layer 2: A dignified wet-oil modulation in `sample(u, v, t)` and/or fine-print engraving mark in `live(g, w, h, t, dpr): boolean` (zero cartoon clipart, zero arcade particles, zero DOM overlays), honoring `ctx.reducedMotion` and providing `reset()`.
 ```
 
 ---
@@ -347,7 +392,7 @@ Return a single TypeScript module exporting `createScene(config: PaintRefConfig)
 }
 ```
 
-#### Mode B Output (Condensed Bespoke `Scene` Blueprint — Wet-Oil & Archival Exhibit Standard):
+#### Mode B Output (Type-Checked Bespoke `Scene` Blueprint — Wet-Oil & Archival Exhibit Standard):
 ```ts
 import type { HSL, Hotspot, PaintRefConfig, PointerKind, Sample, Scene, SceneContext } from './types';
 import { clamp, hslCss, lerp, mixHslShortest, rgbToHsl } from './color';
@@ -375,16 +420,16 @@ function drawArchivalPlate(
   accent: HSL,
   t: number,
   reducedMotion: boolean,
-): void {
+): boolean {
   const age = t - plate.t0;
   const totalLife = 6.52; // 0.22s settle + 5.2s hold + 1.1s fade
-  if (age < 0 || age > totalLife) return;
+  if (age < 0 || age > totalLife) return false;
 
   const enter = reducedMotion ? 1 : clamp(age / 0.22, 0, 1);
   const eased = 1 - Math.pow(1 - enter, 3);
   const exit = age > 5.42 ? 1 - clamp((age - 5.42) / 1.1, 0, 1) : 1;
   const alpha = eased * exit;
-  if (alpha <= 0.01) return;
+  if (alpha <= 0.01) return false;
 
   const unit = Math.min(w, h);
   const margin = clamp(unit * 0.04, 12, 22);
@@ -443,6 +488,7 @@ function drawArchivalPlate(
     g.fillText(plate.subtext, textX, y + padY + titlePx + gap, boxW - accentW - padX * 2);
   }
   g.restore();
+  return true;
 }
 
 export function createBofABundleScene(config: PaintRefConfig): Scene {
@@ -450,6 +496,8 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
   const anchor = config.focalPoint ?? { u: 0.49, v: 0.34 };
   let field: PixelField | null = null;
   let status: 'idle' | 'loading' | 'ready' | 'failed' = 'idle';
+  let rev = 0;
+  let lastT = 0;
   let pointer: { u: number; v: number } | null = null;
   let reducedMotion = false;
   const focus = { u: anchor.u, v: anchor.v };
@@ -460,16 +508,20 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
     if (status !== 'idle' || !config.refImage) return;
     status = 'loading';
     loadPixels(config.refImage, 180).then(
-      (p) => { field = p; status = 'ready'; },
+      (p) => { field = p; status = 'ready'; rev += 1; },
       () => { status = 'failed'; },
     );
   };
 
   return {
-    aspect: config.aspect ?? 4 / 5,
-    alt: config.alt ?? 'Impressionist oil portrait of Bank of America chief executive Brian Moynihan.',
     ready: () => status === 'ready' || status === 'failed',
-    sample(u, v, t) {
+    revision: () => rev,
+    busy: () =>
+      Boolean(
+        (activeSeal && lastT - activeSeal.t0 < 6.5) ||
+        (activePlate && lastT - activePlate.t0 < 6.6),
+      ),
+    sample(u, v, t): Sample {
       if (!field) return { color: FC_OIL.newsprintCream, jitter: 0.5 };
       const px = Math.min(field.width - 1, Math.max(0, Math.floor(u * field.width)));
       const py = Math.min(field.height - 1, Math.max(0, Math.floor(v * field.height)));
@@ -507,6 +559,7 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
       return spots;
     },
     update(t, dt, ctx: SceneContext) {
+      lastT = t;
       reducedMotion = ctx.reducedMotion;
       start();
       const goal = pointer ?? {
@@ -517,7 +570,9 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
       focus.u += (goal.u - focus.u) * k;
       focus.v += (goal.v - focus.v) * k;
     },
-    live(g, w, h, t) {
+    live(g, w, h, t, _dpr): boolean {
+      let drew = false;
+
       // Layer 2 (Fine-Print): Compact circular letterpress registration seal (1.2px double hairline ring)
       if (activeSeal) {
         const age = t - activeSeal.t0;
@@ -558,13 +613,16 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
           g.textBaseline = 'middle';
           g.fillText('FC', 0, 1);
           g.restore();
+          drew = true;
         }
       }
 
       // Layer 1: Shared lower-left Archival Exhibit Plate (max 1 visible at a time)
-      if (activePlate) {
-        drawArchivalPlate(g, w, h, activePlate, mood.accent, t, reducedMotion);
+      if (activePlate && drawArchivalPlate(g, w, h, activePlate, mood.accent, t, reducedMotion)) {
+        drew = true;
       }
+
+      return drew;
     },
     pointer(kind: PointerKind, u, v, t) {
       pointer = kind === 'leave' ? null : { u, v };
@@ -575,7 +633,9 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
           subtext: config.toySubtext ?? '0 EXECS CHARGED',
           t0: t,
         };
+        return true;
       }
+      return false;
     },
     reset() {
       activeSeal = null;
@@ -591,7 +651,7 @@ export function createBofABundleScene(config: PaintRefConfig): Scene {
 
 - [ ] **1. Reference Image Integrity:** Every slug in `content/articles/YYYY/MM/` has a matching key in `content/paint-refs.json` and an existing RGB JPEG (`components 3`, `>5KB`, max `320px`) in `public/paint-refs/<slug>.jpg`.
 - [ ] **2. Visual Spot Inspection:** Hero & newly added reference JPEGs are verified clean (no logos, SVG errors, watermarks, B&W negatives, or clipped foreheads).
-- [ ] **3. License Audit:** Every entry carries a verified `sourceUrl` and permissive/public-domain `sourceLicense` (`Public Domain`, `CC0`, `CC BY`, `CC BY-SA`, `OGL`, `GODL-India`).
+- [ ] **3. License & CC Attribution Audit:** Every entry carries a verified `https://` `sourceUrl` and permissive/public-domain `sourceLicense` (`Public Domain`, `CC0`, `CC BY`, `CC BY-SA`, `OGL`, `GODL-India`), rendered automatically in `FcArt.astro` captions and the `/about` Reference Attribution table.
 - [ ] **4. Zero-`<img>` DOM Audit:** `document.querySelectorAll('fc-painting img').length === 0` across homepage, article, and opinion pages.
 - [ ] **5. Clean Frame Audit:** Zero header bars, zero raw ISO timestamps, zero `FIG.` badges, zero rounded SaaS pills, and zero HTML chrome widgets covering the painting canvas.
 - [ ] **6. Zero Floating Center Text & Zero Cartoon Clipart:** Clicking any painting NEVER draws floating drop-shadow typography over the center of the artwork or over a subject's face, and NEVER emits cartoon particles (no bouncing gold Mario coins, no tumbling triangle-flap envelopes, no chunky dashed orange rings, no spark bursts, no giant tilted stamp boxes with ink-splatter rays).

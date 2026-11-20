@@ -1,22 +1,24 @@
 #!/usr/bin/env node
 /**
- * The Financial Crimes — Daily Remote Sweep & Auto-Publish Orchestrator (v1.3)
+ * The Financial Crimes — Daily Remote Sweep & Auto-Publish Orchestrator (v1.4)
  *
- * Schedule (America/New_York, DST-safe):
- *   - 6:00 AM ET (`--mode sweep`):   Global white-collar feed sweep -> Gemini 4 Hydrogen
- *                                    research, lean NYT-register drafting, Wikimedia/public-domain
- *                                    reference portrait sourcing (`public/paint-refs/<slug>.jpg`),
- *                                    and Canvas 2D impasto painting config generation via
- *                                    `pipeline/prompts/js-painting-prompt.md` (`content/paint-refs.json`).
+ * Target Phase 2 Schedule (America/New_York, DST-safe; cron paused until Phase 2 fetchers land):
+ *   - 6:00 AM ET (`--mode sweep`):   Global white-collar feed sweep -> Gemini research,
+ *                                    lean NYT-register drafting, Wikimedia/public-domain
+ *                                    reference portrait sourcing (`public/paint-refs/<slug>.jpg`,
+ *                                    max 320px RGB JPEG >5KB), and Canvas 2D impasto painting config
+ *                                    generation via `pipeline/prompts/js-painting-prompt.md`
+ *                                    (`content/paint-refs.json`), plus Gemini wrist-slap scoring.
  *   - 7:00 AM ET (`--mode publish`): Pre-press validation (articles + paint-refs + JPEGs),
  *                                    edition manifest finalization & auto-publish handoff
  *                                    to GitHub + Cloudflare CI/CD.
  *
- * AI Engine: Gemini API / Antigravity managed remote agent running `gemini-4-hydrogen`.
- * Painting Architecture: `sambitbiswas.com`-style Canvas 2D impasto engine (`src/painting/`)
- *   following the v1.3 "Wet-Oil & Archival Exhibit" interaction standard (shared lower-left
- *   Archival Exhibit Plate + 6 dignified wet-oil/fine-print surface reactions; zero floating
- *   center text, zero cartoon particles, zero `<img>` in DOM).
+ * AI Engine: Gemini API (`GEMINI_MODEL`, default `gemini-2.5-pro`; configurable for newer models)
+ *   or optional Antigravity managed remote agent.
+ * Painting Architecture: Canvas 2D impasto engine (`src/painting/`) following the Wet-Oil &
+ *   Archival Exhibit interaction standard (shared lower-left Archival Exhibit Plate + 6 dignified
+ *   wet-oil/fine-print surface reactions; zero floating center text, zero cartoon particles,
+ *   zero `<img>` in DOM, mandatory CC BY / CC BY-SA attribution).
  * Note: Newsletter delivery (Cloudflare Email Service GA) is deferred to Phase 3.
  */
 
@@ -25,7 +27,8 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { judgeAll } from './judge-wrist-slap.mjs';
 
-const DEFAULT_MODEL = process.env.GEMINI_MODEL || 'gemini-4-hydrogen';
+const DEFAULT_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-pro';
+const ARTICLES_ROOT = path.join(process.cwd(), 'content', 'articles');
 const PAINTING_PROMPT_PATH = path.join(process.cwd(), 'pipeline', 'prompts', 'js-painting-prompt.md');
 const PAINT_REFS_MANIFEST_PATH = path.join(process.cwd(), 'content', 'paint-refs.json');
 const PAINT_REFS_PUBLIC_DIR = path.join(process.cwd(), 'public');
@@ -63,10 +66,41 @@ export const IMPASTO_TOY_KINDS = [
 
 export const INTERACTION_AESTHETIC = 'wet-oil-archival-exhibit-v1.3';
 
+function isHttpsUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return false;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+async function collectArticleSlugs(dir) {
+  const slugs = new Set();
+  let entries;
+  try {
+    entries = await fs.readdir(dir, { withFileTypes: true });
+  } catch {
+    return slugs;
+  }
+  if (entries.some((e) => e.isFile() && e.name === 'meta.json')) {
+    slugs.add(path.basename(dir));
+    return slugs;
+  }
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      for (const slug of await collectArticleSlugs(path.join(dir, entry.name))) {
+        slugs.add(slug);
+      }
+    }
+  }
+  return slugs;
+}
+
 /**
- * Load the reusable Gemini 4 Hydrogen impasto painting prompt template (v1.3 Wet-Oil &
- * Archival Exhibit standard) and interpolate story dossier placeholders for either
- * `manifest-json` or `bespoke-scene-ts` output.
+ * Load the reusable impasto painting prompt template (Wet-Oil & Archival Exhibit standard)
+ * and interpolate story dossier placeholders for either `manifest-json` or `bespoke-scene-ts` output.
  */
 export async function buildPaintingPrompt(vars = {}) {
   const template = await fs.readFile(PAINTING_PROMPT_PATH, 'utf8');
@@ -91,7 +125,7 @@ export async function buildPaintingPrompt(vars = {}) {
 }
 
 /**
- * Verify that `pipeline/prompts/js-painting-prompt.md` loads cleanly, codifies the v1.3
+ * Verify that `pipeline/prompts/js-painting-prompt.md` loads cleanly, codifies the
  * Wet-Oil & Archival Exhibit guardrails, and interpolates with zero leftover tokens.
  */
 async function auditPaintingPrompt() {
@@ -114,19 +148,32 @@ async function auditPaintingPrompt() {
 }
 
 /**
- * Verify that `content/paint-refs.json` is valid, every refImage JPEG exists on disk (>5KB),
- * and every mood/toy enum matches `src/painting/types.ts`.
+ * Verify 1:1 coverage between `content/articles/` and `content/paint-refs.json`,
+ * that every refImage JPEG exists on disk (>5KB), every entry carries a valid `https://`
+ * `sourceUrl` and `sourceLicense`, and every mood/toy enum matches `src/painting/types.ts`.
  */
-async function auditPaintRefs() {
+export async function auditPaintRefs() {
   const raw = await fs.readFile(PAINT_REFS_MANIFEST_PATH, 'utf8');
   const manifest = JSON.parse(raw);
   const slugs = Object.keys(manifest);
+  const manifestSlugSet = new Set(slugs);
+  const articleSlugs = await collectArticleSlugs(ARTICLES_ROOT);
   const moods = new Set(IMPASTO_PALETTE_MOODS);
   const toys = new Set(IMPASTO_TOY_KINDS);
   let portraits = 0;
   const issues = [];
 
+  for (const articleSlug of articleSlugs) {
+    if (!manifestSlugSet.has(articleSlug)) {
+      issues.push(`${articleSlug}: article missing from content/paint-refs.json`);
+    }
+  }
+
   for (const slug of slugs) {
+    if (articleSlugs.size > 0 && !articleSlugs.has(slug)) {
+      issues.push(`${slug}: orphaned paint-refs entry with no matching article in content/articles/`);
+    }
+
     const entry = manifest[slug];
     if (!entry?.refImage || !entry.refImage.startsWith('/paint-refs/')) {
       issues.push(`${slug}: missing or invalid refImage`);
@@ -135,16 +182,22 @@ async function auditPaintRefs() {
     const diskPath = path.join(PAINT_REFS_PUBLIC_DIR, entry.refImage);
     try {
       const stat = await fs.stat(diskPath);
-      if (stat.size < 5000) issues.push(`${slug}: refImage too small (${stat.size}B)`);
+      if (stat.size < 5000) issues.push(`${slug}: refImage too small (${stat.size}B; must be >= 5000B)`);
     } catch {
       issues.push(`${slug}: missing file ${diskPath}`);
+    }
+    if (!isHttpsUrl(entry.sourceUrl)) {
+      issues.push(`${slug}: sourceUrl must be a valid https:// URL (got "${entry.sourceUrl ?? ''}")`);
+    }
+    if (typeof entry.sourceLicense !== 'string' || !entry.sourceLicense.trim()) {
+      issues.push(`${slug}: missing sourceLicense for CC/Public Domain attribution`);
     }
     if (!moods.has(entry.paletteMood)) issues.push(`${slug}: invalid paletteMood "${entry.paletteMood}"`);
     if (!toys.has(entry.toyKind)) issues.push(`${slug}: invalid toyKind "${entry.toyKind}"`);
     if (entry.isPortrait) portraits += 1;
   }
 
-  return { total: slugs.length, portraits, issues };
+  return { total: slugs.length, articles: articleSlugs.size, portraits, issues };
 }
 
 function parseArgs(argv) {
@@ -172,20 +225,21 @@ async function runSweepBlueprint({ mode, date }) {
   const promptAudit = await auditPaintingPrompt();
   const paintAudit = await auditPaintRefs().catch((err) => ({
     total: 0,
+    articles: 0,
     portraits: 0,
     issues: [`paint-refs audit error: ${err.message}`],
   }));
 
   console.log('====================================================================');
-  console.log(' The Financial Crimes — Remote Sweep Pipeline (v1.3 Wet-Oil Ready)  ');
+  console.log(' The Financial Crimes — Remote Sweep Pipeline (v1.4 Wet-Oil Ready)  ');
   console.log('====================================================================');
   console.log(`Mode:            ${mode}`);
   console.log(`Edition Date:    ${date} (America/New_York)`);
-  console.log(`AI Model:        ${DEFAULT_MODEL} (Research/Drafting + Canvas 2D Impasto Art)`);
+  console.log(`AI Model:        ${DEFAULT_MODEL} (Wrist-Slap Judge + Phase 2 Drafting/Art)`);
   console.log(`Auth Status:     GEMINI_API_KEY=${hasGeminiKey ? 'configured' : 'unset'} | ANTIGRAVITY_REMOTE=${hasAntigravityAgent ? 'configured' : 'unset'}`);
   console.log(`Feeds Queued:    ${GLOBAL_REGULATOR_FEEDS.length} official regulator & court feeds`);
   console.log(`Painting Prompt: ${promptAudit.ready ? 'READY' : 'INVALID'} (${path.relative(process.cwd(), PAINTING_PROMPT_PATH)}, ${promptAudit.bytes}B)`);
-  console.log(`Paint Refs Pool: ${paintAudit.total} entries (${paintAudit.portraits} portraits, ${paintAudit.total - paintAudit.portraits} landmarks/objects)`);
+  console.log(`Paint Refs Pool: ${paintAudit.total}/${paintAudit.articles} articles covered (${paintAudit.portraits} portraits, ${paintAudit.total - paintAudit.portraits} landmarks/objects)`);
   console.log(`Engine Palette:  ${IMPASTO_PALETTE_MOODS.length} FC_OIL moods | ${IMPASTO_TOY_KINDS.length} wet-oil interactions | ${INTERACTION_AESTHETIC}`);
 
   if (promptAudit.issues.length > 0) {
@@ -203,31 +257,41 @@ async function runSweepBlueprint({ mode, date }) {
   }
 
   if (mode === 'dry-run' || (!hasGeminiKey && !hasAntigravityAgent)) {
-    console.log('\n[blueprint] Running in safe non-mutating blueprint mode.');
+    console.log('\n[blueprint] Running in safe non-mutating dry-run mode (no files mutated).');
     console.log('[blueprint] Phase 2 activation steps:');
     console.log('  1. Add GEMINI_API_KEY (or ANTIGRAVITY_AGENT_ENDPOINT + TOKEN) to GitHub Secrets.');
-    console.log('  2. Wire feed fetchers + Wikimedia Commons portrait normalizer (max 320px RGB JPEG)');
+    console.log('  2. Wire feed fetchers + Wikimedia Commons portrait normalizer (max 320px RGB JPEG, >5KB)');
     console.log('     in pipeline/fetchers/ writing to public/paint-refs/<slug>.jpg.');
-    console.log('  3. 6:00 AM ET sweep invokes Gemini 4 Hydrogen with pipeline/prompts/js-painting-prompt.md');
-    console.log('     to draft lean body.html + meta.json + content/paint-refs.json (libel-checked)');
-    console.log('     and stages the daily edition.');
-    console.log('  4. 7:00 AM ET publish runs validate:content + astro check + astro build + pagefind');
-    console.log('     and merges to main for Cloudflare Workers Static Assets deployment.');
+    console.log('  3. Wire 6:00 AM ET sweep article drafting using pipeline/prompts/js-painting-prompt.md');
+    console.log('     (sanitized body.html + meta.json + content/paint-refs.json with https:// CC attribution)');
+    console.log('     and a git commit/PR step, then unpause the cron schedule in daily-sweep.yml.');
+    console.log('  4. 7:00 AM ET publish runs validate:content + test + check + build and merges to main.');
     return;
   }
 
-  // Phase 2 hook: verify editions directory exists before remote agent invocation
+  // Verify editions directory exists before pipeline execution
   const editionsDir = path.join(process.cwd(), 'content', 'editions');
   await fs.mkdir(editionsDir, { recursive: true });
 
   // Wrist-slap scores are always Gemini's call (PRD §2.3 rubric), never hand-entered
+  let scoredChanges = 0;
   if (mode === 'sweep' && hasGeminiKey) {
-    await judgeAll({ apiKey: process.env.GEMINI_API_KEY, write: true, model: DEFAULT_MODEL });
+    scoredChanges = await judgeAll({
+      apiKey: process.env.GEMINI_API_KEY,
+      write: true,
+      model: DEFAULT_MODEL,
+    });
   }
 
-  console.log(`\n[${mode}] Ready to dispatch ${DEFAULT_MODEL} sweep for edition ${date}.`);
+  console.log(`\n[${mode}] Completed ${DEFAULT_MODEL} run for edition ${date}.`);
   console.log(`[${mode}] Loaded impasto master prompt (${path.relative(process.cwd(), PAINTING_PROMPT_PATH)}).`);
-  console.log(`[${mode}] Remote agent execution hook is scaffolded; no files mutated in Phase 1.`);
+  if (mode === 'sweep' && hasGeminiKey) {
+    console.log(
+      `[${mode}] Wrist-slap scoring wrote ${scoredChanges} meta.json update(s). Phase 2 feed fetchers & remote article drafting remain scaffolded (no new articles drafted).`
+    );
+  } else {
+    console.log(`[${mode}] Phase 2 remote article drafting & publish hooks are scaffolded; no files mutated.`);
+  }
 }
 
 const isDirectRun =
