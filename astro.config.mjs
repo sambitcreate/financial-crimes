@@ -1,12 +1,20 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
+
+const siteUrl = process.env.SITE_URL || 'https://financialcrimes.news';
 
 export default defineConfig({
-  site: 'https://financialcrimes.news',
+  site: siteUrl,
   output: 'static',
-  trailingSlash: 'ignore',
+  trailingSlash: 'never',
   build: {
-    format: 'directory',
+    format: 'file',
   },
+  integrations: [
+    sitemap({
+      filter: (page) => !page.endsWith('/404') && !page.endsWith('/404.html'),
+    }),
+  ],
   vite: {
     build: {
       sourcemap: false,

@@ -1,0 +1,233 @@
+---
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CompactHeader from '../components/CompactHeader.astro';
+import { loadAllArticles } from '../loaders/articles';
+import type { PaintRefManifestEntry } from '../painting/types';
+
+const articles = await loadAllArticles();
+const articleBySlug = new Map(articles.map((a) => [a.slug, a]));
+
+const paintRefsPath = path.join(process.cwd(), 'content', 'paint-refs.json');
+const rawRefs = await fs.readFile(paintRefsPath, 'utf-8');
+const paintRefs = JSON.parse(rawRefs) as Record<string, PaintRefManifestEntry>;
+
+const creditRows = Object.entries(paintRefs)
+  .map(([slug, ref]) => {
+    const article = articleBySlug.get(slug);
+    return {
+      slug,
+      headline: article?.headline ?? slug,
+      href: article?.url ?? null,
+      subject: ref.subject ?? 'Editorial reference study',
+      sourceUrl: ref.sourceUrl ?? null,
+      sourceLicense: ref.sourceLicense ?? 'Public Reference',
+    };
+  })
+  .sort((a, b) => a.headline.localeCompare(b.headline));
+
+const topicLinks = [
+  { label: 'Front Page', href: '/' },
+  { label: 'About & Methodology', href: '/about', current: true },
+  { label: 'Corrections', href: '/corrections' },
+  { label: 'The Ledger', href: '/ledger' },
+];
+---
+
+<BaseLayout
+  title="About & Methodology — The Financial Crimes"
+  description="Editorial mission, hard fact/satire firewall, Slap-on-the-Wrist scoring rubric, Fair Report Privilege standards, and Creative Commons portrait attributions."
+  canonicalPath="/about"
+>
+  <CompactHeader
+    slot="header"
+    showTopicBar={true}
+    topicTitle="About"
+    topicLinks={topicLinks}
+  />
+
+  <article class="fc-trust-page">
+    <header class="fc-trust-header">
+      <p class="fc-eyebrow fc-eyebrow--crimson" style="margin: 0;">
+        NEWSROOM STANDARDS &amp; METHODOLOGY
+      </p>
+      <h1 class="fc-trust-h1">About The Financial Crimes</h1>
+      <p class="fc-trust-deck">
+        &ldquo;All the Crimes Fit to Fine.&rdquo; An independent daily digital broadsheet tracking
+        global white-collar crime, corporate enforcement penalties, and prison sentences strictly
+        from primary court dockets and regulatory orders.
+      </p>
+    </header>
+
+    <section class="fc-trust-section" id="mission">
+      <h2 class="fc-trust-h2">Editorial Mission</h2>
+      <div class="fc-trust-prose">
+        <p>
+          <strong>The Financial Crimes</strong> exists to keep a permanent, searchable public ledger
+          of white-collar, corporate, and regulatory enforcement across major financial jurisdictions
+          &mdash; including New York, Washington, Chicago, Los Angeles, London, Frankfurt, Mumbai,
+          New Delhi, Singapore, and Hong Kong.
+        </p>
+        <p>
+          Every dispatch pairs the alleged or adjudicated scale of a scheme directly against the
+          civil penalty, disgorgement, criminal fine, and actual custody imposed. All coverage,
+          tables, and RSS feeds are permanently free ($0.00 / no paywall).
+        </p>
+      </div>
+    </section>
+
+    <section class="fc-trust-section" id="fact-satire-wall">
+      <h2 class="fc-trust-h2">The Hard Fact / Satire Wall</h2>
+      <div class="fc-trust-prose">
+        <p>
+          Our voice draws on dry broadsheet irony, but we enforce an absolute firewall between
+          <strong>factual reporting</strong> and <strong>editorial framing</strong>:
+        </p>
+        <div class="fc-trust-callout">
+          <strong>Facts are sacred; framing carries the wit.</strong> Every dollar amount, fine
+          ratio, prison sentence, agency citation, docket number, defendant name, and legal stage
+          is verified against official court records or government enforcement releases (DOJ, SEC,
+          FinCEN, OCC, OFAC, SEBI, CBI, UK SFO, FCA, EPPO, BaFin, MAS, SFC, AFRC). We never invent
+          quotes, fabricate figures, or blur unproven allegations into convictions.
+        </div>
+        <p>
+          Opinion essays are visually separated under the <strong>OPINION</strong> label and
+          monochrome artwork. News dispatches stick strictly to documented filings.
+        </p>
+      </div>
+    </section>
+
+    <section class="fc-trust-section" id="rubric">
+      <h2 class="fc-trust-h2">Slap-on-the-Wrist Scoring Rubric</h2>
+      <div class="fc-trust-prose">
+        <p>
+          Each concluded enforcement action receives a <strong>Slap-on-the-Wrist Score (0&ndash;100)</strong>
+          evaluating how lightly a corporate or executive penalty lands relative to the documented
+          scale of misconduct, custody outcomes, and admissions of guilt.
+        </p>
+        <p>
+          <strong>Pending Cases Are Never Scored:</strong> Active indictments, arrests, interim
+          orders, and pre-sentencing verdicts always display <code>PENDING</code> (<code>null</code>)
+          until a final settlement, regulatory order, deferred prosecution agreement (DPA), or
+          sentence is entered.
+        </p>
+
+        <div class="fc-trust-rubric-grid">
+          <div class="fc-trust-rubric-card">
+            <span class="fc-trust-rubric-band">0 &ndash; 29 &middot; SUBSTANTIAL</span>
+            Significant multi-year prison sentences, meaningful forfeiture or restitution relative
+            to loss, or explicit guilty pleas / convictions.
+          </div>
+          <div class="fc-trust-rubric-card">
+            <span class="fc-trust-rubric-band">30 &ndash; 69 &middot; MIXED</span>
+            Large monetary penalties or partial executive sanctions, tempered by limited personal
+            custody, negotiated discounts, or stayed relief.
+          </div>
+          <div class="fc-trust-rubric-card">
+            <span class="fc-trust-rubric-band fc-trust-rubric-band--high">70 &ndash; 100 &middot; WRIST-SLAP</span>
+            Pennies-on-the-dollar fine-to-scale ratios, zero executives charged or jailed,
+            &ldquo;neither admit nor deny&rdquo; language, or repeat-offender DPA discounts.
+          </div>
+        </div>
+
+        <p>
+          <strong>Site-Wide Fine-to-Loot Ratio:</strong> All aggregate tickers and regional rollups
+          compute the sum of imposed penalties divided by the sum of documented case scale
+          (<code>sum(fines) / sum(scale)</code>) across included dockets, so front-page, drawer, and
+          ledger figures always agree.
+        </p>
+      </div>
+    </section>
+
+    <section class="fc-trust-section" id="fair-report">
+      <h2 class="fc-trust-h2">Fair Report Privilege &amp; Presumption of Innocence</h2>
+      <div class="fc-trust-prose">
+        <p>
+          Our reporting relies on the <strong>Fair Report Privilege</strong> &mdash; summarizing
+          official judicial and regulatory filings accurately, neutrally, and with direct hyperlinks
+          to primary public records at the foot of every story.
+        </p>
+        <p>
+          Defendants named in indictments, criminal complaints, civil enforcement actions, or
+          interim administrative orders are <strong>presumed innocent until proven guilty</strong>
+          in a court of law. Settlements entered on a &ldquo;neither admit nor deny&rdquo; basis
+          are explicitly labeled as such. If a case is dismissed, reversed on appeal, or ends in
+          acquittal, we update the docket promptly under our{' '}
+          <a href="/corrections">Corrections &amp; Update Protocol</a>.
+        </p>
+      </div>
+    </section>
+
+    <section class="fc-trust-section" id="colophon">
+      <h2 class="fc-trust-h2">Independence Colophon</h2>
+      <div class="fc-trust-prose">
+        <p>
+          <strong>The Financial Crimes</strong> is an independent digital publication and has
+          <strong>no affiliation, sponsorship, or endorsement</strong> from{' '}
+          <em>The New York Times</em>, any government agency, financial regulator, law firm, or
+          corporate entity covered in its pages.
+        </p>
+        <p>
+          News tips on public court filings may be sent to{' '}
+          <a href="mailto:tips@financialcrimes.news">tips@financialcrimes.news</a>. Correction
+          requests and right-of-reply notices should be directed to{' '}
+          <a href="mailto:corrections@financialcrimes.news">corrections@financialcrimes.news</a>.
+        </p>
+      </div>
+    </section>
+
+    <section class="fc-trust-section" id="image-credits">
+      <h2 class="fc-trust-h2">Reference Portrait Attributions &amp; Licenses</h2>
+      <div class="fc-trust-prose">
+        <p>
+          Every editorial illustration on The Financial Crimes is procedurally rendered in HTML5
+          Canvas as an impressionist oil study derived from open-licensed or public-domain
+          reference photographs ({creditRows.length} cataloged studies). In full compliance with
+          Creative Commons (CC BY / CC BY-SA), Open Government Licence (OGL), and CC0 attribution
+          terms, each captioned study links directly to its reference source below and beneath its
+          article frame:
+        </p>
+      </div>
+
+      <div class="fc-trust-table-wrap">
+        <table class="fc-trust-table">
+          <thead>
+            <tr>
+              <th scope="col">Dispatch</th>
+              <th scope="col">Reference Subject</th>
+              <th scope="col">License</th>
+              <th scope="col">Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            {creditRows.map((row) => (
+              <tr>
+                <td>
+                  {row.href ? (
+                    <a href={row.href}>{row.headline}</a>
+                  ) : (
+                    <span>{row.headline}</span>
+                  )}
+                </td>
+                <td>{row.subject}</td>
+                <td>
+                  <span class="fc-trust-license-badge">{row.sourceLicense}</span>
+                </td>
+                <td>
+                  {row.sourceUrl ? (
+                    <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">
+                      Wikimedia Commons &nearr;
+                    </a>
+                  ) : (
+                    <span>&mdash;</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

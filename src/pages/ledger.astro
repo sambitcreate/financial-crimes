@@ -595,7 +595,9 @@ const topicLinks = [
       const top = await Promise.all(res.results.slice(0, 30).map((r: any) => r.data()));
       const slugs = new Set<string>();
       top.forEach((d: any) => {
-        const m = String(d.url || '').match(/\/(?:article|opinion)\/([^/]+)/);
+        const m = String(d.url || '')
+          .replace(/\.html$/i, '')
+          .match(/\/(?:article|opinion)\/([^/]+)/);
         if (m) slugs.add(m[1]);
       });
       pagefindSlugs = slugs;

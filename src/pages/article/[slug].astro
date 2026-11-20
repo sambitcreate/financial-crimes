@@ -54,12 +54,47 @@ const heroRef = await resolvePaintRef({
   caption: article.interactive_art_spec?.caption,
 });
 const publishedStamp = formatDatelineTimestamp(article.publish_date);
+const siteBase = Astro.site ?? new URL('https://financialcrimes.news');
+const articleCanonicalUrl = new URL(article.url, siteBase).toString();
+const ogImageUrl = new URL('/og-card.png', siteBase).toString();
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: article.headline,
+  description: article.deck,
+  datePublished: article.publish_date,
+  url: articleCanonicalUrl,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': articleCanonicalUrl,
+  },
+  image: [ogImageUrl],
+  articleSection: article.category,
+  author: {
+    '@type': 'Person',
+    name: bylineClean,
+  },
+  publisher: {
+    '@type': 'NewsMediaOrganization',
+    name: 'The Financial Crimes',
+    url: siteBase.toString().replace(/\/+$/, ''),
+    logo: {
+      '@type': 'ImageObject',
+      url: ogImageUrl,
+      width: 1200,
+      height: 630,
+    },
+  },
+};
 ---
 
 <BaseLayout
   title={`${article.headline} — The Financial Crimes`}
   description={article.deck}
+  canonicalPath={article.url}
   ogType="article"
+  publishedTime={article.publish_date}
+  jsonLd={articleJsonLd}
   preloadImage={heroRef.entry?.refImage}
 >
   <CompactHeader slot="header" showTopicBar={false} />

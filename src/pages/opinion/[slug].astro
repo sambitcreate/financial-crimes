@@ -43,12 +43,48 @@ const related = allArticles
   .filter((a) => a.slug !== article.slug)
   .sort((a, b) => (b.template === 'opinion' ? 1 : 0) - (a.template === 'opinion' ? 1 : 0))
   .slice(0, 3);
+
+const siteBase = Astro.site ?? new URL('https://financialcrimes.news');
+const opinionCanonicalUrl = new URL(article.url, siteBase).toString();
+const ogImageUrl = new URL('/og-card.png', siteBase).toString();
+const opinionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: article.headline,
+  description: article.deck,
+  datePublished: article.publish_date,
+  url: opinionCanonicalUrl,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': opinionCanonicalUrl,
+  },
+  image: [ogImageUrl],
+  articleSection: 'Opinion',
+  author: {
+    '@type': 'Person',
+    name: bylineClean,
+  },
+  publisher: {
+    '@type': 'NewsMediaOrganization',
+    name: 'The Financial Crimes',
+    url: siteBase.toString().replace(/\/+$/, ''),
+    logo: {
+      '@type': 'ImageObject',
+      url: ogImageUrl,
+      width: 1200,
+      height: 630,
+    },
+  },
+};
 ---
 
 <BaseLayout
   title={`Opinion | ${article.headline} — The Financial Crimes`}
   description={article.deck}
+  canonicalPath={article.url}
   ogType="article"
+  publishedTime={article.publish_date}
+  jsonLd={opinionJsonLd}
   preloadImage={heroRef.entry?.refImage}
 >
   <CompactHeader slot="header" showTopicBar={false} />

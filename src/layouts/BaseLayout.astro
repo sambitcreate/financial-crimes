@@ -7,15 +7,19 @@ import '../painting/fc-art.css';
 import Footer from '../components/Footer.astro';
 import NavDrawer from '../components/NavDrawer.astro';
 import SubscribeModal from '../components/SubscribeModal.astro';
-import { loadAllArticles, loadRollupStats } from '../loaders/articles';
+import { loadAllArticles, loadEdition, loadRollupStats } from '../loaders/articles';
 
 interface Props {
   title: string;
   description?: string;
   canonicalPath?: string;
   ogType?: 'website' | 'article';
+  ogImage?: string;
+  ogImageAlt?: string;
+  publishedTime?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   hideFooter?: boolean;
-  /** Error pages: no canonical/og:url (every missing URL would claim /404/), and keep out of search. */
+  /** Error pages: no canonical/og:url (every missing URL would claim /404), and keep out of search. */
   noindex?: boolean;
   /** Reference image of the above-the-fold hero painting, fetched during HTML parse instead of after the painting script boots. */
   preloadImage?: string;
@@ -26,19 +30,33 @@ const {
   description = 'The Financial Crimes — Daily broadsheet tracking global white-collar crime, regulatory fines, and prison time. All the Crimes Fit to Fine.',
   canonicalPath = Astro.url.pathname,
   ogType = 'website',
+  ogImage = '/og-card.png',
+  ogImageAlt = 'The Financial Crimes — All the Crimes Fit to Fine — Global White-Collar Crime Ledger',
+  publishedTime,
+  jsonLd,
   hideFooter = false,
   noindex = false,
   preloadImage,
 } = Astro.props;
 
-const [navArticles, navRollup] = await Promise.all([
+const [navArticles, navRollup, latestEdition] = await Promise.all([
   loadAllArticles(),
   loadRollupStats(),
+  loadEdition(),
 ]);
 
-const canonicalUrl = new URL(canonicalPath, Astro.site ?? 'https://financialcrimes.news').toString();
-const faviconSvg =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23121212'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-size='34' font-weight='700' fill='%23ffffff'%3EFC%3C/text%3E%3C/svg%3E";
+const editionVolume = latestEdition?.volume ?? 'Vol. I';
+const siteBase = Astro.site ?? new URL('https://financialcrimes.news');
+const normalizedCanonicalPath =
+  canonicalPath === '/' || canonicalPath === '/index.html'
+    ? '/'
+    : canonicalPath.replace(/\.html$/, '').replace(/\/+$/, '') || '/';
+const canonicalUrl = new URL(normalizedCanonicalPath, siteBase).toString();
+const ogImageUrl = new URL(ogImage, siteBase).toString();
+const rssUrl = new URL('/rss.xml', siteBase).toString();
+const serializedJsonLd = jsonLd
+  ? JSON.stringify(jsonLd).replace(/</g, '\\u003c')
+  : null;
 ---
 
 <!doctype html>
@@ -49,15 +67,27 @@ const faviconSvg =
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonicalUrl} />}
-    <link rel="icon" type="image/svg+xml" href={faviconSvg} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title="The Financial Crimes RSS Feed" href={rssUrl} />
+
     <meta property="og:site_name" content="The Financial Crimes" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={ogType} />
     {!noindex && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    {serializedJsonLd && <script type="application/ld+json" set:html={serializedJsonLd} />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -82,9 +112,14 @@ const faviconSvg =
       <slot />
     </main>
 
-    {!hideFooter && <Footer editionDate={navRollup.edition_date} />}
+    {!hideFooter && <Footer editionDate={navRollup.edition_date} volume={editionVolume} />}
 
-    <NavDrawer articles={navArticles} rollup={navRollup} currentPath={Astro.url.pathname} />
+    <NavDrawer
+      articles={navArticles}
+      rollup={navRollup}
+      volume={editionVolume}
+      currentPath={Astro.url.pathname}
+    />
     <SubscribeModal />
     <slot name="modals" />
 
@@ -92,23 +127,33 @@ const faviconSvg =
       function wireGlobalDialogs() {
         const subDialog = document.getElementById('fc-subscribe-dialog') as HTMLDialogElement | null;
         const tipDialog = document.getElementById('fc-tipline-dialog') as HTMLDialogElement | null;
+        const lastTriggers = new WeakMap<HTMLDialogElement, HTMLElement>();
+
+        function openManagedDialog(dlg: HTMLDialogElement, trigger?: HTMLElement | null) {
+          if (trigger) {
+            lastTriggers.set(dlg, trigger);
+          } else if (document.activeElement instanceof HTMLElement) {
+            lastTriggers.set(dlg, document.activeElement);
+          }
+          if (!dlg.open) dlg.showModal();
+        }
 
         document.addEventListener('click', (event) => {
           const target = event.target as HTMLElement | null;
           if (!target) return;
           if (target.closest('#fc-nav-drawer')) return;
 
-          const subTrigger = target.closest('[data-open-subscribe]');
+          const subTrigger = target.closest<HTMLElement>('[data-open-subscribe]');
           if (subTrigger && subDialog) {
             event.preventDefault();
-            if (!subDialog.open) subDialog.showModal();
+            openManagedDialog(subDialog, subTrigger);
             return;
           }
 
-          const tipTrigger = target.closest('[data-open-tipline]');
+          const tipTrigger = target.closest<HTMLElement>('[data-open-tipline]');
           if (tipTrigger && tipDialog) {
             event.preventDefault();
-            if (!tipDialog.open) tipDialog.showModal();
+            openManagedDialog(tipDialog, tipTrigger);
             return;
           }
 
@@ -119,11 +164,17 @@ const faviconSvg =
           }
         });
 
-        // Allow clicking native backdrop to close any .fc-dialog
+        // Allow clicking native backdrop to close any .fc-dialog and restore focus to trigger
         document.querySelectorAll('dialog.fc-dialog').forEach((node) => {
           const dlg = node as HTMLDialogElement;
           dlg.addEventListener('click', (e) => {
             if (e.target === dlg) dlg.close();
+          });
+          dlg.addEventListener('close', () => {
+            const trigger = lastTriggers.get(dlg);
+            if (trigger && document.contains(trigger)) {
+              trigger.focus();
+            }
           });
         });
       }

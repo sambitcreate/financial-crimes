@@ -7,12 +7,10 @@ export interface Props {
   id: string;
   slug?: string;
   spec: {
-    archetype?: string;
     accent?: string;
     theme?: 'newsprint' | 'monochrome';
     caption?: string;
     credit?: string;
-    data?: Record<string, any>;
   };
   mode?: 'hero' | 'inline' | 'thumb';
   aspect?: '4/5' | '16/9' | '16/10' | '1/1' | '4/3';
@@ -88,7 +86,10 @@ const captionText = spec?.caption || '';
 const creditText =
   spec?.credit && !spec.credit.startsWith('Interactive Illustration')
     ? spec.credit
-    : 'Oil Study · The Financial Crimes';
+    : 'Oil study · The Financial Crimes';
+const refSourceUrl = entry?.sourceUrl;
+const refSourceLicense = entry?.sourceLicense;
+const hasRefAttribution = Boolean(refSourceUrl && refSourceLicense);
 const renderCaption = showCaption ?? (safeMode !== 'thumb' && Boolean(captionText));
 ---
 
@@ -130,10 +131,28 @@ const renderCaption = showCaption ?? (safeMode !== 'thumb' && Boolean(captionTex
   </fc-painting>
 
   {
-    renderCaption && captionText && (
+    renderCaption && (captionText || creditText || hasRefAttribution) && (
       <figcaption class="fc-art-figcaption">
-        <span class="fc-art-caption-text">{captionText}</span>
-        {creditText && <span class="fc-art-credit">{creditText}</span>}
+        {captionText && <span class="fc-art-caption-text">{captionText}</span>}
+        {(creditText || hasRefAttribution) && (
+          <span class="fc-art-credit">
+            {creditText}
+            {hasRefAttribution && (
+              <>
+                {creditText && <> &middot; </>}
+                Reference:{' '}
+                <a
+                  href={refSourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="fc-art-credit-link"
+                >
+                  {refSourceLicense}
+                </a>
+              </>
+            )}
+          </span>
+        )}
       </figcaption>
     )
   }

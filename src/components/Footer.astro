@@ -2,8 +2,10 @@
 interface Props {
   /** Latest edition date (YYYY-MM-DD) so "Today's Docket" never goes stale. */
   editionDate: string;
+  /** Dynamic edition volume from content/editions/latest.json (e.g. "Vol. I, No. 1"). */
+  volume?: string;
 }
-const { editionDate } = Astro.props;
+const { editionDate, volume = 'Vol. I' } = Astro.props;
 const currentYear = editionDate.slice(0, 4);
 const editionHref = `/edition/${editionDate}`;
 ---
@@ -67,6 +69,9 @@ const editionHref = `/edition/${editionDate}`;
         <ul>
           <li><button type="button" data-open-subscribe>Subscribe ($0)</button></li>
           <li><button type="button" data-open-tipline>Tip Line</button></li>
+          <li><a href="/about">About &amp; Methodology</a></li>
+          <li><a href="/corrections">Corrections Policy</a></li>
+          <li><a href="/rss.xml">RSS Feed</a></li>
           <li><a href={editionHref}>Edition Archive</a></li>
         </ul>
       </div>
@@ -79,12 +84,15 @@ const editionHref = `/edition/${editionDate}`;
       penalty reported here is drawn from official court filings and regulatory orders (DOJ, SEC,
       FinCEN, OCC, OFAC, SEBI, CBI, UK SFO, FCA, EPPO, BaFin, MAS, SFC, AFRC). Defendants in
       pending cases are presumed innocent until proven guilty; &ldquo;neither admit nor deny&rdquo;
-      settlements are labeled as such. All portraits are rendered procedurally in JavaScript.
+      settlements are labeled as such. All oil studies are rendered procedurally in JavaScript from
+      licensed public reference imagery (<a href="/about#image-credits" style="text-decoration: underline;">reference credits &amp; licenses</a>).
+      See our <a href="/about" style="text-decoration: underline;">editorial standards</a> and{' '}
+      <a href="/corrections" style="text-decoration: underline;">corrections log</a>.
     </div>
 
     <div class="fc-footer-bottom">
       <span>&copy; {currentYear} The Financial Crimes. &ldquo;All the Crimes Fit to Fine.&rdquo;</span>
-      <span>Vol. I, No. 1 &middot; Published Daily at 7:00 a.m. ET</span>
+      <span>{volume} &middot; Published Daily at 7:00 a.m. ET</span>
     </div>
   </div>
 </footer>

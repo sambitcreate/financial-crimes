@@ -1,5 +1,6 @@
 ---
-// Native <dialog> modals: $0 Morning Docket signup + Public-Record Tip Line
+// Native <dialog> modals: Honest $0 Morning Docket (Phase 3 email preview + live RSS)
+// & Public-Record Tip Line (pre-filled mailto:tips@financialcrimes.news handoff)
 ---
 
 <dialog
@@ -29,16 +30,39 @@
     </h2>
     <p
       id="fc-sub-desc"
-      style="font-family: var(--fc-font-body); font-size: 16px; line-height: 1.46; color: var(--fc-ink-secondary); margin: 0 0 16px;"
+      style="font-family: var(--fc-font-body); font-size: 16px; line-height: 1.46; color: var(--fc-ink-secondary); margin: 0 0 14px;"
     >
       Every docket, fine ratio, and consent order here is permanently free &mdash; without
-      admitting or denying wrongdoing. Leave an address to reserve <em>The Morning Docket</em>
-      (7:00 a.m. ET).
+      admitting or denying wrongdoing.
     </p>
 
+    <div
+      style="margin: 0 0 14px; padding: 11px 13px; background: var(--fc-bg-newsprint); border: 1px solid var(--fc-rule-column); font-family: var(--fc-font-sans); font-size: 12.5px; line-height: 1.48;"
+    >
+      <strong style="display: block; font-family: var(--fc-font-mono); font-size: 10.5px; letter-spacing: 0.05em; margin-bottom: 4px;">
+        SUBSCRIBE VIA RSS RIGHT NOW
+      </strong>
+      Automated 7:00 a.m. ET <em>Morning Docket</em> email delivery is launching in Phase 3
+      (via Cloudflare Email Service). Follow every dispatch today in your feed reader:
+      <div style="margin-top: 8px;">
+        <a
+          href="/rss.xml"
+          class="fc-btn-slate"
+          style="padding: 8px 12px; font-size: 11px;"
+        >
+          Subscribe via RSS (/rss.xml) &rarr;
+        </a>
+      </div>
+    </div>
+
     <form id="fc-subscribe-form" style="display: flex; flex-direction: column; gap: 10px;">
+      <p style="font-family: var(--fc-font-sans); font-size: 11.5px; color: var(--fc-ink-muted); margin: 0; line-height: 1.4;">
+        <strong>Local Preview Reminder:</strong> Save your preferred bureau in this browser while email
+        delivery is being wired (stored locally only &mdash; not sent to a server).
+      </p>
+
       <label style="display: flex; flex-direction: column; gap: 4px; font-family: var(--fc-font-sans); font-size: 12px; font-weight: 600;">
-        Email
+        Email (saved locally in this browser)
         <input
           type="email"
           name="email"
@@ -49,7 +73,7 @@
       </label>
 
       <label style="display: flex; flex-direction: column; gap: 4px; font-family: var(--fc-font-sans); font-size: 12px; font-weight: 600;">
-        Desk
+        Preferred Desk
         <select
           name="edition"
           style="border: 1px solid var(--fc-rule-medium); padding: 8px 10px; font-size: 13px; background: #fff;"
@@ -63,8 +87,8 @@
         </select>
       </label>
 
-      <button type="submit" class="fc-btn-slate" style="padding: 11px 14px; font-size: 11.5px; margin-top: 4px;">
-        Subscribe for $0.00
+      <button type="submit" class="fc-btn-outline" style="padding: 10px 14px; font-size: 11.5px; margin-top: 2px;">
+        Save Local Preview Preference ($0.00)
       </button>
 
       <p style="font-family: var(--fc-font-sans); font-size: 11px; color: var(--fc-ink-muted); margin: 2px 0 0; line-height: 1.4;">
@@ -74,13 +98,22 @@
 
     <div
       id="fc-subscribe-success"
+      role="status"
+      aria-live="polite"
       hidden
       style="margin-top: 14px; padding: 14px; background: var(--fc-bg-newsprint); border: 1px solid var(--fc-rule-strong); font-family: var(--fc-font-sans); font-size: 13px; line-height: 1.48;"
     >
-      <strong style="display: block; margin-bottom: 4px; font-family: var(--fc-font-mono); font-size: 11px;">
-        RESERVATION LOGGED &middot; $0.00
-      </strong>
-      <span id="fc-subscribe-success-msg"></span>
+      <h3
+        id="fc-subscribe-status-heading"
+        tabindex="-1"
+        style="margin: 0 0 6px; font-family: var(--fc-font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.05em;"
+      >
+        SAVED LOCALLY IN THIS BROWSER &middot; PHASE 3 EMAIL PREVIEW
+      </h3>
+      <p id="fc-subscribe-success-msg" style="margin: 0 0 10px;"></p>
+      <a href="/rss.xml" class="fc-btn-slate" style="padding: 8px 12px; font-size: 11px;">
+        Subscribe via RSS (/rss.xml) Now &rarr;
+      </a>
     </div>
   </div>
 </dialog>
@@ -101,7 +134,7 @@
       &times;
     </button>
 
-    <p class="fc-eyebrow" style="margin: 0 0 8px;">TIP LINE</p>
+    <p class="fc-eyebrow" style="margin: 0 0 8px;">TIP LINE &middot; PUBLIC FILINGS ONLY</p>
     <h2
       id="fc-tip-title"
       style="font-family: var(--fc-font-headline); font-size: 24px; font-weight: 700; line-height: 1.15; margin: 0 0 8px;"
@@ -110,10 +143,14 @@
     </h2>
     <p
       id="fc-tip-desc"
-      style="font-family: var(--fc-font-sans); font-size: 13px; line-height: 1.46; color: var(--fc-ink-muted); margin: 0 0 14px;"
+      style="font-family: var(--fc-font-sans); font-size: 13px; line-height: 1.46; color: var(--fc-ink-muted); margin: 0 0 12px;"
     >
       Point us to an unsealed indictment, consent order, or regulatory fine we missed.
-      Publicly filed records only.
+      Online intake is in preview &mdash; submitting prepares a pre-filled email to{' '}
+      <a href="mailto:tips@financialcrimes.news" style="text-decoration: underline; color: var(--fc-ink-primary);">
+        tips@financialcrimes.news
+      </a>{' '}
+      so nothing you enter is lost. Publicly filed records only.
     </p>
 
     <form id="fc-tipline-form" style="display: flex; flex-direction: column; gap: 10px;">
@@ -150,30 +187,68 @@
         ></textarea>
       </label>
 
-      <button type="submit" class="fc-btn-slate" style="padding: 10px 14px; font-size: 11px;">
-        Submit Tip
-      </button>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 2px;">
+        <button type="submit" class="fc-btn-slate" style="padding: 10px 14px; font-size: 11px;">
+          Prepare Tip Email
+        </button>
+        <a
+          href="mailto:tips@financialcrimes.news?subject=Public%20Filing%20Tip%20%E2%80%94%20The%20Financial%20Crimes"
+          class="fc-btn-outline"
+          style="padding: 9px 12px; font-size: 11px;"
+        >
+          Email Desk Directly
+        </a>
+      </div>
     </form>
 
     <div
       id="fc-tipline-success"
+      role="status"
+      aria-live="polite"
       hidden
-      style="margin-top: 14px; padding: 12px 14px; background: var(--fc-bg-newsprint); border: 1px solid var(--fc-rule-strong); font-family: var(--fc-font-sans); font-size: 13px; line-height: 1.45;"
+      style="margin-top: 14px; padding: 14px; background: var(--fc-bg-newsprint); border: 1px solid var(--fc-rule-strong); font-family: var(--fc-font-sans); font-size: 13px; line-height: 1.48;"
     >
-      <strong style="display: block; font-family: var(--fc-font-mono); font-size: 11px; margin-bottom: 4px;">
-        TIP RECEIVED
-      </strong>
-      Logged for the 6:00 a.m. ET sweep. We verify every filing against primary court and agency releases.
+      <h3
+        id="fc-tipline-status-heading"
+        tabindex="-1"
+        style="margin: 0 0 6px; font-family: var(--fc-font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.05em;"
+      >
+        EMAIL DRAFT READY &middot; NOT YET SENT
+      </h3>
+      <p style="margin: 0 0 10px;">
+        Online form intake is in preview, so your note has not been submitted to a server.
+        Send your pre-filled filing directly to <strong>tips@financialcrimes.news</strong>:
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <a
+          id="fc-tipline-mailto"
+          href="mailto:tips@financialcrimes.news"
+          class="fc-btn-slate"
+          style="padding: 9px 13px; font-size: 11px;"
+        >
+          Open Pre-Filled Email &rarr;
+        </a>
+        <button
+          type="button"
+          id="fc-tipline-copy"
+          class="fc-btn-outline"
+          style="padding: 8px 12px; font-size: 11px;"
+        >
+          Copy Tip Details
+        </button>
+      </div>
     </div>
   </div>
 </dialog>
 
 <script>
+  const subDialog = document.getElementById('fc-subscribe-dialog') as HTMLDialogElement | null;
   const subForm = document.getElementById('fc-subscribe-form') as HTMLFormElement | null;
   const subSuccess = document.getElementById('fc-subscribe-success');
+  const subStatusHeading = document.getElementById('fc-subscribe-status-heading') as HTMLElement | null;
   const subSuccessMsg = document.getElementById('fc-subscribe-success-msg');
 
-  if (subForm && subSuccess && subSuccessMsg) {
+  if (subDialog && subForm && subSuccess && subSuccessMsg) {
     subForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const fd = new FormData(subForm);
@@ -184,18 +259,73 @@
       } catch {}
       subForm.hidden = true;
       subSuccess.hidden = false;
-      subSuccessMsg.textContent = `Logged for ${email} (${edition.toUpperCase()}). Charged $0.00 — roughly what major banks pay as a share of earnings in laundering settlements.`;
+      subSuccessMsg.textContent = `Stored locally in this browser for ${email} (${edition.toUpperCase()} desk). No server email list is active yet — Phase 3 automated 7:00 a.m. ET email delivery via Cloudflare Email Service is coming soon. Use RSS below for immediate updates.`;
+      subStatusHeading?.focus();
+    });
+
+    subDialog.addEventListener('close', () => {
+      subForm.reset();
+      subForm.hidden = false;
+      subSuccess.hidden = true;
+      subSuccessMsg.textContent = '';
     });
   }
 
+  const tipDialog = document.getElementById('fc-tipline-dialog') as HTMLDialogElement | null;
   const tipForm = document.getElementById('fc-tipline-form') as HTMLFormElement | null;
   const tipSuccess = document.getElementById('fc-tipline-success');
+  const tipStatusHeading = document.getElementById('fc-tipline-status-heading') as HTMLElement | null;
+  const tipMailto = document.getElementById('fc-tipline-mailto') as HTMLAnchorElement | null;
+  const tipCopyBtn = document.getElementById('fc-tipline-copy') as HTMLButtonElement | null;
 
-  if (tipForm && tipSuccess) {
+  let lastTipPlainText = '';
+
+  if (tipDialog && tipForm && tipSuccess && tipMailto) {
     tipForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      const fd = new FormData(tipForm);
+      const agency = String(fd.get('agency') || '').trim();
+      const docket = String(fd.get('docket') || '').trim();
+      const note = String(fd.get('note') || '').trim();
+
+      const subject = `Public Filing Tip (${agency}): ${docket}`;
+      const body = [
+        `Agency / Court: ${agency}`,
+        `Docket / Official URL: ${docket}`,
+        '',
+        'Why It Belongs on Page One:',
+        note,
+        '',
+        '---',
+        'Sent via The Financial Crimes public-filing tip handoff.',
+      ].join('\n');
+
+      lastTipPlainText = `To: tips@financialcrimes.news\nSubject: ${subject}\n\n${body}`;
+      tipMailto.href = `mailto:tips@financialcrimes.news?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
       tipForm.hidden = true;
       tipSuccess.hidden = false;
+      tipStatusHeading?.focus();
+    });
+
+    tipCopyBtn?.addEventListener('click', async () => {
+      if (!lastTipPlainText) return;
+      try {
+        await navigator.clipboard.writeText(lastTipPlainText);
+        tipCopyBtn.textContent = 'Copied to Clipboard';
+        window.setTimeout(() => {
+          tipCopyBtn.textContent = 'Copy Tip Details';
+        }, 1800);
+      } catch {}
+    });
+
+    tipDialog.addEventListener('close', () => {
+      tipForm.reset();
+      tipForm.hidden = false;
+      tipSuccess.hidden = true;
+      tipMailto.href = 'mailto:tips@financialcrimes.news';
+      lastTipPlainText = '';
+      if (tipCopyBtn) tipCopyBtn.textContent = 'Copy Tip Details';
     });
   }
 </script>

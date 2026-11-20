@@ -1,0 +1,167 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CompactHeader from '../components/CompactHeader.astro';
+import { loadAllArticles } from '../loaders/articles';
+import { formatBroadsheetDate } from '../utils/format';
+
+const articles = await loadAllArticles();
+
+interface LoggedCorrection {
+  date: string;
+  note: string;
+  type: 'correction' | 'clarification' | 'update';
+  articleHeadline: string;
+  articleUrl: string;
+  docketNumber: string | null;
+}
+
+const correctionsLog: LoggedCorrection[] = articles
+  .flatMap((article) =>
+    (article.corrections ?? []).map((entry) => ({
+      date: entry.date,
+      note: entry.note,
+      type: entry.type ?? 'correction',
+      articleHeadline: article.headline,
+      articleUrl: article.url,
+      docketNumber: article.docket_number,
+    }))
+  )
+  .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+
+const topicLinks = [
+  { label: 'Front Page', href: '/' },
+  { label: 'About & Methodology', href: '/about' },
+  { label: 'Corrections', href: '/corrections', current: true },
+  { label: 'The Ledger', href: '/ledger' },
+];
+---
+
+<BaseLayout
+  title="Corrections Policy & Public Log — The Financial Crimes"
+  description="Corrections policy, acquittal and dismissal update protocol, right of reply, and live corrections log for The Financial Crimes."
+  canonicalPath="/corrections"
+>
+  <CompactHeader
+    slot="header"
+    showTopicBar={true}
+    topicTitle="Corrections"
+    topicLinks={topicLinks}
+  />
+
+  <article class="fc-trust-page">
+    <header class="fc-trust-header">
+      <p class="fc-eyebrow fc-eyebrow--crimson" style="margin: 0;">
+        ACCOUNTABILITY &amp; PUBLIC RECORD
+      </p>
+      <h1 class="fc-trust-h1">Corrections &amp; Legal Updates</h1>
+      <p class="fc-trust-deck">
+        We report from primary dockets and hold our own ledger to the same standard. Factual
+        errors are corrected transparently, never quietly scrubbed.
+      </p>
+    </header>
+
+    <section class="fc-trust-section" id="policy">
+      <h2 class="fc-trust-h2">Corrections Policy</h2>
+      <div class="fc-trust-prose">
+        <p>
+          When <strong>The Financial Crimes</strong> makes a factual error &mdash; including an
+          inaccurate dollar figure, fine calculation, docket number, agency attribution, custody
+          term, entity name, or procedural stage &mdash; we correct the underlying article and
+          publish a dated note in the public log below identifying what changed.
+        </p>
+        <p>
+          Minor typographical or formatting edits that do not alter meaning or factual accuracy are
+          made without a formal correction notice. Substantive clarifications and post-publication
+          legal developments are logged with explicit <code>CLARIFICATION</code> or{' '}
+          <code>UPDATE</code> tags.
+        </p>
+      </div>
+    </section>
+
+    <section class="fc-trust-section" id="acquittal-protocol">
+      <h2 class="fc-trust-h2">Acquittal, Dismissal &amp; Appeal Update Protocol</h2>
+      <div class="fc-trust-prose">
+        <p>
+          White-collar prosecutions and regulatory actions frequently unfold over years. Because
+          many cases in our ledger begin at the indictment, arrest, or interim-order stage, we
+          maintain an affirmative update protocol:
+        </p>
+        <div class="fc-trust-callout">
+          Whenever charges are <strong>dismissed</strong>, a defendant is{' '}
+          <strong>acquitted</strong>, a conviction is <strong>vacated or reversed on appeal</strong>,
+          or a regulatory penalty is set aside or materially modified, we update the article&rsquo;s
+          <code>legal_stage</code>, docket strip, and framing, and append a dated{' '}
+          <strong>UPDATE</strong> notice to the public log below linking to the dispositive order.
+        </div>
+      </div>
+    </section>
+
+    <section class="fc-trust-section" id="right-of-reply">
+      <h2 class="fc-trust-h2">Right of Reply &amp; How to Request a Correction</h2>
+      <div class="fc-trust-prose">
+        <p>
+          Defendants, defense counsel, corporate spokespeople, regulators, and readers who identify
+          an error or wish to submit a subsequent court order or statement for the record may write
+          directly to our standards desk:
+        </p>
+        <p>
+          <a
+            href="mailto:corrections@financialcrimes.news?subject=Correction%20or%20Legal%20Update%20%E2%80%94%20The%20Financial%20Crimes"
+            class="fc-btn-slate"
+            style="text-decoration: none; color: #ffffff; padding: 9px 14px; font-size: 11px;"
+          >
+            Email corrections@financialcrimes.news &rarr;
+          </a>
+        </p>
+        <p>
+          Please include the article URL, the specific statement at issue, and a link or docket
+          citation to the official court filing or agency release supporting the correction or
+          procedural update.
+        </p>
+      </div>
+    </section>
+
+    <section class="fc-trust-section" id="log">
+      <h2 class="fc-trust-h2">Live Corrections &amp; Updates Log</h2>
+      {correctionsLog.length > 0 ? (
+        <ul class="fc-corrections-list">
+          {correctionsLog.map((item) => (
+            <li class="fc-correction-item">
+              <div class="fc-correction-meta">
+                <span
+                  class:list={[
+                    'fc-correction-badge',
+                    {
+                      'fc-correction-badge--update': item.type === 'update',
+                      'fc-correction-badge--clarification': item.type === 'clarification',
+                    },
+                  ]}
+                >
+                  {item.type}
+                </span>
+                <time datetime={item.date}>{formatBroadsheetDate(item.date)}</time>
+                {item.docketNumber && <span>&middot; {item.docketNumber}</span>}
+              </div>
+              <p style="font-family: var(--fc-font-headline); font-size: 17px; font-weight: 700; margin: 0 0 6px;">
+                <a href={item.articleUrl} class="fc-headline-link">
+                  {item.articleHeadline}
+                </a>
+              </p>
+              <p style="font-family: var(--fc-font-body); font-size: 15.5px; line-height: 1.5; margin: 0; color: var(--fc-ink-secondary);">
+                {item.note}
+              </p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="fc-trust-callout" style="margin-top: 12px;">
+          <strong>CURRENT LOG STATUS: 0 ENTRIES.</strong> No published corrections, clarifications,
+          or post-publication legal updates have been logged yet across the{' '}
+          {articles.length} filings in the current edition. Any entry recorded in an
+          article&rsquo;s <code>corrections</code> manifest automatically appears here in reverse
+          chronological order.
+        </div>
+      )}
+    </section>
+  </article>
+</BaseLayout>

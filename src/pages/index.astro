@@ -86,11 +86,32 @@ const bottomLedger = ledgerGridArticles;
 
 const displayDate = edition?.display_date ?? 'Thursday, Nov. 19, 2026';
 const editionDate = edition?.edition_date ?? '2026-11-19';
+const siteBase = Astro.site ?? new URL('https://financialcrimes.news');
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsMediaOrganization',
+  name: 'The Financial Crimes',
+  alternateName: 'FC',
+  url: siteBase.toString().replace(/\/+$/, ''),
+  logo: {
+    '@type': 'ImageObject',
+    url: new URL('/og-card.png', siteBase).toString(),
+    width: 1200,
+    height: 630,
+  },
+  description:
+    'Daily broadsheet tracking global white-collar crime, regulatory fines, and prison time from primary court filings and agency enforcement orders.',
+  slogan: 'All the Crimes Fit to Fine.',
+  publishingPrinciples: new URL('/about', siteBase).toString(),
+  correctionsPolicy: new URL('/corrections', siteBase).toString(),
+};
 ---
 
 <BaseLayout
   title="The Financial Crimes — All the Crimes Fit to Fine"
   description="Daily broadsheet tracking global white-collar crime, regulatory fines, and prison time."
+  canonicalPath="/"
+  jsonLd={orgJsonLd}
   preloadImage={leadHeroRef.entry?.refImage}
 >
   <Masthead slot="header" displayDate={displayDate} editionDate={editionDate} rollup={rollup} />

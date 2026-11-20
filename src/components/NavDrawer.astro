@@ -5,10 +5,11 @@ import { formatUsdShort } from '../utils/format';
 interface Props {
   articles: ArticleRecord[];
   rollup: RollupStats;
+  volume?: string;
   currentPath?: string;
 }
 
-const { articles, rollup, currentPath = '/' } = Astro.props;
+const { articles, rollup, volume = 'Vol. I', currentPath = '/' } = Astro.props;
 
 const DESK_ORDER = [
   'Wall Street',
@@ -73,7 +74,10 @@ function formatCompactBillions(usd: number, fallback: string): string {
 const pulseLoot = formatCompactBillions(rollup.total_loot_usd, rollup.total_loot_display);
 const pulseRatio = `${rollup.avg_fine_ratio_pct.toFixed(1)}%`;
 const docketHref = `/edition/${rollup.edition_date}`;
-const normalizedPath = currentPath.replace(/\/+$/, '') || '/';
+const normalizedPath =
+  currentPath === '/index.html'
+    ? '/'
+    : currentPath.replace(/\.html$/, '').replace(/\/+$/, '') || '/';
 ---
 
 <dialog
@@ -166,7 +170,7 @@ const normalizedPath = currentPath.replace(/\/+$/, '') || '/';
             aria-current={normalizedPath === docketHref ? 'page' : undefined}
           >
             <span>Today&rsquo;s Docket</span>
-            <span class="fc-drawer-primary-meta">Vol. I</span>
+            <span class="fc-drawer-primary-meta">{volume}</span>
           </a>
         </li>
       </ul>
@@ -231,6 +235,27 @@ const normalizedPath = currentPath.replace(/\/+$/, '') || '/';
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Newsroom & Trust Links */}
+      <div class="fc-drawer-meta-links" aria-label="Editorial policies and feeds">
+        <a
+          href="/about"
+          class="fc-drawer-meta-link"
+          aria-current={normalizedPath === '/about' ? 'page' : undefined}
+        >
+          About &amp; Methodology
+        </a>
+        <span aria-hidden="true">&middot;</span>
+        <a
+          href="/corrections"
+          class="fc-drawer-meta-link"
+          aria-current={normalizedPath === '/corrections' ? 'page' : undefined}
+        >
+          Corrections
+        </a>
+        <span aria-hidden="true">&middot;</span>
+        <a href="/rss.xml" class="fc-drawer-meta-link">RSS</a>
       </div>
 
       {/* Bottom CTAs */}
