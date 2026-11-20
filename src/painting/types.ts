@@ -25,7 +25,7 @@ export interface SceneContext {
   reducedMotion: boolean;
 }
 
-export type PointerKind = 'down' | 'move' | 'leave';
+export type PointerKind = 'down' | 'up' | 'move' | 'leave';
 
 export type PaletteMood =
   | 'verdict-crimson'

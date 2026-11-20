@@ -134,6 +134,85 @@ export class FcPaintingElement extends HTMLElement {
       painter.step(t, dt);
     });
 
+    const interactive = mode !== 'thumb';
+    const isPortrait = config.isPortrait ?? true;
+    const focusU = clamp(config.focalPoint?.u ?? 0.5, 0.15, 0.85);
+    const focusV = clamp(config.focalPoint?.v ?? (isPortrait ? 0.34 : 0.45), 0.15, 0.82);
+
+    // Keyboard & screen-reader accessibility (interactive hero/inline paintings only; thumbs stay non-focusable)
+    let announceExhibit = () => {};
+    if (interactive) {
+      if (!stage.hasAttribute('role')) {
+        stage.setAttribute('role', 'img');
+      }
+      stage.setAttribute('tabindex', '0');
+      stage.setAttribute('aria-roledescription', 'interactive oil painting');
+
+      const baseLabel =
+        stage.dataset.baseAriaLabel ??
+        stage.getAttribute('aria-label') ??
+        'Editorial oil painting';
+      stage.dataset.baseAriaLabel = baseLabel;
+      const hint = 'Activate to inspect archival exhibit';
+      stage.setAttribute('aria-label', baseLabel.includes(hint) ? baseLabel : `${baseLabel}. ${hint}.`);
+
+      let statusRegion = this.querySelector<HTMLElement>('.fc-painting-sr-status');
+      if (!statusRegion) {
+        statusRegion = document.createElement('span');
+        statusRegion.className = 'fc-painting-sr-status';
+        statusRegion.setAttribute('role', 'status');
+        statusRegion.setAttribute('aria-live', 'polite');
+        statusRegion.setAttribute('aria-atomic', 'true');
+        this.appendChild(statusRegion);
+      }
+
+      const toyText = (config.toyText || 'CASE SETTLED').trim();
+      const toySubtext = (
+        config.toySubtext || (config.toyKind === 'redaction' ? 'Hover bar to reveal' : '')
+      ).trim();
+      const announcement = `${toyText}${toySubtext ? ` — ${toySubtext}` : ''}`;
+
+      let announceRaf: number | null = null;
+      announceExhibit = () => {
+        if (!statusRegion) return;
+        if (announceRaf !== null) {
+          cancelAnimationFrame(announceRaf);
+          announceRaf = null;
+        }
+        statusRegion.textContent = '';
+        announceRaf = requestAnimationFrame(() => {
+          announceRaf = null;
+          if (statusRegion) statusRegion.textContent = announcement;
+        });
+      };
+
+      const onKeyDown = (e: KeyboardEvent) => {
+        if (e.target !== stage || e.repeat) return;
+        if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+        e.preventDefault();
+        const t = now();
+        painter.pointer('down', focusU, focusV, t);
+        painter.pointer('up', focusU, focusV, t);
+        announceExhibit();
+      };
+      const onBlur = () => {
+        painter.pointer('leave', focusU, focusV, now());
+      };
+
+      stage.addEventListener('keydown', onKeyDown);
+      stage.addEventListener('blur', onBlur);
+      this.cleanupListeners.push(() => {
+        stage.removeEventListener('keydown', onKeyDown);
+        stage.removeEventListener('blur', onBlur);
+        if (announceRaf !== null) {
+          cancelAnimationFrame(announceRaf);
+          announceRaf = null;
+        }
+      });
+    } else {
+      stage.removeAttribute('tabindex');
+    }
+
     const send = (kind: PointerKind, e: PointerEvent) => {
       const rect = stage.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
@@ -148,15 +227,22 @@ export class FcPaintingElement extends HTMLElement {
     const TAP_SLOP_PX = 10;
     const onDown = (e: PointerEvent) => {
       // Never intercept clicks on thumbnails inside article links
-      if (mode === 'thumb' || !e.isPrimary || e.button !== 0) return;
-      if (e.pointerType === 'mouse') send('down', e);
-      else tap = { id: e.pointerId, x: e.clientX, y: e.clientY };
+      if (!interactive || !e.isPrimary || e.button !== 0) return;
+      if (e.pointerType === 'mouse') {
+        send('down', e);
+        announceExhibit();
+      } else {
+        tap = { id: e.pointerId, x: e.clientX, y: e.clientY };
+      }
     };
     const onUp = (e: PointerEvent) => {
       if (!tap || tap.id !== e.pointerId) return;
       const moved = Math.hypot(e.clientX - tap.x, e.clientY - tap.y);
       tap = null;
-      if (moved <= TAP_SLOP_PX) send('down', e);
+      if (moved <= TAP_SLOP_PX) {
+        send('down', e);
+        announceExhibit();
+      }
     };
     const onCancel = () => {
       tap = null;
