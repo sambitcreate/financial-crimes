@@ -93,7 +93,18 @@ const editionHref = `/edition/${editionDate}`;
     </div>
 
     <div class="fc-footer-bottom">
-      <span>&copy; {currentYear} The Financial Crimes. &ldquo;All the Crimes Fit to Fine.&rdquo;</span>
+      <span>
+        &copy; {currentYear} The Financial Crimes. &ldquo;All the Crimes Fit to Fine.&rdquo;
+        &middot; Made by{' '}
+        <a
+          href="https://sambitbiswas.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="text-decoration: underline;"
+        >
+          Sambit Biswas
+        </a>
+      </span>
       <span>{volume ? <>{volume} &middot; </> : null}Published Daily at 7:00 a.m. ET</span>
     </div>
   </div>
