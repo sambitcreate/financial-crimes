@@ -7,13 +7,18 @@ import {
   loadAllArticles,
   loadRollupStats,
 } from '../src/loaders/articles';
-import {
-  ArticleMetaSchema,
-  PaintRefsManifestSchema,
-} from '../src/schemas/article';
+import { ArticleMetaSchema, PaintRefsManifestSchema } from '../src/schemas/article';
 import { findGenericHubUrlReason } from '../scripts/validate-content.mjs';
 
 const PROJECT_ROOT = process.cwd();
+
+/** Strips loader-only fields so the strict meta schema sees exactly what meta.json holds. */
+async function firstMeta() {
+  const articles = await loadAllArticles();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { bodyHtml, url, contentDir, ...meta } = articles[0];
+  return meta;
+}
 
 describe('ArticleMetaSchema security & hygiene', () => {
   beforeEach(() => {
@@ -21,8 +26,7 @@ describe('ArticleMetaSchema security & hygiene', () => {
   });
 
   it('rejects javascript: and http: URLs in sources[]', async () => {
-    const articles = await loadAllArticles();
-    const base = { ...articles[0] };
+    const base = await firstMeta();
 
     const jsAttempt = ArticleMetaSchema.safeParse({
       ...base,
@@ -52,8 +56,7 @@ describe('ArticleMetaSchema security & hygiene', () => {
   });
 
   it('rejects unknown or misspelled legal_stage values', async () => {
-    const articles = await loadAllArticles();
-    const base = { ...articles[0] };
+    const base = await firstMeta();
 
     const badStage = ArticleMetaSchema.safeParse({
       ...base,
@@ -63,8 +66,7 @@ describe('ArticleMetaSchema security & hygiene', () => {
   });
 
   it('accepts optional corrections entries without dead legacy fields', async () => {
-    const articles = await loadAllArticles();
-    const base = { ...articles[0] };
+    const base = await firstMeta();
 
     const withCorrection = ArticleMetaSchema.safeParse({
       ...base,
@@ -77,6 +79,24 @@ describe('ArticleMetaSchema security & hygiene', () => {
       ],
     });
     expect(withCorrection.success).toBe(true);
+  });
+
+  it('rejects the legacy corrections shape {date, summary} documented before the schema fix', async () => {
+    const base = await firstMeta();
+    const legacy = ArticleMetaSchema.safeParse({
+      ...base,
+      corrections: [{ date: '2026-11-20', summary: 'Old field name.' }],
+    });
+    expect(legacy.success).toBe(false);
+  });
+
+  it('parses every real meta.json with the strict schema (no loader-only or unknown keys)', async () => {
+    const articles = await loadAllArticles();
+    for (const a of articles) {
+      const raw = JSON.parse(await fs.readFile(path.join(a.contentDir, 'meta.json'), 'utf-8'));
+      const parsed = ArticleMetaSchema.safeParse(raw);
+      expect(parsed.success, `${a.slug}: ${parsed.success ? '' : parsed.error.message}`).toBe(true);
+    }
   });
 });
 
@@ -91,7 +111,7 @@ describe('Article loaders, caching, rollup parity, and 1:1 paint-refs', () => {
     expect(p1).toBe(p2);
 
     const [a1, a2] = await Promise.all([p1, p2]);
-    expect(a1.length).toBeGreaterThanOrEqual(22);
+    expect(a1.length).toBeGreaterThanOrEqual(1);
     expect(a1).toBe(a2);
 
     const gensol = a1.find((a) => a.slug === 'gensol-blusmart-ev-loan-camellias-condo');
@@ -116,6 +136,10 @@ describe('Article loaders, caching, rollup parity, and 1:1 paint-refs', () => {
     expect(diskRollup.avg_fine_ratio_pct).toBe(computed.avg_fine_ratio_pct);
     expect(diskRollup.avg_slap_on_wrist_score).toBe(computed.avg_slap_on_wrist_score);
     expect(diskRollup.zero_prison_cases).toBe(computed.zero_prison_cases);
+    expect(diskRollup.total_loot_display).toBe(computed.total_loot_display);
+    expect(diskRollup.total_fines_display).toBe(computed.total_fines_display);
+    expect(diskRollup.edition_date).toBe(computed.edition_date);
+    expect(Object.keys(diskRollup.regions).sort()).toEqual(Object.keys(computed.regions).sort());
 
     for (const [regionKey, expectedRegion] of Object.entries(computed.regions)) {
       expect(diskRollup.regions[regionKey]).toEqual(expectedRegion);
@@ -124,7 +148,10 @@ describe('Article loaders, caching, rollup parity, and 1:1 paint-refs', () => {
 
   it('validates 1:1 paint-refs.json coverage and valid JPEG files (>5 KB, FF D8 FF)', async () => {
     const articles = await loadAllArticles();
-    const rawRefs = await fs.readFile(path.join(PROJECT_ROOT, 'content', 'paint-refs.json'), 'utf-8');
+    const rawRefs = await fs.readFile(
+      path.join(PROJECT_ROOT, 'content', 'paint-refs.json'),
+      'utf-8'
+    );
     const manifest = PaintRefsManifestSchema.parse(JSON.parse(rawRefs));
 
     const articleSlugs = new Set(articles.map((a) => a.slug));
@@ -164,7 +191,10 @@ describe('Article loaders, caching, rollup parity, and 1:1 paint-refs', () => {
       'https://vertexaisearch.cloud.google.com/grounding-api-redirect/abc123',
     ];
     for (const badUrl of rejectedExamples) {
-      expect(findGenericHubUrlReason(badUrl), `Expected hub URL to be rejected: ${badUrl}`).toBeTruthy();
+      expect(
+        findGenericHubUrlReason(badUrl),
+        `Expected hub URL to be rejected: ${badUrl}`
+      ).toBeTruthy();
     }
 
     const acceptedExamples = [
@@ -176,11 +206,15 @@ describe('Article loaders, caching, rollup parity, and 1:1 paint-refs', () => {
       'https://media.ca7.uscourts.gov/cgi-bin/OpinionsWeb/processWebInputExternal.pl?Submit=Display&Path=Y2026/D04-27/C:25-2249:J:Scudder:aut:T:fnOp:N:3530621:S:0',
     ];
     for (const goodUrl of acceptedExamples) {
-      expect(findGenericHubUrlReason(goodUrl), `Expected canonical URL to pass: ${goodUrl}`).toBeNull();
+      expect(
+        findGenericHubUrlReason(goodUrl),
+        `Expected canonical URL to pass: ${goodUrl}`
+      ).toBeNull();
     }
 
     const articles = await loadAllArticles();
-    expect(articles.length).toBeGreaterThanOrEqual(25);
+    // No hard article-count floor: retractions and removals must not break CI.
+    expect(articles.length).toBeGreaterThanOrEqual(1);
     const violations: string[] = [];
     for (const article of articles) {
       for (const [idx, source] of article.sources.entries()) {

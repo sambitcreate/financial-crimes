@@ -66,8 +66,12 @@ High-signal architecture map, non-negotiable invariants, and verification comman
 Always run the full verification chain before opening a PR or committing:
 
 ```bash
-npm run validate:content && npm test && npm run check && npm run build
+npm run verify   # = validate:content && test && check && build:site
 ```
+
+- `npm run build` always runs `scripts/validate-content.mjs` first and fails fast; `npm run deploy` runs `npm run verify` before `wrangler deploy`. Never deploy with a bare `wrangler deploy`.
+- The validator imports `src/schemas/article.ts` directly via Node type stripping: Node >= 22.18, or >= 22.6 via `npm run validate:content` (which passes `--experimental-strip-types`). `FC_NOW=<ISO>` overrides "now" for the future-date checks.
+- After changing any article financials, stage, retraction, or edition, run `npm run rollup:recompute`.
 
 When modifying anything in `pipeline/`, `docs/PAINTING_PROMPT.md`, or `content/paint-refs.json`, also run:
 

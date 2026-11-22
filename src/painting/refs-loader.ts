@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { PaintRefManifestEntry } from './types';
 import { loadAllArticles } from '../loaders/articles';
+import { PaintRefsManifestSchema } from '../schemas/article';
 
 const PROJECT_ROOT = process.cwd();
 const PAINT_REFS_PATH = path.join(PROJECT_ROOT, 'content', 'paint-refs.json');
@@ -14,32 +15,52 @@ interface RefLookupCache {
 
 let cachedLookup: Promise<RefLookupCache> | null = null;
 
-async function buildLookupCache(): Promise<RefLookupCache> {
-  let manifest: Record<string, PaintRefManifestEntry> = {};
+/**
+ * Reads and strictly parses content/paint-refs.json with the shared Zod schema.
+ * Throws (failing the build) on a missing, unparseable, or schema-invalid manifest — never
+ * silently renders without paintings, and never lets an unsafe sourceUrl (javascript:, http:,
+ * credentials, IP literal…) reach an href.
+ */
+export async function readPaintRefsManifest(
+  manifestPath: string = PAINT_REFS_PATH
+): Promise<Record<string, PaintRefManifestEntry>> {
+  let raw: string;
   try {
-    const raw = await fs.readFile(PAINT_REFS_PATH, 'utf-8');
-    const parsed: unknown = JSON.parse(raw);
-    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-      manifest = parsed as Record<string, PaintRefManifestEntry>;
-    }
-  } catch {
-    manifest = {};
+    raw = await fs.readFile(manifestPath, 'utf-8');
+  } catch (err) {
+    throw new Error(`paint-refs manifest unreadable at ${manifestPath}: ${(err as Error).message}`);
   }
+  let json: unknown;
+  try {
+    json = JSON.parse(raw);
+  } catch (err) {
+    throw new Error(
+      `paint-refs manifest is not valid JSON (${manifestPath}): ${(err as Error).message}`
+    );
+  }
+  const result = PaintRefsManifestSchema.safeParse(json);
+  if (!result.success) {
+    const detail = result.error.issues
+      .map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`)
+      .join('; ');
+    throw new Error(`paint-refs manifest failed schema validation (${manifestPath}): ${detail}`);
+  }
+  return result.data;
+}
+
+async function buildLookupCache(): Promise<RefLookupCache> {
+  const manifest = await readPaintRefsManifest();
 
   const idToSlug = new Map<string, string>();
   const captionToSlug = new Map<string, string>();
 
-  try {
-    const articles = await loadAllArticles();
-    for (const article of articles) {
-      idToSlug.set(article.id, article.slug);
-      const caption = article.interactive_art_spec?.caption?.trim();
-      if (caption && !captionToSlug.has(caption)) {
-        captionToSlug.set(caption, article.slug);
-      }
+  const articles = await loadAllArticles();
+  for (const article of articles) {
+    idToSlug.set(article.id, article.slug);
+    const caption = article.interactive_art_spec?.caption?.trim();
+    if (caption && !captionToSlug.has(caption)) {
+      captionToSlug.set(caption, article.slug);
     }
-  } catch {
-    // Graceful fallback if articles cannot be enumerated
   }
 
   return { manifest, idToSlug, captionToSlug };

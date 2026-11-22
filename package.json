@@ -6,14 +6,16 @@
   "description": "The Financial Crimes — Independent satirical-yet-factually-grounded digital broadsheet covering global white-collar, corporate, and regulatory financial crimes.",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/generate-og-cards.mjs && npx pagefind --site dist",
+    "build": "npm run validate:content && npm run build:site",
+    "build:site": "astro build && node scripts/generate-og-cards.mjs && npx pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run",
-    "validate:content": "node scripts/validate-content.mjs",
+    "validate:content": "node --experimental-strip-types scripts/validate-content.mjs",
+    "verify": "npm run validate:content && npm test && npm run check && npm run build:site",
     "rollup:recompute": "node scripts/recompute-rollup.mjs",
     "judge:slap": "node pipeline/judge-wrist-slap.mjs",
-    "deploy": "CI=1 wrangler deploy"
+    "deploy": "npm run verify && CI=1 wrangler deploy"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

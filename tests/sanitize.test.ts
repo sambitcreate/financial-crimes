@@ -92,3 +92,105 @@ describe('isSafeHttpsUrl', () => {
     expect(isSafeHttpsUrl('not-a-url')).toBe(false);
   });
 });
+
+describe('hardened sanitizer/detector agreement (V8)', () => {
+  const agree = (html: string) => ({
+    violations: findHtmlSecurityViolations(html),
+    sanitized: sanitizeArticleHtml(html),
+  });
+
+  it('flags and strips http:, mailto: and other non-https hrefs', () => {
+    for (const href of ['http://www.sec.gov/x', 'mailto:tips@example.com', 'ftp://x.example/y']) {
+      const { violations, sanitized } = agree(`<p><a href="${href}">x</a></p>`);
+      expect(
+        violations.some((v) => v.includes('disallowed href scheme')),
+        href
+      ).toBe(true);
+      expect(sanitized).not.toContain(href);
+    }
+  });
+
+  it('keeps relative links and https links', () => {
+    const html = '<p><a href="/article/x">in</a> <a href="https://www.sec.gov/x">out</a></p>';
+    expect(findHtmlSecurityViolations(html)).toEqual([]);
+    expect(sanitizeArticleHtml(html)).toBe(html);
+  });
+
+  it('flags unsafe https hrefs (credentials / IP literals)', () => {
+    expect(
+      findHtmlSecurityViolations('<p><a href="https://www.sec.gov@evil.example/x">x</a></p>').some(
+        (v) => v.includes('unsafe https href')
+      )
+    ).toBe(true);
+    expect(
+      findHtmlSecurityViolations('<p><a href="https://10.0.0.1/x">x</a></p>').length
+    ).toBeGreaterThan(0);
+  });
+
+  it('forces rel="noopener noreferrer" on target=_blank and drops bad rel tokens / targets', () => {
+    const opener = agree(
+      '<p><a href="https://www.sec.gov/x" target="_blank" rel="opener">x</a></p>'
+    );
+    expect(opener.violations.some((v) => v.includes('rel token "opener"'))).toBe(true);
+    expect(opener.violations.some((v) => v.includes('requires rel="noopener noreferrer"'))).toBe(
+      true
+    );
+    expect(opener.sanitized).toContain('rel="noopener noreferrer"');
+    expect(opener.sanitized).not.toContain('rel="opener"');
+
+    const bare = agree('<p><a href="https://www.sec.gov/x" target="_blank">x</a></p>');
+    expect(bare.violations.length).toBeGreaterThan(0);
+    expect(bare.sanitized).toContain('rel="noopener noreferrer"');
+
+    const frame = agree('<p><a href="https://www.sec.gov/x" target="_top">x</a></p>');
+    expect(frame.violations.some((v) => v.includes('disallowed target "_top"'))).toBe(true);
+    expect(frame.sanitized).not.toContain('target');
+
+    const reordered =
+      '<p><a href="https://www.sec.gov/x" target="_blank" rel="noreferrer noopener">x</a></p>';
+    expect(findHtmlSecurityViolations(reordered)).toEqual([]);
+    expect(sanitizeArticleHtml(reordered)).toBe(reordered);
+  });
+
+  it('only allows the editorial class allowlist (no spoofed site badges)', () => {
+    const spoof = agree('<p class="fc-score-badge">99</p><span class="fc-dateline evil">x</span>');
+    expect(spoof.violations.some((v) => v.includes('class "fc-score-badge" on <p>'))).toBe(true);
+    expect(spoof.violations.some((v) => v.includes('class "evil" on <span>'))).toBe(true);
+    expect(spoof.sanitized).not.toContain('fc-score-badge');
+    expect(spoof.sanitized).not.toContain('evil');
+    expect(spoof.sanitized).toContain('class="fc-dateline"');
+
+    const wrongTag = agree('<span class="fc-lead">x</span>');
+    expect(wrongTag.violations.some((v) => v.includes('class "fc-lead" on <span>'))).toBe(true);
+  });
+
+  it('flags comments, CDATA, doctype and processing instructions', () => {
+    expect(findHtmlSecurityViolations('<p>a</p><!-- hidden -->').join()).toContain('HTML comment');
+    expect(findHtmlSecurityViolations('<p><![CDATA[x]]></p>').join()).toContain('CDATA');
+    expect(findHtmlSecurityViolations('<!DOCTYPE html><p>a</p>').join()).toContain(
+      'markup declaration'
+    );
+    expect(findHtmlSecurityViolations('<?xml version="1.0"?><p>a</p>').join()).toContain(
+      'processing instruction'
+    );
+  });
+
+  it('agrees with the sanitizer on every real body.html (no violations, no mutation)', async () => {
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+    const walk = async (dir: string): Promise<string[]> => {
+      const out: string[] = [];
+      for (const e of await fs.readdir(dir, { withFileTypes: true })) {
+        const full = path.join(dir, e.name);
+        if (e.isDirectory()) out.push(...(await walk(full)));
+        else if (e.name === 'body.html') out.push(full);
+      }
+      return out;
+    };
+    for (const file of await walk(path.join(process.cwd(), 'content', 'articles'))) {
+      const html = (await fs.readFile(file, 'utf-8')).trim();
+      expect(findHtmlSecurityViolations(html), file).toEqual([]);
+      expect(sanitizeArticleHtml(html), file).toBe(html);
+    }
+  });
+});
