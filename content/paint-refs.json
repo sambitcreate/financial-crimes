@@ -284,5 +284,44 @@
     "toyText": "50% D.P.A. DISCOUNT",
     "toySubtext": "NO COMPLIANCE MONITOR",
     "alt": "Impressionist oil portrait of U.S. Deputy Attorney General Todd Blanche, accompanying coverage of the Justice Department's post-Blanche Memo F.C.P.A. and F.E.P.A. bribery enforcement shift."
+  },
+  "sfo-london-capital-finance-minibond-charges": {
+    "refImage": "/paint-refs/sfo-london-capital-finance-minibond-charges.jpg",
+    "subject": "Westminster Magistrates' Court, London",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Entrance_to_Westminster_Magistrates%27_Court,_March_2025.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": { "u": 0.45, "v": 0.34 },
+    "paletteMood": "subpoena-cobalt",
+    "toyKind": "gavel-ripple",
+    "toyText": "£251M · 8 CHARGED",
+    "toySubtext": "HEARING DEC. 7 · PRESUMED INNOCENT",
+    "alt": "Impressionist oil study of Westminster Magistrates' Court in London, where eight defendants charged by the U.K. Serious Fraud Office in the London Capital & Finance collapse are scheduled to appear."
+  },
+  "sec-colorado-fake-crypto-advisers-ring": {
+    "refImage": "/paint-refs/sec-colorado-fake-crypto-advisers-ring.jpg",
+    "subject": "Byron White United States Courthouse, Denver",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Colorado_-_Byron_White_United_States_Courthouse_-_20170713170112.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": { "u": 0.46, "v": 0.44 },
+    "paletteMood": "courtroom-ochre",
+    "toyKind": "crash-line",
+    "toyText": "4 SHELL PAIRS · $37.4M",
+    "toySubtext": "S.E.C. CIVIL COMPLAINT · D. COLO.",
+    "alt": "Impressionist oil study of the neoclassical colonnade at the Byron White United States Courthouse in Denver, illustrating the S.E.C.'s civil complaint against eight Colorado entities over fake crypto platforms."
+  },
+  "doj-innovage-pace-false-claims-settlement": {
+    "refImage": "/paint-refs/doj-innovage-pace-false-claims-settlement.jpg",
+    "subject": "Robert F. Kennedy Department of Justice Building, Washington",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2014-04-04-Robert-F-Kennedy-Department-of-Justice-Building-Washington-DC.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": { "u": 0.52, "v": 0.48 },
+    "paletteMood": "verdict-crimson",
+    "toyKind": "stamp",
+    "toyText": "$36M · NO ADMISSION",
+    "toySubtext": "FIRST PACE SETTLEMENT · 0 PRISON",
+    "alt": "Impressionist oil study of the Robert F. Kennedy Department of Justice Building in Washington, accompanying coverage of InnovAge Holding Corporation's $36 million False Claims Act settlement."
   }
 }

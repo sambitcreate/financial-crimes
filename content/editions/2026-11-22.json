@@ -1,0 +1,69 @@
+{
+  "edition_date": "2026-11-22",
+  "volume": "Vol. I, No. 2",
+  "display_date": "Sunday, November 22, 2026",
+  "tagline": "All the Crimes Fit to Fine.",
+  "published_at": "2026-11-22T07:00:00-05:00",
+  "slots": {
+    "lead_hero": "sfo-london-capital-finance-minibond-charges",
+    "lead_live": "sec-colorado-fake-crypto-advisers-ring",
+    "lead_right": "doj-innovage-pace-false-claims-settlement",
+    "lead_grid": [
+      "bank-of-america-aml-bundle-discount",
+      "backward-hat-capital-forex-ponzi",
+      "sebi-jane-street-mumbai-options-manipulation",
+      "do-kwon-terraform-fifteen-years"
+    ],
+    "secondary_1": "biglaw-merger-insider-trading-ring",
+    "secondary_2": "eppo-operation-hermes-smartphone-vat-carousel",
+    "rail_feature": "bradley-heppner-gwg-ai-privilege",
+    "rail_mini": [
+      "chad-monroe-medicare-rogue-shark-yacht",
+      "gensol-blusmart-ev-loan-camellias-condo",
+      "aog-technics-forged-jet-engine-parts",
+      "pwc-hong-kong-evergrande-audit-sanctions"
+    ],
+    "rail_opinion": [
+      "roger-ver-bitcoin-exit-tax-dpa",
+      "bafin-jpmorgan-germany-record-aml-fine"
+    ],
+    "ledger": [
+      "nate-app-zero-percent-ai-manila",
+      "cbi-sting-sfio-deputy-director-dhfl",
+      "singapore-mas-nine-banks-fujian-laundering",
+      "michael-madigan-comed-bribery-appeal",
+      "tigo-scoular-fepa-foreign-bribery",
+      "elie-schwartz-nightingale-crowdstreet-fraud",
+      "charlie-javice-frank-jpmorgan-sentencing",
+      "indusind-bank-derivatives-insider-trading",
+      "korfuzi-siblings-wfh-insider-trading-fca"
+    ]
+  },
+  "article_slugs": [
+    "sfo-london-capital-finance-minibond-charges",
+    "sec-colorado-fake-crypto-advisers-ring",
+    "doj-innovage-pace-false-claims-settlement",
+    "bank-of-america-aml-bundle-discount",
+    "backward-hat-capital-forex-ponzi",
+    "sebi-jane-street-mumbai-options-manipulation",
+    "do-kwon-terraform-fifteen-years",
+    "biglaw-merger-insider-trading-ring",
+    "eppo-operation-hermes-smartphone-vat-carousel",
+    "bradley-heppner-gwg-ai-privilege",
+    "chad-monroe-medicare-rogue-shark-yacht",
+    "gensol-blusmart-ev-loan-camellias-condo",
+    "aog-technics-forged-jet-engine-parts",
+    "pwc-hong-kong-evergrande-audit-sanctions",
+    "roger-ver-bitcoin-exit-tax-dpa",
+    "bafin-jpmorgan-germany-record-aml-fine",
+    "nate-app-zero-percent-ai-manila",
+    "cbi-sting-sfio-deputy-director-dhfl",
+    "singapore-mas-nine-banks-fujian-laundering",
+    "michael-madigan-comed-bribery-appeal",
+    "tigo-scoular-fepa-foreign-bribery",
+    "elie-schwartz-nightingale-crowdstreet-fraud",
+    "charlie-javice-frank-jpmorgan-sentencing",
+    "indusind-bank-derivatives-insider-trading",
+    "korfuzi-siblings-wfh-insider-trading-fca"
+  ]
+}

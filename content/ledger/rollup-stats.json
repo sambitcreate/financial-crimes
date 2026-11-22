@@ -1,23 +1,23 @@
 {
-  "as_of": "2026-11-19T07:00:00-05:00",
-  "edition_date": "2026-11-19",
-  "total_cases": 22,
-  "total_loot_usd": 58981545000,
-  "total_loot_display": "$58.98B",
-  "total_fines_usd": 7523330000,
-  "total_fines_display": "$7.52B",
-  "avg_fine_ratio_pct": 12.76,
-  "avg_slap_on_wrist_score": 53,
-  "zero_prison_cases": 6,
+  "as_of": "2026-11-22T06:10:47.476Z",
+  "edition_date": "2026-11-22",
+  "total_cases": 25,
+  "total_loot_usd": 59372945000,
+  "total_loot_display": "$59.37B",
+  "total_fines_usd": 7559330000,
+  "total_fines_display": "$7.56B",
+  "avg_fine_ratio_pct": 12.73,
+  "avg_slap_on_wrist_score": 53.9,
+  "zero_prison_cases": 7,
   "regions": {
     "us": {
       "label": "U.S.",
-      "case_count": 12,
-      "total_loot_usd": 46448180000,
-      "total_loot_display": "$46.45B",
-      "total_fines_usd": 6393280000,
-      "total_fines_display": "$6.39B",
-      "avg_fine_ratio_pct": 13.76
+      "case_count": 14,
+      "total_loot_usd": 46521580000,
+      "total_loot_display": "$46.52B",
+      "total_fines_usd": 6429280000,
+      "total_fines_display": "$6.43B",
+      "avg_fine_ratio_pct": 13.82
     },
     "new-york": {
       "label": "NEW YORK",
@@ -48,12 +48,12 @@
     },
     "london": {
       "label": "LONDON",
-      "case_count": 2,
-      "total_loot_usd": 51250000,
-      "total_loot_display": "$51.3M",
+      "case_count": 3,
+      "total_loot_usd": 369250000,
+      "total_loot_display": "$369.3M",
       "total_fines_usd": 1250000,
       "total_fines_display": "$1.3M",
-      "avg_fine_ratio_pct": 2.44
+      "avg_fine_ratio_pct": 0.34
     },
     "india": {
       "label": "INDIA",
@@ -75,12 +75,12 @@
     },
     "global": {
       "label": "GLOBAL",
-      "case_count": 22,
-      "total_loot_usd": 58981545000,
-      "total_loot_display": "$58.98B",
-      "total_fines_usd": 7523330000,
-      "total_fines_display": "$7.52B",
-      "avg_fine_ratio_pct": 12.76
+      "case_count": 25,
+      "total_loot_usd": 59372945000,
+      "total_loot_display": "$59.37B",
+      "total_fines_usd": 7559330000,
+      "total_fines_display": "$7.56B",
+      "avg_fine_ratio_pct": 12.73
     }
   }
 }

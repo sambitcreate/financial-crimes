@@ -1,0 +1,58 @@
+{
+  "id": "fc-2026-025",
+  "slug": "doj-innovage-pace-false-claims-settlement",
+  "publish_date": "2026-11-22T06:50:00-05:00",
+  "edition_date": "2026-11-22",
+  "city": "Washington",
+  "edition": "us",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the District of Colorado & DOJ Civil Division"
+  },
+  "category": "Courts",
+  "agencies": [
+    "DOJ",
+    "Colorado AG"
+  ],
+  "docket_number": "1:21-cv-02464",
+  "legal_stage": "settlement",
+  "template": "news",
+  "eyebrow": "COURTS",
+  "headline": "Senior-Care Operator InnovAge Pays $36 Million to Settle First-of-Its-Kind Medicare PACE False Claims Case",
+  "deck": "Federal prosecutors accused the Denver company of collecting monthly capitated payments while delaying cardiology, neurology, and oncology referrals. InnovAge admitted no liability and no executives were charged.",
+  "byline": "By The Washington Bureau",
+  "dateline": "WASHINGTON",
+  "read_time_min": 2,
+  "layout_slot": "lead-right",
+  "financials": {
+    "amount_usd": 36000000,
+    "amount_display": "$36.0M",
+    "fine_usd": 36000000,
+    "fine_display": "$36.0M",
+    "fine_ratio_pct": 100,
+    "prison_months": 0,
+    "prison_display": "0 Days (Civil Only)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 65,
+  "street_crime_compare": {
+    "exec_summary": "$36M civil False Claims Act settlement ($25.7M federal, $10.3M states) with no admission of liability and zero individual charges or custody.",
+    "street_equivalent": "Billing Medicaid $22,000 for home-health visits that were never delivered",
+    "street_sentence": "12–24 months prison plus mandatory federal healthcare program exclusion"
+  },
+  "sources": [
+    {
+      "title": "PACE Organization InnovAge Agrees to Pay $36M to Resolve False Claims Act Allegations of Failing to Provide Necessary Medical Care to Seniors",
+      "agency": "U.S. Department of Justice (Civil Division)",
+      "url": "https://www.justice.gov/opa/pr/pace-organization-innovage-agrees-pay-36m-resolve-false-claims-act-allegations-failing",
+      "date": "2026-11-17"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "The Robert F. Kennedy Department of Justice Building in Washington. The Civil Division called the $36 million InnovAge agreement its first False Claims Act settlement with a PACE operator.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

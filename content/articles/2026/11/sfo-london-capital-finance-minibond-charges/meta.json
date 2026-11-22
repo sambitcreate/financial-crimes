@@ -1,0 +1,57 @@
+{
+  "id": "fc-2026-023",
+  "slug": "sfo-london-capital-finance-minibond-charges",
+  "publish_date": "2026-11-22T07:00:00-05:00",
+  "edition_date": "2026-11-22",
+  "city": "London",
+  "edition": "london",
+  "jurisdiction": {
+    "country_iso": "GB",
+    "venue": "Westminster Magistrates' Court & UK Serious Fraud Office (SFO)"
+  },
+  "category": "Europe",
+  "agencies": [
+    "UK SFO"
+  ],
+  "docket_number": null,
+  "legal_stage": "indicted",
+  "template": "news",
+  "eyebrow": "LONDON",
+  "headline": "Seven Years After £251 Million Mini-Bond Collapse, U.K. Prosecutors Charge Eight in London Capital & Finance Case",
+  "deck": "The Serious Fraud Office accused former executives and associates of conspiracy to defraud after more than 11,200 retail investors lost savings in 2019. All defendants are presumed innocent.",
+  "byline": "By The London Bureau",
+  "dateline": "LONDON",
+  "read_time_min": 2,
+  "layout_slot": "lead-hero",
+  "financials": {
+    "amount_usd": 318000000,
+    "amount_display": "£251M (~$318M)",
+    "fine_usd": null,
+    "fine_display": "Pending Trial",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending Trial",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "Eight individuals criminally charged in £251M (~$318M) retail mini-bond collapse affecting 11,200+ savers; first court appearance scheduled Dec. 7, 2026.",
+    "street_equivalent": "Running an unlicensed £25,000 neighborhood investment club that vanishes with deposits",
+    "street_sentence": "Charged within months rather than seven years after the collapse"
+  },
+  "sources": [
+    {
+      "title": "SFO charges eight over London Capital & Finance collapse",
+      "agency": "UK Serious Fraud Office (GOV.UK)",
+      "url": "https://www.gov.uk/government/news/sfo-charges-eight-over-london-capital-finance-collapse",
+      "date": "2026-11-16"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "Westminster Magistrates' Court in London, where eight defendants charged in the London Capital & Finance investigation are scheduled to make their first appearance on Dec. 7, 2026.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

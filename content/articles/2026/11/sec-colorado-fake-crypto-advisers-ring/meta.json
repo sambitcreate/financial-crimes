@@ -1,0 +1,57 @@
+{
+  "id": "fc-2026-024",
+  "slug": "sec-colorado-fake-crypto-advisers-ring",
+  "publish_date": "2026-11-22T06:55:00-05:00",
+  "edition_date": "2026-11-22",
+  "city": "Denver",
+  "edition": "us",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the District of Colorado"
+  },
+  "category": "Crypto & AI",
+  "agencies": [
+    "SEC"
+  ],
+  "docket_number": "1:26-cv-06302",
+  "legal_stage": "civil_complaint",
+  "template": "news",
+  "eyebrow": "CRYPTO & AI",
+  "headline": "S.E.C. Accuses Eight Rotating Colorado Shell Firms of Printing Fake S.E.C. Certificates in $37.4 Million Crypto Scheme",
+  "deck": "Regulators allege four consecutive adviser-and-exchange pairings lured 1,500 U.S. investors from WhatsApp stock chats into bogus token platforms, citing real EDGAR filings to project legitimacy.",
+  "byline": "By The Digital Assets Desk",
+  "dateline": "DENVER",
+  "read_time_min": 2,
+  "layout_slot": "lead-live",
+  "financials": {
+    "amount_usd": 37400000,
+    "amount_display": "$37.4M",
+    "fine_usd": null,
+    "fine_display": "Pending Civil Suit",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Civil Suit Only",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "SEC civil fraud complaint against eight Colorado entities over alleged $37.4M rotating fake crypto platform ring targeting 1,500+ retail investors.",
+    "street_equivalent": "Printing counterfeit municipal business permits to run a $15,000 pop-up raffle",
+    "street_sentence": "Immediate local arrest and state felony forgery counts"
+  },
+  "sources": [
+    {
+      "title": "SEC Charges Eight Entities That Used Fake Crypto Asset Trading Platforms to Steal More Than $37 Million from U.S. Investors (Press Release 2026-115)",
+      "agency": "U.S. Securities and Exchange Commission",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-115-sec-eight-entities-used-fake-crypto-asset-trading-platforms-steal-more-37-million-us-investors",
+      "date": "2026-11-19"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "The Byron White United States Courthouse in Denver. The S.E.C. filed civil fraud charges in the District of Colorado against eight entities accused of cycling through four bogus crypto trading platforms.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

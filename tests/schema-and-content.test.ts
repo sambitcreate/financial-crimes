@@ -84,13 +84,13 @@ describe('Article loaders, caching, rollup parity, and 1:1 paint-refs', () => {
     clearArticleCache();
   });
 
-  it('loads all 22 articles and memoizes filesystem reads until cache is cleared', async () => {
+  it('loads all published articles and memoizes filesystem reads until cache is cleared', async () => {
     const p1 = loadAllArticles();
     const p2 = loadAllArticles();
     expect(p1).toBe(p2);
 
     const [a1, a2] = await Promise.all([p1, p2]);
-    expect(a1).toHaveLength(22);
+    expect(a1.length).toBeGreaterThanOrEqual(22);
     expect(a1).toBe(a2);
 
     const gensol = a1.find((a) => a.slug === 'gensol-blusmart-ev-loan-camellias-condo');
@@ -101,7 +101,7 @@ describe('Article loaders, caching, rollup parity, and 1:1 paint-refs', () => {
     const p3 = loadAllArticles();
     expect(p3).not.toBe(p1);
     const a3 = await p3;
-    expect(a3).toHaveLength(22);
+    expect(a3).toHaveLength(a1.length);
   });
 
   it('keeps content/ledger/rollup-stats.json in exact parity with computeRollupFromArticles()', async () => {
