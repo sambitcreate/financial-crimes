@@ -36,7 +36,8 @@ No API keys or environment variables are needed for local development, testing, 
 | `check` | `npm run check` | Run `astro check` + TypeScript typechecking across `src/` |
 | `test` | `npm test` | Run the Vitest unit test suite (`vitest run`) |
 | `validate:content` | `npm run validate:content` | Validate every article `meta.json` & sanitized `body.html`, edition manifests, rollup stats, and 1:1 `paint-refs.json` + JPEG integrity |
-| `judge:slap` | `npm run judge:slap` | Score resolved cases (`settlement`, `regulatory_order`, `sentenced`, `dpa`) via Gemini (`GEMINI_API_KEY` required; dry-run by default, pass `-- --write` to update `meta.json`) |
+| `rollup:recompute` | `npm run rollup:recompute` | Recompute `content/ledger/rollup-stats.json` from articles + dated edition manifests via `scripts/lib/rollup.mjs` (idempotent: `as_of` only changes when totals change; `-- --check` exits 1 if stale). Run after any `meta.json` or edition change. |
+| `judge:slap` | `npm run judge:slap` | Score **unscored or changed** resolved cases (`settlement`, `regulatory_order`, `sentenced`, `dpa`) via Gemini with stored `score_provenance` (`-- --plan` lists targets without a key; `GEMINI_API_KEY` + `-- --write` to update `meta.json`; see [`pipeline/README.md`](./pipeline/README.md)) |
 
 Run the full pre-commit check locally:
 
@@ -53,7 +54,7 @@ npm run validate:content && npm test && npm run check && npm run build
 ├── content/
 │   ├── articles/YYYY/MM/<slug>/   # Git-backed CMS: meta.json + body.html per story
 │   ├── editions/                  # Daily edition manifests (YYYY-MM-DD.json & latest.json)
-│   ├── ledger/rollup-stats.json   # Aggregate loot, fines, ratios & regional rollups
+│   ├── ledger/rollup-stats.json   # Generated aggregates (npm run rollup:recompute); never hand-edit
 │   └── paint-refs.json            # Impasto painting manifest + Wikimedia/gov CC attribution
 ├── public/
 │   ├── paint-refs/<slug>.jpg      # Normalized reference JPEGs (max 320px, >5KB; decoded in memory only)
@@ -71,10 +72,13 @@ npm run validate:content && npm test && npm run check && npm run build
 │   ├── styles/                    # Broadsheet design tokens (tokens.css) & layout styles (broadsheet.css)
 │   └── utils/                     # Formatting helpers & strict sanitize-html wrapper (sanitize.ts)
 ├── scripts/
-│   └── validate-content.mjs       # Deterministic schema, HTML security, and paint-ref validator
+│   ├── validate-content.mjs       # Deterministic schema, HTML security, and paint-ref validator
+│   ├── recompute-rollup.mjs       # CLI for npm run rollup:recompute
+│   └── lib/rollup.mjs             # Single rollup definition (resolved fines vs. frozen money, retractions)
 ├── pipeline/
 │   ├── judge-wrist-slap.mjs       # Gemini Slap-on-the-Wrist Score judge (PRD §2.3 rubric)
 │   ├── run-sweep.mjs              # Daily sweep & publish orchestrator (dry-run audit + Phase 2 scaffold)
+│   ├── config.mjs                 # Shared default Gemini model (override with GEMINI_MODEL)
 │   ├── prompts/                   # Machine prompts (js-painting-prompt.md, wrist-slap-judge.md)
 │   └── README.md                  # Pipeline architecture & Phase 1 vs. Phase 2 status
 ├── tests/                         # Vitest unit tests (sanitization, schemas, formatting, painting)

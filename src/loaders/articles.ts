@@ -1,17 +1,27 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { formatUsdShort } from '../utils/format';
 import { sanitizeArticleHtml } from '../utils/sanitize';
 import {
   ArticleMetaSchema,
   EditionManifestSchema,
-  RollupStatsSchema,
   type ArticleMeta,
   type ArticleRecord,
   type EditionManifest,
-  type RegionalRollup,
   type RollupStats,
 } from '../schemas/article';
+import {
+  computeRollup,
+  isRetracted as isRetractedRaw,
+  type RollupFile,
+  type RollupRegion,
+} from '../../scripts/lib/rollup.mjs';
+
+/**
+ * Full rollup shape produced by scripts/lib/rollup.mjs. A superset of the schema's RollupStats:
+ * adds resolved/alleged loot split, frozen (unresolved-case) money and case-status counts.
+ */
+export type LedgerRollup = RollupFile & RollupStats;
+export type LedgerRollupRegion = RollupRegion;
 
 const PROJECT_ROOT = process.cwd();
 const CONTENT_ROOT = path.join(PROJECT_ROOT, 'content');
@@ -19,27 +29,15 @@ const ARTICLES_ROOT = path.join(CONTENT_ROOT, 'articles');
 const EDITIONS_ROOT = path.join(CONTENT_ROOT, 'editions');
 const ROLLUP_PATH = path.join(CONTENT_ROOT, 'ledger', 'rollup-stats.json');
 
-const REGION_LABELS: Record<string, string> = {
-  us: 'U.S.',
-  'new-york': 'NEW YORK',
-  chicago: 'CHICAGO',
-  'los-angeles': 'L.A.',
-  london: 'LONDON',
-  india: 'INDIA',
-  europe: 'EUROPE',
-  global: 'GLOBAL',
-};
-
-const REGION_ORDER = ['us', 'new-york', 'chicago', 'los-angeles', 'london', 'india', 'europe'] as const;
-const US_EDITIONS = new Set(['us', 'new-york', 'chicago', 'los-angeles']);
-
 let cachedArticlesPromise: Promise<ArticleRecord[]> | null = null;
+let cachedListedPromise: Promise<ArticleRecord[]> | null = null;
 let cachedEditionsPromise: Promise<EditionManifest[]> | null = null;
-let cachedRollupPromise: Promise<RollupStats> | null = null;
+let cachedRollupPromise: Promise<LedgerRollup> | null = null;
 const cachedEditionByDate = new Map<string, Promise<EditionManifest | null>>();
 
 export function clearArticleCache(): void {
   cachedArticlesPromise = null;
+  cachedListedPromise = null;
   cachedEditionsPromise = null;
   cachedRollupPromise = null;
   cachedEditionByDate.clear();
@@ -81,98 +79,29 @@ async function findArticleDirs(dir: string): Promise<string[]> {
   return nested;
 }
 
-/** Fines as a share of loot, aggregated (sum/sum) - the one ratio definition used site-wide. */
-function aggregateRatioPct(fines: number, loot: number): number | null {
-  return loot > 0 ? Number(((fines / loot) * 100).toFixed(2)) : null;
+/**
+ * True when the article carries a retraction tombstone (`retracted: { date, note }`).
+ * Retracted articles stay in the content tree (their URL renders a retraction notice and keeps the
+ * corrections trail) but are excluded from listings, RSS, the ledger and every rollup total.
+ */
+export function isRetracted(article: object | null | undefined): boolean {
+  return isRetractedRaw(article as { retracted?: unknown } | null | undefined);
 }
 
-function formatRollupUsd(value: number): string {
-  return formatUsdShort(value, { B: 2, M: 1, K: 0 });
-}
-
+/**
+ * Rollup computed by the shared scripts/lib/rollup.mjs definition. Fines count only resolved-stage
+ * articles; frozen/escrowed money in unresolved cases is reported as `total_frozen_usd`; retracted
+ * articles are excluded. `edition_date` is the newest dated edition when `editions` is supplied
+ * (falls back to the newest article edition_date otherwise).
+ */
 export function computeRollupFromArticles(
   articles: ArticleRecord[],
-  asOf?: string
-): RollupStats {
-  const totalLootUsd = articles.reduce((sum, a) => sum + (a.financials.amount_usd ?? 0), 0);
-  const totalFinesUsd = articles.reduce((sum, a) => sum + (a.financials.fine_usd ?? 0), 0);
-
-  const avgFineRatioPct = aggregateRatioPct(totalFinesUsd, totalLootUsd) ?? 0;
-
-  const scores = articles
-    .map((a) => a.slap_on_wrist_score)
-    .filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
-  const avgSlapScore =
-    scores.length > 0
-      ? Number((scores.reduce((s, v) => s + v, 0) / scores.length).toFixed(1))
-      : 0;
-
-  const zeroPrisonCases = articles.filter(
-    (a) => a.financials.prison_months === 0
-  ).length;
-
-  const regionBuckets = new Map<string, ArticleRecord[]>();
-  for (const article of articles) {
-    const key = article.edition.toLowerCase();
-    const bucketKeys = new Set<string>([key]);
-    if (US_EDITIONS.has(key)) {
-      bucketKeys.add('us');
-    }
-    for (const bucketKey of bucketKeys) {
-      if (bucketKey === 'global') continue;
-      const bucket = regionBuckets.get(bucketKey) ?? [];
-      bucket.push(article);
-      regionBuckets.set(bucketKey, bucket);
-    }
-  }
-
-  const orderedKeys = [
-    ...REGION_ORDER.filter((k) => regionBuckets.has(k)),
-    ...[...regionBuckets.keys()].filter(
-      (k) => !(REGION_ORDER as readonly string[]).includes(k)
-    ).sort(),
-  ];
-
-  const regions: Record<string, RegionalRollup> = {};
-  for (const key of orderedKeys) {
-    const list = regionBuckets.get(key) ?? [];
-    const loot = list.reduce((sum, a) => sum + (a.financials.amount_usd ?? 0), 0);
-    const fines = list.reduce((sum, a) => sum + (a.financials.fine_usd ?? 0), 0);
-    regions[key] = {
-      label: REGION_LABELS[key] ?? key.toUpperCase(),
-      case_count: list.length,
-      total_loot_usd: loot,
-      total_loot_display: formatRollupUsd(loot),
-      total_fines_usd: fines,
-      total_fines_display: formatRollupUsd(fines),
-      avg_fine_ratio_pct: aggregateRatioPct(fines, loot),
-    };
-  }
-
-  regions.global = {
-    label: 'GLOBAL',
-    case_count: articles.length,
-    total_loot_usd: totalLootUsd,
-    total_loot_display: formatRollupUsd(totalLootUsd),
-    total_fines_usd: totalFinesUsd,
-    total_fines_display: formatRollupUsd(totalFinesUsd),
-    avg_fine_ratio_pct: avgFineRatioPct,
-  };
-
-  const latestEditionDate = articles[0]?.edition_date ?? '2026-11-19';
-
+  asOf?: string,
+  editions: ReadonlyArray<Pick<EditionManifest, 'edition_date'>> = []
+): LedgerRollup {
   return {
     as_of: asOf ?? new Date().toISOString(),
-    edition_date: latestEditionDate,
-    total_cases: articles.length,
-    total_loot_usd: totalLootUsd,
-    total_loot_display: formatRollupUsd(totalLootUsd),
-    total_fines_usd: totalFinesUsd,
-    total_fines_display: formatRollupUsd(totalFinesUsd),
-    avg_fine_ratio_pct: avgFineRatioPct,
-    avg_slap_on_wrist_score: avgSlapScore,
-    zero_prison_cases: zeroPrisonCases,
-    regions,
+    ...computeRollup(articles, { editions }),
   };
 }
 
@@ -200,6 +129,17 @@ async function readAllArticlesFromDisk(): Promise<ArticleRecord[]> {
     });
   }
 
+  const seen = new Map<string, string>();
+  for (const article of articles) {
+    const prior = seen.get(article.slug);
+    if (prior) {
+      throw new Error(
+        `Duplicate article slug "${article.slug}" in ${prior} and ${article.contentDir}; slugs must be unique site-wide.`
+      );
+    }
+    seen.set(article.slug, article.contentDir);
+  }
+
   return articles.sort((a, b) => {
     const dateCmp = (Date.parse(b.publish_date) || 0) - (Date.parse(a.publish_date) || 0);
     if (dateCmp !== 0) return dateCmp;
@@ -207,7 +147,11 @@ async function readAllArticlesFromDisk(): Promise<ArticleRecord[]> {
   });
 }
 
-export function loadAllArticles(): Promise<ArticleRecord[]> {
+/**
+ * Every article on disk INCLUDING retracted ones. Use for per-article page generation (so a
+ * retracted URL renders its tombstone instead of 404ing) and for /corrections.
+ */
+export function loadAllArticlesIncludingRetracted(): Promise<ArticleRecord[]> {
   if (!cachedArticlesPromise) {
     cachedArticlesPromise = readAllArticlesFromDisk().catch((err) => {
       cachedArticlesPromise = null;
@@ -215,6 +159,28 @@ export function loadAllArticles(): Promise<ArticleRecord[]> {
     });
   }
   return cachedArticlesPromise;
+}
+
+/**
+ * Listed (non-retracted) articles, newest first. Use for homepage, ledger, archive, RSS, search
+ * indexes and any other listing or aggregate.
+ */
+export function loadAllArticles(): Promise<ArticleRecord[]> {
+  if (!cachedListedPromise) {
+    cachedListedPromise = loadAllArticlesIncludingRetracted()
+      .then((all) => all.filter((article) => !isRetracted(article)))
+      .catch((err) => {
+        cachedListedPromise = null;
+        throw err;
+      });
+  }
+  return cachedListedPromise;
+}
+
+/** One article by slug, including retracted articles (the caller renders the tombstone). */
+export async function loadArticleBySlug(slug: string): Promise<ArticleRecord | null> {
+  const all = await loadAllArticlesIncludingRetracted();
+  return all.find((article) => article.slug === slug) ?? null;
 }
 
 async function readEditionFromDisk(date?: string): Promise<EditionManifest | null> {
@@ -292,23 +258,28 @@ export function loadAllEditions(): Promise<EditionManifest[]> {
   return cachedEditionsPromise;
 }
 
-async function readRollupStatsFromDisk(): Promise<RollupStats> {
+/**
+ * The rollup is always recomputed from content (articles + dated editions) so the site can never
+ * render stale or hand-edited totals. content/ledger/rollup-stats.json supplies only `as_of`; its
+ * body is kept in parity by `npm run rollup:recompute` and enforced by tests/validation.
+ */
+async function readRollupStats(): Promise<LedgerRollup> {
+  const [articles, editions] = await Promise.all([
+    loadAllArticlesIncludingRetracted(),
+    loadAllEditions(),
+  ]);
+  let asOf: string | undefined;
   if (await pathExists(ROLLUP_PATH)) {
-    const raw = await fs.readFile(ROLLUP_PATH, 'utf-8');
-    const rollup = RollupStatsSchema.parse(JSON.parse(raw));
-    for (const region of Object.values(rollup.regions)) {
-      region.avg_fine_ratio_pct =
-        aggregateRatioPct(region.total_fines_usd, region.total_loot_usd) ?? region.avg_fine_ratio_pct;
-    }
-    return rollup;
+    const disk: unknown = JSON.parse(await fs.readFile(ROLLUP_PATH, 'utf-8'));
+    const value = (disk as { as_of?: unknown } | null)?.as_of;
+    if (typeof value === 'string' && !Number.isNaN(Date.parse(value))) asOf = value;
   }
-  const articles = await loadAllArticles();
-  return computeRollupFromArticles(articles);
+  return computeRollupFromArticles(articles, asOf, editions);
 }
 
-export function loadRollupStats(): Promise<RollupStats> {
+export function loadRollupStats(): Promise<LedgerRollup> {
   if (!cachedRollupPromise) {
-    cachedRollupPromise = readRollupStatsFromDisk().catch((err) => {
+    cachedRollupPromise = readRollupStats().catch((err) => {
       cachedRollupPromise = null;
       throw err;
     });
