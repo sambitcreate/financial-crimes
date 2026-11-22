@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CompactHeader from '../components/CompactHeader.astro';
-import { loadAllArticles } from '../loaders/articles';
+import { loadEveryArticle } from '../layouts/article-meta';
 import { getPaintRefLookup } from '../painting/refs-loader';
 import {
   buildCreditEntries,
@@ -10,7 +10,8 @@ import {
   summarizeLicenses,
 } from '../utils/ledger';
 
-const [articles, { manifest }] = await Promise.all([loadAllArticles(), getPaintRefLookup()]);
+// Every article incl. retracted, so buildCreditEntries can drop retracted portraits' credits
+const [articles, { manifest }] = await Promise.all([loadEveryArticle(), getPaintRefLookup()]);
 const allCredits = buildCreditEntries(articles, manifest);
 const licenseSummary = summarizeLicenses(allCredits);
 const initialPage = paginateItems(allCredits, 1, CREDITS_PAGE_SIZE);

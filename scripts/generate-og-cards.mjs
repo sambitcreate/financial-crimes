@@ -245,6 +245,26 @@ function formatApDate(iso) {
   return `${AP_MONTHS[month - 1]} ${day}, ${year}`;
 }
 
+/** Stages where a penalty was actually imposed; everything else is presumed-innocent / pending. */
+export const RESOLVED_STAGES = new Set(['settlement', 'regulatory_order', 'sentenced', 'dpa']);
+
+export function isResolvedStage(stage) {
+  return RESOLVED_STAGES.has(String(stage ?? '').trim().toLowerCase());
+}
+
+/** Fine ratio only for resolved stages: frozen or escrowed sums in pending cases are not fines. */
+export function stageFineRatio(article) {
+  if (!isResolvedStage(article?.legal_stage)) return null;
+  const pct = article?.financials?.fine_ratio_pct;
+  return typeof pct === 'number' && Number.isFinite(pct) ? pct : null;
+}
+
+/** Retraction tombstones get no per-story card (the page uses the site card). */
+export function isRetractedMeta(meta) {
+  const r = meta?.retracted;
+  return Boolean(r && typeof r === 'object' && typeof r.date === 'string' && r.date.trim());
+}
+
 function formatFineRatioCard(pct) {
   if (pct === null || pct === undefined || Number.isNaN(Number(pct))) {
     return 'Pending';
@@ -281,10 +301,8 @@ export function buildOgCardSvg(article) {
   const inkMuted = isOpinion ? '#333333' : '#5a5a5a';
   const ruleLight = isOpinion ? '#333333' : '#d5d0c5';
   const accentEyebrow = isOpinion ? '#121212' : '#a62626';
-  const ratioColor =
-    !isOpinion && article.financials?.fine_ratio_pct !== null && article.financials?.fine_ratio_pct !== undefined
-      ? '#a62626'
-      : inkPrimary;
+  const resolvedRatio = stageFineRatio(article);
+  const ratioColor = !isOpinion && resolvedRatio !== null ? '#a62626' : inkPrimary;
 
   // Badge text & palette — NEVER emits GUILTY / CONVICTED / FRAUDSTER
   const badgeText = score !== null ? `SLAP ${score}/100` : 'PENDING';
@@ -386,13 +404,13 @@ export function buildOgCardSvg(article) {
       color: inkPrimary,
     },
     {
-      label: 'PENALTY',
+      label: isResolvedStage(article.legal_stage) ? 'PENALTY' : 'PENALTY STATUS',
       value: financials.fine_display || 'Pending',
       color: inkPrimary,
     },
     {
       label: 'FINE / SCALE',
-      value: formatFineRatioCard(financials.fine_ratio_pct),
+      value: formatFineRatioCard(resolvedRatio),
       color: ratioColor,
     },
     {
@@ -543,6 +561,7 @@ export function generateAllOgCards({
     if (!meta?.slug) {
       throw new Error(`Article meta missing slug: ${metaPath}`);
     }
+    if (isRetractedMeta(meta)) continue;
     const png = renderOgCardPng(meta);
     const outPath = path.join(outDir, `${meta.slug}.png`);
     fs.writeFileSync(outPath, png);
@@ -552,12 +571,45 @@ export function generateAllOgCards({
   return generated;
 }
 
+export const LOGO_SIZE = 512;
+
+/**
+ * Square publisher logo for JSON-LD (schema.org publisher.logo): the favicon's "FC" crest,
+ * rendered with the bundled Source Serif face so it is identical on every build host.
+ */
+export function buildLogoSvg(size = LOGO_SIZE) {
+  const inset = Math.round(size * 0.0625);
+  const stroke = Math.max(2, Math.round(size * 0.0234));
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+  <rect width="${size}" height="${size}" fill="#121212"/>
+  <rect x="${inset}" y="${inset}" width="${size - inset * 2}" height="${size - inset * 2}" fill="none" stroke="#f6f3ec" stroke-width="${stroke}"/>
+  <text x="${size / 2}" y="${Math.round(size * 0.66)}" text-anchor="middle" font-family="Source Serif 4 Display" font-weight="700" font-size="${Math.round(size * 0.47)}" fill="#f6f3ec">FC</text>
+</svg>`;
+}
+
+export function renderLogoPng(size = LOGO_SIZE) {
+  ensureFontsPresent();
+  const resvg = new Resvg(buildLogoSvg(size), {
+    fitTo: { mode: 'width', value: size },
+    font: { fontFiles: FONT_FILES, loadSystemFonts: false, defaultFontFamily: 'Source Serif 4 Display' },
+  });
+  return Buffer.from(resvg.render().asPng());
+}
+
+export function generateLogo({ outPath = path.join(ROOT_DIR, 'dist', 'fc-logo-512.png') } = {}) {
+  const png = renderLogoPng();
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
+  fs.writeFileSync(outPath, png);
+  return { outPath, bytes: png.length };
+}
+
 const isMainModule =
   typeof process.argv[1] === 'string' && path.resolve(process.argv[1]) === __filename;
 
 if (isMainModule) {
   const start = Date.now();
   const generated = generateAllOgCards();
+  generateLogo();
   const elapsedMs = Date.now() - start;
   console.log(
     `[og-cards] Generated ${generated.length} broadsheet OG cards in dist/og/ (${elapsedMs}ms)`

@@ -92,6 +92,16 @@ button {
   border: 0;
 }
 
+/*
+ * Link fallbacks for script-only controls; BaseLayout's <noscript> style reveals them.
+ * !important so component classes (.fc-icon-btn, .fc-btn-slate…) on or near them can never
+ * re-show a fallback while JS runs. Put the attribute on a plain <span>/<li> wrapper, never on
+ * a styled element: the noscript rule restores spans with display:contents and others with revert.
+ */
+[data-nojs-only] {
+  display: none !important;
+}
+
 /* Container */
 .fc-container {
   width: 100%;
@@ -3348,9 +3358,18 @@ dialog.fc-dialog--receipt {
   white-space: nowrap;
 }
 
-.fc-pagination-btn:disabled {
+.fc-pagination-btn:disabled,
+.fc-pagination-btn[aria-disabled='true'] {
   opacity: 0.42;
   cursor: not-allowed;
+}
+
+a.fc-pagination-btn {
+  text-decoration: none;
+}
+
+a.fc-pagination-btn[aria-disabled='true'] {
+  pointer-events: none;
 }
 
 /* Credits directory */

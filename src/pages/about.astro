@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CompactHeader from '../components/CompactHeader.astro';
-import { loadAllArticles } from '../loaders/articles';
+import { loadEveryArticle } from '../layouts/article-meta';
 import { getPaintRefLookup } from '../painting/refs-loader';
 import { buildCreditEntries, summarizeLicenses } from '../utils/ledger';
 
-const [articles, { manifest }] = await Promise.all([loadAllArticles(), getPaintRefLookup()]);
+// Every article incl. retracted, so buildCreditEntries can drop retracted portraits' credits
+const [articles, { manifest }] = await Promise.all([loadEveryArticle(), getPaintRefLookup()]);
 const creditRows = buildCreditEntries(articles, manifest);
 const licenseSummary = summarizeLicenses(creditRows);
 
@@ -115,10 +116,12 @@ const topicLinks = [
         </div>
 
         <p>
-          <strong>Site-Wide Fine-to-Loot Ratio:</strong> All aggregate tickers and regional rollups
-          compute the sum of imposed penalties divided by the sum of documented case scale
-          (<code>sum(fines) / sum(scale)</code>) across included dockets, so front-page, drawer, and
-          ledger figures always agree.
+          <strong>Site-Wide Fine Ratio:</strong> All aggregate tickers and regional rollups
+          compute the sum of imposed penalties divided by the documented scale of the same resolved
+          cases (settlements, regulatory orders, sentences, and DPAs):
+          <code>sum(fines) / sum(scale)</code>. Money frozen, seized, or escrowed in a pending case is
+          not a fine and is never counted as one; pending amounts are labelled alleged. Front-page,
+          drawer, and ledger figures always agree.
         </p>
       </div>
     </section>

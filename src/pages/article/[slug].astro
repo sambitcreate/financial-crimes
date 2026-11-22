@@ -4,17 +4,22 @@ import CompactHeader from '../../components/CompactHeader.astro';
 import FcArt from '../../components/FcArt.astro';
 import CompareStreetCrime from '../../components/CompareStreetCrime.astro';
 import CrimeReceiptModal from '../../components/CrimeReceiptModal.astro';
-import { loadAllArticles } from '../../loaders/articles';
+import RetractedArticlePage from '../../components/RetractedArticlePage.astro';
+import { buildArticleJsonLd, loadEveryArticle } from '../../layouts/article-meta';
 import { resolvePaintRef } from '../../painting/refs-loader';
 import type { ArticleRecord } from '../../schemas/article';
 import {
+  articleModifiedAt,
   formatBroadsheetDate,
   formatDatelineTimestamp,
-  formatFineRatio,
+  formatStageFineRatio,
+  isResolvedStage,
 } from '../../utils/format';
+import { getRetraction, listedArticles } from '../../utils/ledger';
 
 export async function getStaticPaths() {
-  const articles = await loadAllArticles();
+  // Retracted stories keep their URL (tombstone page) instead of 404ing
+  const articles = await loadEveryArticle();
   return articles
     .filter((a) => a.template === 'news')
     .map((article) => ({
@@ -29,8 +34,9 @@ interface Props {
 }
 
 const { article, allArticles } = Astro.props;
+const retraction = getRetraction(article);
 
-const related = allArticles
+const related = listedArticles(allArticles)
   .filter((a) => a.slug !== article.slug)
   .sort((a, b) => {
     const aSame = a.category === article.category || a.edition === article.edition ? 1 : 0;
@@ -47,50 +53,26 @@ const initials = bylineClean
   .map((w) => w[0].toUpperCase())
   .join('');
 
-const fineRatioDisplay = formatFineRatio(article.financials.fine_ratio_pct, 'Pending');
+// Pending cases: no penalty imposed, so no fine ratio (frozen sums are not fines)
+const fineRatioDisplay = formatStageFineRatio(article, 'Pending');
+const penaltyLabel = isResolvedStage(article.legal_stage) ? 'Penalty' : 'Penalty status';
 const heroRef = await resolvePaintRef({
   id: article.id,
   slug: article.slug,
   caption: article.interactive_art_spec?.caption,
 });
 const publishedStamp = formatDatelineTimestamp(article.publish_date);
+const modifiedAt = articleModifiedAt(article);
+const updatedStamp = modifiedAt !== article.publish_date ? formatDatelineTimestamp(modifiedAt) : null;
 const siteBase = Astro.site ?? new URL('https://financialcrimes.fyi');
-const articleCanonicalUrl = new URL(article.url, siteBase).toString();
 const ogImagePath = `/og/${article.slug}.png`;
-const ogImageUrl = new URL(ogImagePath, siteBase).toString();
 const ogImageAlt = `${article.headline} — The Financial Crimes`;
-const publisherLogoUrl = new URL('/og-card.png', siteBase).toString();
-const articleJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'NewsArticle',
-  headline: article.headline,
-  description: article.deck,
-  datePublished: article.publish_date,
-  url: articleCanonicalUrl,
-  mainEntityOfPage: {
-    '@type': 'WebPage',
-    '@id': articleCanonicalUrl,
-  },
-  image: [ogImageUrl],
-  articleSection: article.category,
-  author: {
-    '@type': 'Person',
-    name: bylineClean,
-  },
-  publisher: {
-    '@type': 'NewsMediaOrganization',
-    name: 'The Financial Crimes',
-    url: siteBase.toString().replace(/\/+$/, ''),
-    logo: {
-      '@type': 'ImageObject',
-      url: publisherLogoUrl,
-      width: 1200,
-      height: 630,
-    },
-  },
-};
+const articleJsonLd = buildArticleJsonLd(article, siteBase);
 ---
 
+{retraction ? (
+  <RetractedArticlePage article={article} retraction={retraction} />
+) : (
 <BaseLayout
   title={`${article.headline} — The Financial Crimes`}
   description={article.deck}
@@ -129,7 +111,7 @@ const articleJsonLd = {
       {/* Tight Action Bar: Crime Receipt, Primary Filings, Share, Save */}
       <div class="fc-action-bar fc-article-action-bar">
         <div class="fc-action-left">
-          <button type="button" class="fc-btn-pill" data-open-receipt>
+          <button type="button" class="fc-btn-pill" data-open-receipt data-requires-js>
             <span aria-hidden="true">&#129534;</span>
             <span>Crime Receipt</span>
           </button>
@@ -140,7 +122,7 @@ const articleJsonLd = {
           <span class="fc-meta-readtime">{article.read_time_min} MIN READ</span>
         </div>
 
-        <div class="fc-action-right">
+        <div class="fc-action-right" data-requires-js>
           <button
             type="button"
             class="fc-btn-pill"
@@ -212,7 +194,13 @@ const articleJsonLd = {
           {article.city} &middot; {article.jurisdiction.venue}
         </span>
         <span class="fc-byline-time">
-          {publishedStamp}
+          <time datetime={article.publish_date}>{publishedStamp}</time>
+          {updatedStamp && (
+            <>
+              {' · Updated '}
+              <time datetime={modifiedAt}>{updatedStamp}</time>
+            </>
+          )}
           {article.docket_number && ` · ${article.docket_number}`}
         </span>
       </div>
@@ -225,7 +213,7 @@ const articleJsonLd = {
         <span class="fc-docket-stat-val">{article.financials.amount_display}</span>
       </div>
       <div>
-        <span class="fc-docket-stat-label">Penalty</span>
+        <span class="fc-docket-stat-label">{penaltyLabel}</span>
         <span class="fc-docket-stat-val">{article.financials.fine_display}</span>
       </div>
       <div>
@@ -296,6 +284,7 @@ const articleJsonLd = {
 
   <CrimeReceiptModal slot="modals" article={article} />
 </BaseLayout>
+)}
 
 <script>
   const copyBtn = document.getElementById('fc-copy-article-url');

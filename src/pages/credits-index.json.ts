@@ -1,10 +1,10 @@
 import type { APIRoute } from 'astro';
-import { loadAllArticles } from '../loaders/articles';
+import { loadEveryArticle } from '../layouts/article-meta';
 import { getPaintRefLookup } from '../painting/refs-loader';
 import { buildCreditEntries, CREDITS_PAGE_SIZE } from '../utils/ledger';
 
 export const GET: APIRoute = async () => {
-  const [articles, { manifest }] = await Promise.all([loadAllArticles(), getPaintRefLookup()]);
+  const [articles, { manifest }] = await Promise.all([loadEveryArticle(), getPaintRefLookup()]);
   const entries = buildCreditEntries(articles, manifest);
 
   const payload = {

@@ -4,13 +4,16 @@ import CompactHeader from '../../components/CompactHeader.astro';
 import FcArt from '../../components/FcArt.astro';
 import CompareStreetCrime from '../../components/CompareStreetCrime.astro';
 import CrimeReceiptModal from '../../components/CrimeReceiptModal.astro';
-import { loadAllArticles } from '../../loaders/articles';
+import RetractedArticlePage from '../../components/RetractedArticlePage.astro';
+import { buildArticleJsonLd, loadEveryArticle } from '../../layouts/article-meta';
 import { resolvePaintRef } from '../../painting/refs-loader';
 import type { ArticleRecord } from '../../schemas/article';
 import { formatBroadsheetDate } from '../../utils/format';
+import { getRetraction, listedArticles } from '../../utils/ledger';
 
 export async function getStaticPaths() {
-  const articles = await loadAllArticles();
+  // Retracted stories keep their URL (tombstone page) instead of 404ing
+  const articles = await loadEveryArticle();
   return articles
     .filter((a) => a.template === 'opinion')
     .map((article) => ({
@@ -25,6 +28,7 @@ interface Props {
 }
 
 const { article, allArticles } = Astro.props;
+const retraction = getRetraction(article);
 
 const bylineClean = article.byline.replace(/^By\s+/i, '').trim();
 const formattedDate = formatBroadsheetDate(article.publish_date);
@@ -39,48 +43,20 @@ const heroRef = await resolvePaintRef({
   caption: monoSpec.caption,
 });
 
-const related = allArticles
+const related = listedArticles(allArticles)
   .filter((a) => a.slug !== article.slug)
   .sort((a, b) => (b.template === 'opinion' ? 1 : 0) - (a.template === 'opinion' ? 1 : 0))
   .slice(0, 3);
 
 const siteBase = Astro.site ?? new URL('https://financialcrimes.fyi');
-const opinionCanonicalUrl = new URL(article.url, siteBase).toString();
 const ogImagePath = `/og/${article.slug}.png`;
-const ogImageUrl = new URL(ogImagePath, siteBase).toString();
 const ogImageAlt = `${article.headline} — The Financial Crimes`;
-const publisherLogoUrl = new URL('/og-card.png', siteBase).toString();
-const opinionJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'NewsArticle',
-  headline: article.headline,
-  description: article.deck,
-  datePublished: article.publish_date,
-  url: opinionCanonicalUrl,
-  mainEntityOfPage: {
-    '@type': 'WebPage',
-    '@id': opinionCanonicalUrl,
-  },
-  image: [ogImageUrl],
-  articleSection: 'Opinion',
-  author: {
-    '@type': 'Person',
-    name: bylineClean,
-  },
-  publisher: {
-    '@type': 'NewsMediaOrganization',
-    name: 'The Financial Crimes',
-    url: siteBase.toString().replace(/\/+$/, ''),
-    logo: {
-      '@type': 'ImageObject',
-      url: publisherLogoUrl,
-      width: 1200,
-      height: 630,
-    },
-  },
-};
+const opinionJsonLd = buildArticleJsonLd(article, siteBase);
 ---
 
+{retraction ? (
+  <RetractedArticlePage article={article} retraction={retraction} />
+) : (
 <BaseLayout
   title={`Opinion | ${article.headline} — The Financial Crimes`}
   description={article.deck}
@@ -106,7 +82,7 @@ const opinionJsonLd = {
       </p>
 
       <div class="fc-opinion-actions">
-        <button type="button" class="fc-btn-pill" data-open-receipt>
+        <button type="button" class="fc-btn-pill" data-open-receipt data-requires-js>
           <span aria-hidden="true">&#129534;</span>
           <span>Crime Receipt</span>
         </button>
@@ -114,7 +90,7 @@ const opinionJsonLd = {
           <span>Primary Filings ({article.sources.length})</span>
           <span aria-hidden="true">&darr;</span>
         </a>
-        <button type="button" class="fc-btn-pill" id="fc-opinion-copy-btn">
+        <button type="button" class="fc-btn-pill" id="fc-opinion-copy-btn" data-requires-js>
           Share
         </button>
         {article.slap_on_wrist_score !== null && (
@@ -200,6 +176,7 @@ const opinionJsonLd = {
 
   <CrimeReceiptModal slot="modals" article={article} />
 </BaseLayout>
+)}
 
 <script>
   const copyBtn = document.getElementById('fc-opinion-copy-btn');

@@ -1,31 +1,47 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CompactHeader from '../components/CompactHeader.astro';
-import { loadAllArticles } from '../loaders/articles';
+import { loadEveryArticle } from '../layouts/article-meta';
 import { formatBroadsheetDate } from '../utils/format';
+import { getRetraction } from '../utils/ledger';
 
-const articles = await loadAllArticles();
+// Retracted stories stay on the public log (never quietly scrubbed), under a neutral label
+const articles = await loadEveryArticle();
 
 interface LoggedCorrection {
   date: string;
   note: string;
-  type: 'correction' | 'clarification' | 'update';
+  type: 'correction' | 'clarification' | 'update' | 'retraction';
   articleHeadline: string;
   articleUrl: string;
   docketNumber: string | null;
 }
 
 const correctionsLog: LoggedCorrection[] = articles
-  .flatMap((article) =>
-    (article.corrections ?? []).map((entry) => ({
+  .flatMap((article) => {
+    const retraction = getRetraction(article);
+    // Do not repeat a retracted story's claims: label it instead of quoting its headline
+    const articleHeadline = retraction ? 'Retracted story' : article.headline;
+    const entries: LoggedCorrection[] = (article.corrections ?? []).map((entry) => ({
       date: entry.date,
       note: entry.note,
       type: entry.type ?? 'correction',
-      articleHeadline: article.headline,
+      articleHeadline,
       articleUrl: article.url,
-      docketNumber: article.docket_number,
-    }))
-  )
+      docketNumber: retraction ? null : article.docket_number,
+    }));
+    if (retraction) {
+      entries.push({
+        date: retraction.date,
+        note: retraction.note || 'Story retracted.',
+        type: 'retraction',
+        articleHeadline,
+        articleUrl: article.url,
+        docketNumber: null,
+      });
+    }
+    return entries;
+  })
   .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
 
 const topicLinks = [

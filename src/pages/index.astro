@@ -7,12 +7,17 @@ import RightRail from '../components/RightRail.astro';
 import { loadAllArticles, loadEdition, loadRollupStats } from '../loaders/articles';
 import { resolvePaintRef } from '../painting/refs-loader';
 import type { ArticleRecord } from '../schemas/article';
+import { listedArticles } from '../utils/ledger';
+import { penaltyLabel } from '../utils/format';
+import { PUBLISHER_LOGO_PATH, PUBLISHER_LOGO_SIZE } from '../layouts/article-meta';
 
-const [allArticles, edition, rollup] = await Promise.all([
+const [loadedArticles, edition, rollup] = await Promise.all([
   loadAllArticles(),
   loadEdition(),
   loadRollupStats(),
 ]);
+// Retracted stories never fill a front-page slot; slot pickers fall back to the next story
+const allArticles = listedArticles(loadedArticles);
 
 const bySlug = new Map<string, ArticleRecord>(allArticles.map((a) => [a.slug, a]));
 
@@ -95,12 +100,13 @@ const orgJsonLd = {
   url: siteBase.toString().replace(/\/+$/, ''),
   logo: {
     '@type': 'ImageObject',
-    url: new URL('/og-card.png', siteBase).toString(),
-    width: 1200,
-    height: 630,
+    url: new URL(PUBLISHER_LOGO_PATH, siteBase).toString(),
+    width: PUBLISHER_LOGO_SIZE,
+    height: PUBLISHER_LOGO_SIZE,
   },
+  // Satire disclosure: jokes and framing are ours; every fact comes from primary filings
   description:
-    'Daily broadsheet tracking global white-collar crime, regulatory fines, and prison time from primary court filings and agency enforcement orders.',
+    'Satirical daily broadsheet tracking global white-collar crime, regulatory fines, and prison time. Every fact comes from primary court filings and agency enforcement orders; the jokes are ours.',
   slogan: 'All the Crimes Fit to Fine.',
   publishingPrinciples: new URL('/about', siteBase).toString(),
   correctionsPolicy: new URL('/corrections', siteBase).toString(),
@@ -208,7 +214,7 @@ const orgJsonLd = {
 
                   <div class="fc-ledger-card-stats">
                     <span><strong>{item.financials.amount_display}</strong></span>
-                    <span>FINE <strong>{item.financials.fine_display}</strong></span>
+                    <span>{penaltyLabel(item.legal_stage)} <strong>{item.financials.fine_display}</strong></span>
                     <span>{item.financials.prison_display}</span>
                   </div>
                 </article>

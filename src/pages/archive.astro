@@ -4,17 +4,18 @@ import CompactHeader from '../components/CompactHeader.astro';
 import { loadAllArticles, loadAllEditions, loadRollupStats } from '../loaders/articles';
 import {
   formatBroadsheetDate,
-  formatFineRatio,
   formatShortDate,
+  formatStageFineRatio,
   formatUsdShort,
 } from '../utils/format';
-import { groupArticlesByMonth } from '../utils/ledger';
+import { groupArticlesByMonth, listedArticles } from '../utils/ledger';
 
-const [articles, editions, rollup] = await Promise.all([
+const [allArticles, editions, rollup] = await Promise.all([
   loadAllArticles(),
   loadAllEditions(),
   loadRollupStats(),
 ]);
+const articles = listedArticles(allArticles);
 
 const monthlyGroups = groupArticlesByMonth(articles);
 
@@ -122,7 +123,7 @@ const topicLinks = [
                 <div class="fc-archive-row-stats">
                   <span>{item.financials.amount_display}</span>
                   <span class="fc-archive-row-ratio">
-                    {formatFineRatio(item.financials.fine_ratio_pct, 'Pending')}
+                    {formatStageFineRatio(item, 'Pending')}
                   </span>
                 </div>
               </li>

@@ -1,6 +1,6 @@
 ---
 import type { RollupStats } from '../schemas/article';
-import { formatUsdShort } from '../utils/format';
+import { describeLootTotals, formatUsdShort, type LootRollupLike } from '../utils/format';
 
 interface Props {
   displayDate?: string;
@@ -66,13 +66,17 @@ function formatCompactBillions(usd: number, fallback: string): string {
   return usd >= 1e6 ? formatUsdShort(usd, { M: 0 }) : fallback;
 }
 
-const initialLoot = formatCompactBillions(rollup.total_loot_usd, rollup.total_loot_display);
+// Never call the combined figure "looted": it mixes alleged (pending) and adjudicated cases
+const lootTotals = describeLootTotals(rollup as LootRollupLike);
+const initialLoot = lootTotals.value;
 const initialFines = formatCompactBillions(rollup.total_fines_usd, rollup.total_fines_display);
-const initialRatio = `${rollup.avg_fine_ratio_pct.toFixed(1)}%`;
+const initialRatio = lootTotals.ratioPct !== null ? `${lootTotals.ratioPct.toFixed(1)}%` : 'PENDING';
 
 const tickerPayload = JSON.stringify({
   global: {
     loot: initialLoot,
+    lootLabel: lootTotals.label,
+    lootDescription: lootTotals.description,
     fines: initialFines,
     ratio: initialRatio,
     cases: rollup.total_cases,
@@ -80,14 +84,20 @@ const tickerPayload = JSON.stringify({
     avgSlap: rollup.avg_slap_on_wrist_score,
   },
   regions: Object.fromEntries(
-    Object.entries(rollup.regions).map(([k, r]) => [
-      k,
-      {
-        ...r,
-        lootShort: formatCompactBillions(r.total_loot_usd, r.total_loot_display),
-        finesShort: formatCompactBillions(r.total_fines_usd, r.total_fines_display),
-      },
-    ])
+    Object.entries(rollup.regions).map(([k, r]) => {
+      const regionLoot = describeLootTotals(r as LootRollupLike);
+      return [
+        k,
+        {
+          ...r,
+          lootShort: regionLoot.value,
+          lootLabel: regionLoot.label,
+          lootDescription: regionLoot.description,
+          ratioPct: regionLoot.ratioPct,
+          finesShort: formatCompactBillions(r.total_fines_usd, r.total_fines_display),
+        },
+      ];
+    })
   ),
 });
 ---
@@ -103,6 +113,7 @@ const tickerPayload = JSON.stringify({
             class="fc-icon-btn fc-masthead-menu-trigger"
             id="fc-masthead-menu-btn"
             data-open-nav-drawer
+            data-requires-js
             aria-label="Open sections menu"
             aria-controls="fc-nav-drawer"
             aria-expanded="false"
@@ -116,6 +127,7 @@ const tickerPayload = JSON.stringify({
             type="button"
             class="fc-icon-btn fc-masthead-search-trigger"
             id="fc-masthead-search-toggle"
+            data-requires-js
             aria-label="Toggle docket search"
             aria-controls="fc-masthead-search-drawer"
             aria-expanded="false"
@@ -125,9 +137,18 @@ const tickerPayload = JSON.stringify({
               <path d="M10.8 10.8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
             </svg>
           </button>
+          {/* No-JS fallbacks: the drawer and search toggle need scripts; these are plain links */}
+          <span data-nojs-only>
+            <a href="/ledger" class="fc-icon-btn" aria-label="Search the Ledger" title="Search the Ledger">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="7" cy="7" r="4.8" stroke="currentColor" stroke-width="1.5" />
+                <path d="M10.8 10.8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
+              </svg>
+            </a>
+          </span>
         </div>
 
-        <nav class="fc-edition-bar" aria-label="City and regional editions">
+        <nav class="fc-edition-bar" aria-label="City and regional editions" data-requires-js>
           {editions.map((ed) => (
             <button
               type="button"
@@ -141,12 +162,16 @@ const tickerPayload = JSON.stringify({
         </nav>
 
         <div class="fc-utility-right">
-          <button type="button" class="fc-btn-slate" data-open-subscribe>
+          <button type="button" class="fc-btn-slate" data-open-subscribe data-requires-js>
             Subscribe $0
           </button>
-          <button type="button" class="fc-btn-outline" data-open-tipline>
+          <button type="button" class="fc-btn-outline" data-open-tipline data-requires-js>
             Tip Line
           </button>
+          <span data-nojs-only>
+            <a href="/rss.xml" class="fc-btn-slate">RSS Feed</a>
+            <a href="/about" class="fc-btn-outline">About</a>
+          </span>
         </div>
       </div>
 
@@ -186,9 +211,9 @@ const tickerPayload = JSON.stringify({
             class="fc-masthead-ticker"
             id="fc-masthead-ticker-btn"
             data-ticker-payload={tickerPayload}
-            title="Click to cycle ledger totals"
+            title={`${lootTotals.description}. Click to cycle ledger totals.`}
           >
-            <span class="fc-ticker-label" id="fc-ticker-left-label">LOOTED</span>
+            <span class="fc-ticker-label" id="fc-ticker-left-label">{lootTotals.label}</span>
             <span class="fc-ticker-val fc-ticker-val--crimson" id="fc-ticker-left-val">
               {initialLoot}
             </span>
@@ -253,24 +278,26 @@ const tickerPayload = JSON.stringify({
       if (regionKey === 'all' || !payload.regions || !payload.regions[regionKey]) {
         return {
           prefix: '',
-          loot: payload.global?.loot || '$59.0B',
-          fines: payload.global?.fines || '$7.5B',
-          ratio: payload.global?.ratio || '12.8%',
-          cases: payload.global?.cases || 22,
-          zeroPrison: payload.global?.zeroPrison ?? 6,
-          avgSlap: payload.global?.avgSlap ?? 53,
+          loot: payload.global?.loot ?? '—',
+          lootLabel: payload.global?.lootLabel ?? 'AT ISSUE',
+          fines: payload.global?.fines ?? '—',
+          ratio: payload.global?.ratio ?? 'PENDING',
+          cases: payload.global?.cases ?? 0,
+          zeroPrison: payload.global?.zeroPrison ?? 0,
+          avgSlap: payload.global?.avgSlap ?? 0,
         };
       }
       const r = payload.regions[regionKey];
       return {
         prefix: `${r.label} `,
         loot: r.lootShort || r.total_loot_display,
+        lootLabel: r.lootLabel ?? 'AT ISSUE',
         fines: r.finesShort || r.total_fines_display,
-        ratio: r.avg_fine_ratio_pct != null ? `${r.avg_fine_ratio_pct.toFixed(1)}%` : 'PENDING',
+        ratio: r.ratioPct != null ? `${Number(r.ratioPct).toFixed(1)}%` : 'PENDING',
         cases: r.case_count,
         // Not tracked per region: these stay site-wide, and the labels below say so
-        zeroPrison: payload.global?.zeroPrison ?? 6,
-        avgSlap: payload.global?.avgSlap ?? 53,
+        zeroPrison: payload.global?.zeroPrison ?? 0,
+        avgSlap: payload.global?.avgSlap ?? 0,
       };
     }
 
@@ -278,7 +305,7 @@ const tickerPayload = JSON.stringify({
       const s = getRegionStats(activeRegion);
       const modes = [
         {
-          l1: `${s.prefix}LOOTED`,
+          l1: `${s.prefix}${s.lootLabel}`,
           v1: s.loot,
           c1: 'fc-ticker-val fc-ticker-val--crimson',
           l2: 'FINED',

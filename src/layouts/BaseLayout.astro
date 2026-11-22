@@ -1,4 +1,5 @@
 ---
+import '../styles/fonts.css';
 import '../styles/tokens.css';
 import '../styles/broadsheet.css';
 import '../styles/sidebar-mobile.css';
@@ -8,6 +9,7 @@ import Footer from '../components/Footer.astro';
 import NavDrawer from '../components/NavDrawer.astro';
 import SubscribeModal from '../components/SubscribeModal.astro';
 import { loadAllArticles, loadEdition, loadRollupStats } from '../loaders/articles';
+import { listedArticles } from '../utils/ledger';
 
 interface Props {
   title: string;
@@ -39,13 +41,15 @@ const {
   preloadImage,
 } = Astro.props;
 
-const [navArticles, navRollup, latestEdition] = await Promise.all([
+const [loadedNavArticles, navRollup, latestEdition] = await Promise.all([
   loadAllArticles(),
   loadRollupStats(),
   loadEdition(),
 ]);
 
-const editionVolume = latestEdition?.volume ?? 'Vol. I';
+// Never invent a volume number: components omit it when no edition manifest exists
+const navArticles = listedArticles(loadedNavArticles);
+const editionVolume = latestEdition?.volume;
 const siteBase = Astro.site ?? new URL('https://financialcrimes.fyi');
 const normalizedCanonicalPath =
   canonicalPath === '/' || canonicalPath === '/index.html'
@@ -54,6 +58,8 @@ const normalizedCanonicalPath =
 const canonicalUrl = new URL(normalizedCanonicalPath, siteBase).toString();
 const ogImageUrl = new URL(ogImage, siteBase).toString();
 const rssUrl = new URL('/rss.xml', siteBase).toString();
+const NOSCRIPT_STYLE =
+  '<style>[data-requires-js]{display:none!important}html [data-nojs-only]{display:revert!important}html span[data-nojs-only]{display:contents!important}[data-compare-panel][hidden]{display:block!important}</style>';
 const serializedJsonLd = jsonLd
   ? JSON.stringify(jsonLd).replace(/</g, '\\u003c')
   : null;
@@ -89,13 +95,13 @@ const serializedJsonLd = jsonLd
 
     {serializedJsonLd && <script type="application/ld+json" set:html={serializedJsonLd} />}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    {/* Only faces some rule renders: nothing sets Newsreader 400 italic or Source Serif 4 at 600 */}
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600;700&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,700;1,8..60,400&family=UnifrakturMaguntia&display=swap"
-      rel="stylesheet"
-    />
+    {/* Self-hosted fonts (src/styles/fonts.css): preload the nameplate and headline faces */}
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/newsreader-latin-opsz-normal.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/unifrakturmaguntia-latin-400-normal.woff2" crossorigin />
+    {/* Without JavaScript, hide controls that only scripts can drive and show their link fallbacks */}
+    {/* set:html: a literal <style> child inside <noscript> confuses the Astro compiler (it hoists
+        the style out of the noscript, which would hide these controls for everyone) */}
+    <noscript set:html={NOSCRIPT_STYLE} />
     {
       /* crossorigin matches the painting's anonymous-CORS Image() load so the preloaded response is reused */
       preloadImage && (
@@ -107,6 +113,7 @@ const serializedJsonLd = jsonLd
       defer
       src="https://umami.bitcreate.cloud/script.js"
       data-website-id="4caebd8b-911e-47fc-bce3-045ea50e87fe"
+      data-domains="financialcrimes.fyi"
     ></script>
   </head>
   <body>

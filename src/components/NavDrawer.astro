@@ -1,6 +1,6 @@
 ---
 import type { ArticleRecord, RollupStats } from '../schemas/article';
-import { formatUsdShort } from '../utils/format';
+import { describeLootTotals, type LootRollupLike } from '../utils/format';
 
 interface Props {
   articles: ArticleRecord[];
@@ -9,7 +9,7 @@ interface Props {
   currentPath?: string;
 }
 
-const { articles, rollup, volume = 'Vol. I', currentPath = '/' } = Astro.props;
+const { articles, rollup, volume, currentPath = '/' } = Astro.props;
 
 const DESK_ORDER = [
   'Wall Street',
@@ -67,12 +67,10 @@ const bureaus = [
   { key: 'india', label: 'India' },
 ];
 
-function formatCompactBillions(usd: number, fallback: string): string {
-  return usd >= 1e6 ? formatUsdShort(usd, { M: 0 }) : fallback;
-}
-
-const pulseLoot = formatCompactBillions(rollup.total_loot_usd, rollup.total_loot_display);
-const pulseRatio = `${rollup.avg_fine_ratio_pct.toFixed(1)}%`;
+// Combined totals mix alleged (pending) and adjudicated cases: label them honestly
+const lootTotals = describeLootTotals(rollup as LootRollupLike);
+const pulseLoot = lootTotals.value;
+const pulseRatio = lootTotals.ratioPct !== null ? `${lootTotals.ratioPct.toFixed(1)}%` : 'PENDING';
 const docketHref = `/edition/${rollup.edition_date}`;
 const normalizedPath =
   currentPath === '/index.html'
@@ -124,10 +122,10 @@ const normalizedPath =
       </form>
 
       {/* Live Docket Pulse Bar */}
-      <a class="fc-drawer-pulse" href="/ledger" aria-label={`Live docket totals: Looted ${pulseLoot}, fined ${pulseRatio}, ${rollup.total_cases} cases`}>
+      <a class="fc-drawer-pulse" href="/ledger" aria-label={`Docket totals: ${lootTotals.description}; fined ${pulseRatio}; ${rollup.total_cases} cases`}>
         <span class="fc-drawer-pulse-stats">
           <span class="fc-drawer-pulse-item">
-            LOOTED <strong class="fc-drawer-pulse-crimson">{pulseLoot}</strong>
+            {lootTotals.label} <strong class="fc-drawer-pulse-crimson">{pulseLoot}</strong>
           </span>
           <span class="fc-drawer-pulse-sep" aria-hidden="true">&middot;</span>
           <span class="fc-drawer-pulse-item">
@@ -170,7 +168,7 @@ const normalizedPath =
             aria-current={normalizedPath === docketHref ? 'page' : undefined}
           >
             <span>Today&rsquo;s Docket</span>
-            <span class="fc-drawer-primary-meta">{volume}</span>
+            {volume && <span class="fc-drawer-primary-meta">{volume}</span>}
           </a>
         </li>
         <li>

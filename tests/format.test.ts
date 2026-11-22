@@ -71,6 +71,19 @@ describe('formatGuiltAdmission & formatLegalStage', () => {
     expect(formatGuiltAdmission(makeCase('guilty_plea', true))).toBe('YES (GUILTY PLEA)');
   });
 
+  it('never claims a trial conviction when the admission record is missing', () => {
+    expect(formatGuiltAdmission(makeCase('sentenced', null))).toBe('SENTENCED (ADMISSION NOT RECORDED)');
+    expect(formatGuiltAdmission(makeCase('convicted', null))).toBe('CONVICTED (ADMISSION NOT RECORDED)');
+    expect(formatGuiltAdmission(makeCase('sentenced', null))).not.toMatch(/AT TRIAL/);
+  });
+
+  it('labels dismissed and acquitted cases as cleared, never contested or guilty', () => {
+    expect(formatGuiltAdmission(makeCase('dismissed', null))).toBe('NO (CHARGES DISMISSED)');
+    expect(formatGuiltAdmission(makeCase('acquitted', null))).toBe('NO (ACQUITTED)');
+    expect(formatLegalStage('dismissed')).toBe('CHARGES DISMISSED');
+    expect(formatLegalStage('acquitted')).toBe('ACQUITTED');
+  });
+
   it('handles DPA, regulatory order, interim order, and pending stages', () => {
     expect(formatGuiltAdmission(makeCase('dpa', true))).toBe('YES (DPA FACTS · 0 PRISON)');
     expect(formatGuiltAdmission(makeCase('dpa', false))).toBe('NO (DEFERRED PROSECUTION)');

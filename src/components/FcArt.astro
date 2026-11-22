@@ -110,7 +110,9 @@ const renderCaption = showCaption ?? (safeMode !== 'thumb' && Boolean(captionTex
     <div class="fc-painting-stage" role="img" aria-label={resolvedAlt}>
       <canvas class="fc-painting-layer fc-painting-layer--ground" data-layer="ground" aria-hidden="true"></canvas>
       <canvas class="fc-painting-layer fc-painting-layer--weave" data-layer="weave" aria-hidden="true"></canvas>
-      <canvas class="fc-painting-layer fc-painting-layer--live" data-layer="live" aria-hidden="true"></canvas>
+      {isInteractive && (
+        <canvas class="fc-painting-layer fc-painting-layer--live" data-layer="live" aria-hidden="true"></canvas>
+      )}
     </div>
 
     {
@@ -119,6 +121,7 @@ const renderCaption = showCaption ?? (safeMode !== 'thumb' && Boolean(captionTex
           type="button"
           class="fc-painting-repaint"
           data-fc-repaint
+          data-requires-js
           aria-label="Repaint portrait"
           title="Repaint portrait"
         >
