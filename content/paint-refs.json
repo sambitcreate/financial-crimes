@@ -27,16 +27,16 @@
   },
   "bafin-jpmorgan-germany-record-aml-fine": {
     "refImage": "/paint-refs/bafin-jpmorgan-germany-record-aml-fine.jpg",
-    "subject": "Jamie Dimon, C.E.O. of JPMorgan Chase",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chancellor_Rachel_Reeves_meets_Jamie_Dimon_(54838700663)_(cropped)_(cropped).jpg",
-    "sourceLicense": "OGL 3",
-    "isPortrait": true,
-    "focalPoint": { "u": 0.48, "v": 0.38 },
+    "subject": "Frankfurt am Main banking district skyline",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bankenviertel_Frankfurt.jpg",
+    "sourceLicense": "CC BY-SA 3.0",
+    "isPortrait": false,
+    "focalPoint": { "u": 0.50, "v": 0.45 },
     "paletteMood": "monochrome-noir",
     "toyKind": "stamp",
     "toyText": "€45M RECORD FINE",
     "toySubtext": "≈ 9 HRS NET INCOME",
-    "alt": "Monochrome impressionist oil portrait of JPMorgan Chase chief executive Jamie Dimon, accompanying an Opinion column on BaFin's record €45 million penalty against J.P. Morgan SE."
+    "alt": "Monochrome impressionist oil painting of the Frankfurt am Main banking-district skyline, accompanying an Opinion column on BaFin's record €45 million administrative fine against J.P. Morgan SE."
   },
   "bank-of-america-aml-bundle-discount": {
     "refImage": "/paint-refs/bank-of-america-aml-bundle-discount.jpg",
@@ -152,7 +152,7 @@
     "paletteMood": "subpoena-cobalt",
     "toyKind": "gavel-ripple",
     "toyText": "€410M VAT PROBE",
-    "toySubtext": "62 DETAINED · 8 NATIONS",
+    "toySubtext": "62 DETAINED · 8-NATION RAIDS",
     "alt": "Impressionist oil portrait of European Chief Prosecutor Laura Codruța Kövesi against a European Union blue backdrop, accompanying coverage of E.P.P.O. Operation Hermes."
   },
   "gensol-blusmart-ev-loan-camellias-condo": {
@@ -166,7 +166,7 @@
     "toyKind": "coins",
     "toyText": "₹978 CR EV LOANS",
     "toySubtext": "SEBI BAN · PROBES ACTIVE",
-    "alt": "Impressionist oil painting of D.L.F. high-rise towers under storm clouds in Gurugram, illustrating regulatory findings on diverted electric-vehicle fleet loans at Gensol Engineering."
+    "alt": "Impressionist oil painting of D.L.F. high-rise towers under storm clouds in Gurugram, illustrating SEBI's allegations that electric-vehicle fleet loans to Gensol Engineering were diverted."
   },
   "indusind-bank-derivatives-insider-trading": {
     "refImage": "/paint-refs/indusind-bank-derivatives-insider-trading.jpg",
@@ -222,16 +222,16 @@
   },
   "pwc-hong-kong-evergrande-audit-sanctions": {
     "refImage": "/paint-refs/pwc-hong-kong-evergrande-audit-sanctions.jpg",
-    "subject": "Hui Ka Yan, Founder of China Evergrande Group",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Xu_Jiayin_in_Aug,_2026_(cropped).jpg",
-    "sourceLicense": "CC BY 4.0",
-    "isPortrait": true,
-    "focalPoint": { "u": 0.50, "v": 0.36 },
+    "subject": "Prince's Building, Central, Hong Kong (PwC Hong Kong offices)",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:HK_Princes_Building.jpg",
+    "sourceLicense": "CC BY 3.0",
+    "isPortrait": false,
+    "focalPoint": { "u": 0.52, "v": 0.45 },
     "paletteMood": "bullion-gold",
     "toyKind": "stamp",
-    "toyText": "$167M vs $8.4B",
-    "toySubtext": "6-MONTH AUDIT BAN",
-    "alt": "Impressionist oil portrait of China Evergrande founder Hui Ka Yan, accompanying coverage of PwC Hong Kong's $167 million regulatory sanctions and Evergrande liquidators' $8.4 billion claim."
+    "toyText": "$167M vs $8.4B CLAIM",
+    "toySubtext": "6-MO NEW PIE CLIENT BAN",
+    "alt": "Impressionist oil painting of Prince's Building in Central, Hong Kong, home to PwC Hong Kong's offices, accompanying coverage of the firm's $167 million in regulatory fines and compensation over its Evergrande audits and Evergrande liquidators' $8.4 billion claim."
   },
   "roger-ver-bitcoin-exit-tax-dpa": {
     "refImage": "/paint-refs/roger-ver-bitcoin-exit-tax-dpa.jpg",
@@ -274,7 +274,7 @@
   },
   "tigo-scoular-fepa-foreign-bribery": {
     "refImage": "/paint-refs/tigo-scoular-fepa-foreign-bribery.jpg",
-    "subject": "Todd Blanche, U.S. Deputy Attorney General",
+    "subject": "Todd Blanche, U.S. Attorney General",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:AG_Todd_Blanche_Official_Portrait.jpg",
     "sourceLicense": "Public Domain",
     "isPortrait": true,
@@ -283,7 +283,7 @@
     "toyKind": "stamp",
     "toyText": "50% D.P.A. DISCOUNT",
     "toySubtext": "NO COMPLIANCE MONITOR",
-    "alt": "Impressionist oil portrait of U.S. Deputy Attorney General Todd Blanche, accompanying coverage of the Justice Department's post-Blanche Memo F.C.P.A. and F.E.P.A. bribery enforcement shift."
+    "alt": "Impressionist oil portrait of U.S. Attorney General Todd Blanche, accompanying coverage of the Justice Department's post-Blanche Memo F.C.P.A. and F.E.P.A. bribery enforcement shift."
   },
   "sfo-london-capital-finance-minibond-charges": {
     "refImage": "/paint-refs/sfo-london-capital-finance-minibond-charges.jpg",

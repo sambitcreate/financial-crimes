@@ -15,29 +15,29 @@
     "USAO-CDCA",
     "IRS-CI"
   ],
-  "docket_number": "C.D. Cal. DPA (Oct. 14, 2025)",
+  "docket_number": "C.D. Cal. No. 2:24-cr-00103 (DPA Sept. 23, 2025)",
   "legal_stage": "dpa",
   "template": "opinion",
   "eyebrow": "OPINION",
-  "headline": "Early Bitcoin Evangelist Settles Decade-Old Exit Tax Indictment With Check and Zero Prison Time",
-  "deck": "Roger Ver closed an alleged $48 million expatriation-tax indictment with a $49.9 million check and zero days in prison.",
+  "headline": "Early Bitcoin Evangelist Resolves Decade-Old Exit Tax Case With a Check and Zero Prison Time",
+  "deck": "Roger Ver admitted a willful $16.9 million tax loss — prosecutors had once alleged $48 million — and paid $49.9 million to have his indictment dismissed, with zero days in prison.",
   "byline": "By The Editorial Board",
   "dateline": "LOS ANGELES",
   "read_time_min": 2,
   "layout_slot": "rail-opinion",
   "financials": {
-    "amount_usd": 48000000,
-    "amount_display": "~$48M Tax Alleged",
+    "amount_usd": 16864105,
+    "amount_display": "$16.9M Tax Loss (Admitted)",
     "fine_usd": 49900000,
     "fine_display": "$49.9M Paid",
-    "fine_ratio_pct": 103.96,
+    "fine_ratio_pct": 295.9,
     "prison_months": 0,
     "prison_display": "0 Days (DPA Dismissal)",
-    "admitted_guilt": false
+    "admitted_guilt": true
   },
   "slap_on_wrist_score": 62,
   "street_crime_compare": {
-    "exec_summary": "Resolved alleged $48M 2014 exit-tax evasion via Oct. 2025 DPA for $49.9M paid and zero days in prison.",
+    "exec_summary": "Resolved 2014 exit-tax charges via a Sept. 2025 DPA (announced Oct. 14, 2025): admitted a willful $16.9M tax loss, paid $49.9M in tax, penalties and interest, and served zero days in prison.",
     "street_equivalent": "Underreporting $18,000 in W-2 cash wages on a federal return",
     "street_sentence": "Multi-year criminal tax sentence rarely resolved by a decade-late check with zero incarceration"
   },
@@ -47,12 +47,18 @@
       "agency": "U.S. Department of Justice Tax Division / C.D. Cal.",
       "url": "https://www.justice.gov/opa/pr/roger-ver-admits-misconduct-and-enters-deferred-prosecution-agreement",
       "date": "2025-10-14"
+    },
+    {
+      "title": "Early bitcoin investor charged with tax fraud",
+      "agency": "IRS Criminal Investigation",
+      "url": "https://www.irs.gov/compliance/criminal-investigation/early-bitcoin-investor-charged-with-tax-fraud",
+      "date": "2024-04-30"
     }
   ],
   "interactive_art_spec": {
     "accent": "crimson",
     "theme": "monochrome",
-    "caption": "Roger Ver, early Bitcoin investor. His Oct. 14, 2025 deferred prosecution agreement closed a decade-old $48 million tax indictment for $49.9 million and zero prison days.",
+    "caption": "Roger Ver, early Bitcoin investor. His deferred prosecution agreement, announced Oct. 14, 2025, ended a federal tax indictment for $49.9 million and zero prison days.",
     "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"

@@ -20,7 +20,7 @@
   "legal_stage": "interim_order",
   "template": "news",
   "eyebrow": "MUMBAI",
-  "headline": "Before Telling Shareholders About a $230 Million Hole, Bank Chiefs Found Time to Sell",
+  "headline": "Before Shareholders Heard About a $230 Million Hole, Bank Chiefs Found Time to Sell, SEBI Alleges",
   "deck": "SEBI froze ₹19.78 crore ($2.3M) from five former IndusInd Bank leaders accused of unloading stock before disclosing a ₹2,000 crore derivatives hole.",
   "byline": "By The Mumbai Bureau",
   "dateline": "MUMBAI",
@@ -31,7 +31,7 @@
     "amount_display": "~₹2,000 Cr (~$230M Hole)",
     "fine_usd": 2300000,
     "fine_display": "₹19.78 Cr (~$2.3M) Frozen",
-    "fine_ratio_pct": 1,
+    "fine_ratio_pct": null,
     "prison_months": null,
     "prison_display": "Resignations; SAT & SFIO Active",
     "admitted_guilt": false
@@ -39,7 +39,7 @@
   "slap_on_wrist_score": null,
   "street_crime_compare": {
     "exec_summary": "Executive resignations, ESOP clawbacks, and ₹19.78 Cr frozen under SEBI’s May 2025 interim order; SAT appeals and SFIO inquiries active.",
-    "street_equivalent": "Selling a wrecked car for $1,800 after hiding an inspection report",
+    "street_equivalent": "If proven, the conduct SEBI alleges would resemble selling a wrecked car for $1,800 after hiding an inspection report",
     "street_sentence": "Immediate consumer-fraud charges without multi-year appellate stays"
   },
   "sources": [

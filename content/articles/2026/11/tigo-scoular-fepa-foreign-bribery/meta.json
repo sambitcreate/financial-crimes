@@ -19,19 +19,19 @@
   "template": "news",
   "eyebrow": "WASHINGTON",
   "headline": "After Brief Moratorium on Bribery Cases, Justice Dept. Resumes Enforcement — Provided Cartels Are in the Supply Chain",
-  "deck": "Discounted deals for TIGO Guatemala ($118.2M) and Scoular ($10.18M) join the first criminal charge under the Foreign Extortion Prevention Act.",
+  "deck": "Discounted deals for TIGO Guatemala ($118.2M) and Scoular ($10.18M) join the first-ever charges under the Foreign Extortion Prevention Act.",
   "byline": "By The Washington Bureau",
   "dateline": "MIAMI",
   "read_time_min": 2,
   "layout_slot": "ledger",
   "financials": {
-    "amount_usd": 128380000,
-    "amount_display": "$128.4M Combined Bribery Deals",
+    "amount_usd": null,
+    "amount_display": "TIGO Gains Undisclosed · Scoular $6.5M+ Avoided Costs",
     "fine_usd": 128380000,
     "fine_display": "$118.2M TIGO / $10.18M Scoular",
-    "fine_ratio_pct": 50,
+    "fine_ratio_pct": null,
     "prison_months": 0,
-    "prison_display": "0 Corporate Execs Charged (DPAs)",
+    "prison_display": "0 Prison (Corporate DPAs)",
     "admitted_guilt": false
   },
   "slap_on_wrist_score": 75,
@@ -52,12 +52,18 @@
       "agency": "U.S. Department of Justice Fraud Section",
       "url": "https://www.justice.gov/opa/pr/agricultural-company-pay-over-10m-resolve-foreign-bribery-case",
       "date": "2026-07-21"
+    },
+    {
+      "title": "Former Honduran Consul General and Three Others Arrested for Running Extortion and Money Laundering Scheme",
+      "agency": "U.S. Attorney’s Office, Northern District of Georgia",
+      "url": "https://www.justice.gov/usao-ndga/pr/former-honduran-consul-general-and-three-others-arrested-running-extortion-and-money",
+      "date": "2026-11-16"
     }
   ],
   "interactive_art_spec": {
     "accent": "sage",
     "theme": "newsprint",
-    "caption": "Deputy Attorney General Todd Blanche. Under the department’s revised bribery priorities, enforcement has zeroed in on border and cartel corridors.",
+    "caption": "Attorney General Todd Blanche. Under the department’s revised bribery priorities, enforcement has zeroed in on border and cartel corridors.",
     "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"

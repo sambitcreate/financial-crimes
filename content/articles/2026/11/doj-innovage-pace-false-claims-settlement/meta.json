@@ -25,11 +25,11 @@
   "read_time_min": 2,
   "layout_slot": "lead-right",
   "financials": {
-    "amount_usd": 36000000,
-    "amount_display": "$36.0M",
+    "amount_usd": null,
+    "amount_display": "Not Quantified (FCA Allegations)",
     "fine_usd": 36000000,
     "fine_display": "$36.0M",
-    "fine_ratio_pct": 100,
+    "fine_ratio_pct": null,
     "prison_months": 0,
     "prison_display": "0 Days (Civil Only)",
     "admitted_guilt": false

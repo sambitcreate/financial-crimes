@@ -29,7 +29,7 @@
     "amount_display": "₹4,843.57 Cr (~$553M)",
     "fine_usd": 553000000,
     "fine_display": "₹4,843.57 Cr Impounded in Escrow",
-    "fine_ratio_pct": 100,
+    "fine_ratio_pct": null,
     "prison_months": null,
     "prison_display": "Civil Regulatory Appeal (SAT Reserved)",
     "admitted_guilt": false
@@ -37,7 +37,7 @@
   "slap_on_wrist_score": null,
   "street_crime_compare": {
     "exec_summary": "Civil regulatory dispute: ₹4,843.57 Cr (~$553M–$565M) deposited in escrow while SAT weighs Jane Street affiliates’ appeal.",
-    "street_equivalent": "Rigging a local card table for ₹1.5 lakh ($1,800)",
+    "street_equivalent": "If proven, SEBI’s allegation would resemble rigging a local card table for ₹1.5 lakh ($1,800)",
     "street_sentence": "Immediate police booking rather than a 15-month appellate tribunal briefing"
   },
   "sources": [

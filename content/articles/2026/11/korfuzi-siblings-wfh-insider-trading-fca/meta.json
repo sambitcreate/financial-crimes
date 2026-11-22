@@ -27,9 +27,9 @@
   "financials": {
     "amount_usd": 1250000,
     "amount_display": "~£1.0M (~$1.25M)",
-    "fine_usd": 1250000,
+    "fine_usd": 0,
     "fine_display": "POCA Confiscation Active (2026)",
-    "fine_ratio_pct": 100,
+    "fine_ratio_pct": 0,
     "prison_months": 132,
     "prison_display": "11 Combined Years (Record FCA)",
     "admitted_guilt": false
