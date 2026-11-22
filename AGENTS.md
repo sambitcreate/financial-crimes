@@ -57,7 +57,7 @@ High-signal architecture map, non-negotiable invariants, and verification comman
 
 ### D. Honest UX & Dynamic Metadata
 - Do not hardcode edition volumes (`Vol. I, No. 1`) in components — always read `edition.volume` from `loadEdition()`.
-- Do not fabricate fake server confirmations in client-only Phase 1 forms (Subscribe / Tip Line); keep RSS and `mailto:` handoffs truthful until Phase 3 backends exist.
+- Do not fabricate fake server confirmations in client-only forms (Subscribe / Tip Line); keep them clearly marked as "Coming soon" alongside the live `/rss.xml` feed until backend intake exists.
 
 ---
 

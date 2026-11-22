@@ -81,10 +81,9 @@ npm run validate:content && npm test && npm run check && npm run build
 ├── docs/
 │   └── PAINTING_PROMPT.md         # Master editorial & TypeScript handbook for <fc-painting>
 ├── .github/workflows/
-│   ├── ci.yml                     # PR & main verification + optional Cloudflare deploy
-│   └── daily-sweep.yml            # Manual workflow_dispatch (cron paused until Phase 2 fetchers land)
+│   └── ci.yml                     # PR & main verification (validate:content, test, check, build)
 ├── astro.config.mjs               # Astro 5 static config (format: 'file', trailingSlash: 'never', sitemap)
-├── wrangler.jsonc                 # Cloudflare Workers Static Assets config (serves ./dist)
+├── wrangler.jsonc                 # Cloudflare Workers Static Assets config (serves ./dist on financialcrimes.fyi)
 └── PRD.md                         # Product Requirements Document (v1.4)
 ```
 
@@ -92,15 +91,15 @@ npm run validate:content && npm test && npm run check && npm run build
 
 ## Deploying to Cloudflare Workers Static Assets
 
-The site builds to static files in `dist/` and deploys via [`wrangler.jsonc`](./wrangler.jsonc) (`assets.directory = "./dist"`, `html_handling = "drop-trailing-slash"`, `not_found_handling = "404-page"`). Choose either deployment path:
+The site builds to static files in `dist/` and deploys via [`wrangler.jsonc`](./wrangler.jsonc) (`assets.directory = "./dist"`, `html_handling = "drop-trailing-slash"`, `not_found_handling = "404-page"`, custom domains `financialcrimes.fyi` and `www.financialcrimes.fyi`). Choose either deployment path:
 
 ### Option A: Cloudflare Workers Git Integration (Recommended)
-1. In the Cloudflare Dashboard, go to **Workers & Pages → Create → Import a repository** and connect this GitHub repo.
+1. In the Cloudflare Dashboard, go to **Workers & Pages → Create → Import a repository** and connect `sambitcreate/financial-crimes` (`main`).
 2. Configure the build settings:
    - **Build command:** `npm run build`
    - **Deploy command:** `npx wrangler deploy`
    - **Node.js version:** `22`
-3. Optional: set `SITE_URL` if deploying to a custom preview/staging domain (defaults to `https://financialcrimes.news`).
+3. Optional: set `SITE_URL` if deploying to a custom preview/staging domain (defaults to `https://financialcrimes.fyi`).
 4. Keep GitHub repository variable `CLOUDFLARE_DEPLOY_ENABLED` unset (or `false`) so `.github/workflows/ci.yml` only runs validation/tests/build and does not duplicate deploys.
 
 ### Option B: GitHub Actions Deploy (`.github/workflows/ci.yml`)
@@ -121,9 +120,9 @@ npx wrangler deploy
 
 | Phase | Scope | Current Status |
 | :--- | :--- | :--- |
-| **Phase 1 — Launch Broadsheet (Website-Only)** | Astro 5 static broadsheet, 22 verified primary-sourced launch stories, Canvas 2D impasto `<fc-painting>` engine (Wet-Oil & Archival Exhibit interactions, keyboard/screen-reader a11y, CC BY/BY-SA attribution), Pagefind `/ledger`, Crime Receipt printer/PNG, `/about`, `/corrections`, `/rss.xml`, sitemap, OG cards, `sanitize-html` security boundary, Vitest test suite, Gemini `judge:slap` CLI, CI/CD. | **Implemented & Live** |
-| **Phase 2 — Automated 6:00 AM / 7:00 AM ET Daily Sweep** | Live court/regulator feed fetchers (`pipeline/fetchers/`), automated Wikimedia portrait sourcing & 320px normalization, Gemini drafting/libel gate, and automated git commit/PR publishing in `daily-sweep.yml`. | **Scaffolded** (`run-sweep.mjs` audits prompt & `paint-refs.json` and runs `judge:slap`; cron paused until fetchers + PR step are wired) |
-| **Phase 3 — Newsletter & Live Ops** | Cloudflare Email Service (GA) 7:00 AM ET *Morning Docket* email delivery (`/api/subscribe`), Turnstile-protected `/api/tip` intake, and weekly automated acquittal/dismissal docket watcher. | **Planned** (Subscribe & Tip Line modals currently operate honestly as preview UX with RSS + `mailto:` handoff) |
+| **Phase 1 — Launch Broadsheet (Website-Only)** | Astro 5 static broadsheet live on `https://financialcrimes.fyi`, 22 verified primary-sourced launch stories, Canvas 2D impasto `<fc-painting>` engine (Wet-Oil & Archival Exhibit interactions, keyboard/screen-reader a11y, CC BY/BY-SA attribution), Pagefind `/ledger`, Crime Receipt printer/PNG, `/about`, `/corrections`, `/rss.xml`, sitemap, OG cards, `sanitize-html` security boundary, Vitest test suite, Gemini `judge:slap` CLI, CI/CD. | **Implemented & Live** |
+| **Phase 2 — Automated 6:00 AM ET Daily Sweep (Antigravity Automation)** | Scheduled **Antigravity Automation** (`Financial Crimes — Daily Morning Sweep`, running daily at 6:00 AM `America/New_York` on **Gemini 4 Neon High**) that sweeps global court & regulatory filings, drafts verified stories, sources/normalizes `320px` Wikimedia portraits with CC attribution, runs `validate:content` + `test` + `check` + `build`, pushes to `main`, and deploys live. | **Configured** *(enable in Antigravity Automations Dashboard)* |
+| **Phase 3 — Sign-Up, Tip Intake & Live Ops** | Email sign-up / morning digest delivery (Cloudflare Email Service GA), public-filing tip submissions, and direct correction intake. | **Coming Soon** *(RSS `/rss.xml` is live today; Subscribe & Tip Line dialogs show Coming Soon)* |
 
 ---
 

@@ -4,7 +4,7 @@ import { loadAllArticles } from '../loaders/articles';
 
 export async function GET(context: APIContext) {
   const articles = await loadAllArticles();
-  const site = context.site ?? new URL('https://financialcrimes.news');
+  const site = context.site ?? new URL('https://financialcrimes.fyi');
 
   return rss({
     title: 'The Financial Crimes',

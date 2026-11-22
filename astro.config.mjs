@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-const siteUrl = process.env.SITE_URL || 'https://financialcrimes.news';
+const siteUrl = process.env.SITE_URL || 'https://financialcrimes.fyi';
 
 export default defineConfig({
   site: siteUrl,

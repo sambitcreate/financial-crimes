@@ -11,19 +11,19 @@ This directory holds the **Slap-on-the-Wrist Score** Gemini judge (`judge-wrist-
 | **Gemini Slap-on-the-Wrist Score Judge** | `pipeline/judge-wrist-slap.mjs` + `prompts/wrist-slap-judge.md` | **Implemented (Phase 1)** — scores resolved cases (`settlement`, `regulatory_order`, `sentenced`, `dpa`) and writes `null` (`PENDING`) for unresolved stages. |
 | **Impasto Painting Prompt & `paint-refs.json` Audit** | `pipeline/run-sweep.mjs` + `prompts/js-painting-prompt.md` | **Implemented (Phase 1)** — `--mode dry-run` verifies prompt integrity, 1:1 coverage between `content/articles/` and `content/paint-refs.json`, `https://` `sourceUrl` + `sourceLicense` attribution, JPEG existence (`> 5 KB`), and mood/toy enums. |
 | **Global Regulator Feed Fetchers & Automated Drafting** | `pipeline/fetchers/` (planned) | **Stubbed for Phase 2** — `GLOBAL_REGULATOR_FEEDS` is cataloged in `run-sweep.mjs`; live feed fetchers, automated Wikimedia 320px portrait normalization, and article drafting are not yet wired. |
-| **Automated Daily Cron & Git Commit / PR Publishing** | `.github/workflows/daily-sweep.yml` | **Paused for Phase 2** — `schedule:` cron triggers are commented out so scheduled runs do not burn Gemini API quota and discard results; manual `workflow_dispatch` remains available. |
-| **7:00 AM ET *Morning Docket* Email Newsletter** | Cloudflare Email Service (GA) | **Deferred to Phase 3** — Phase 1 and Phase 2 are website-only (RSS at `/rss.xml` is live now). |
+| **Automated Daily 6:00 AM ET Sweep** | Antigravity Scheduled Automation (`Financial Crimes — Daily Morning Sweep`, `gemini-4-neon-high`) | **Configured** — replaces GitHub Actions cron; runs daily at 6:00 AM `America/New_York`, researches new global white-collar filings, writes verified HTML + `meta.json` + 320px portraits, runs validation/tests/build, pushes to `main`, and deploys live to `https://financialcrimes.fyi`. |
+| **Email Sign-Ups & Tip Intake** | Cloudflare Email Service (GA) | **Coming Soon (Phase 3)** — RSS at `/rss.xml` is live now; Subscribe & Tip Line modals display Coming Soon. |
 
 ---
 
-## Target Phase 2 Schedule (DST-Safe `America/New_York`)
+## Daily Sweep Schedule (`CRON_TZ=America/New_York 0 6 * * *`)
 
-Once Phase 2 feed fetchers and the git commit/PR step are wired, `.github/workflows/daily-sweep.yml` will re-enable two daily beats:
+The daily sweep runs via **Antigravity Scheduled Automation** (**`Financial Crimes — Daily Morning Sweep`**) pinned to **Gemini 4 Neon (High)**:
 
-| Beat | Local Time (ET) | Mode | Purpose |
-| :--- | :--- | :--- | :--- |
-| **Morning Research & Art Sweep** | **6:00 AM ET** | `--mode sweep` | Polls global court & regulator feeds (DOJ, SEC, CFTC, CourtListener, FinCEN/OCC/OFAC, SEBI, ED/CBI, UK SFO/FCA, EU EPPO, BaFin, MAS, HK SFC), drafts primary-sourced `meta.json` + sanitized `body.html`, sources & normalizes a 320px reference portrait into `public/paint-refs/<slug>.jpg`, generates the `content/paint-refs.json` impasto painting entry via `pipeline/prompts/js-painting-prompt.md`, scores resolved cases via `judge-wrist-slap.mjs`, and stages the daily edition. |
-| **Morning Press Auto-Publish** | **7:00 AM ET** | `--mode publish` | Runs pre-press validation (`validate:content`, `test`, `check`, `build`), updates `content/editions/YYYY-MM-DD.json`, `content/editions/latest.json`, and `content/ledger/rollup-stats.json`, and opens/merges the edition PR to `main` so Cloudflare Workers Static Assets deploys `dist/`. |
+1. Pulls latest `main` and inspects existing slugs in `content/articles/` to avoid duplicates.
+2. Sweeps primary global court & regulatory sources (DOJ, SEC, CFTC, FinCEN/OCC/OFAC, SEBI, ED/CBI, UK SFO/FCA, EU EPPO, BaFin, MAS, HK SFC) for new material white-collar enforcement actions.
+3. Drafts primary-sourced `meta.json` + sanitized `body.html`, sources & normalizes `<= 320px` Wikimedia/gov reference JPEGs into `public/paint-refs/<slug>.jpg` with mandatory `https://` CC attribution in `content/paint-refs.json`, and updates `content/editions/` + `content/ledger/rollup-stats.json`.
+4. Runs `npm run validate:content && npm test && npm run check && npm run build`, commits & pushes to `origin main`, and deploys `dist/` to `https://financialcrimes.fyi`.
 
 ---
 

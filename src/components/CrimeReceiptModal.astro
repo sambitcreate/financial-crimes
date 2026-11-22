@@ -199,7 +199,7 @@ const receiptPayload = JSON.stringify({
                   ))}
                 </svg>
                 <span style="font-size: 9px; letter-spacing: 0.16em; margin-top: 3px; color: var(--fc-ink-muted);">
-                  {article.id.toUpperCase()} &middot; FINANCIALCRIMES.NEWS
+                  {article.id.toUpperCase()} &middot; FINANCIALCRIMES.FYI
                 </span>
               </div>
             </div>
@@ -605,7 +605,7 @@ const receiptPayload = JSON.stringify({
     ctx.textAlign = 'center';
     ctx.fillStyle = '#5a5a5a';
     ctx.font = '600 13px "JetBrains Mono", ui-monospace, monospace';
-    ctx.fillText(`${String(data.id || '').toUpperCase()} · FINANCIALCRIMES.NEWS`, W / 2, y);
+    ctx.fillText(`${String(data.id || '').toUpperCase()} · FINANCIALCRIMES.FYI`, W / 2, y);
 
     y += 24;
     ctx.font = '400 12px "JetBrains Mono", ui-monospace, monospace';

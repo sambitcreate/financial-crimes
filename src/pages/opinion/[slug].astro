@@ -44,7 +44,7 @@ const related = allArticles
   .sort((a, b) => (b.template === 'opinion' ? 1 : 0) - (a.template === 'opinion' ? 1 : 0))
   .slice(0, 3);
 
-const siteBase = Astro.site ?? new URL('https://financialcrimes.news');
+const siteBase = Astro.site ?? new URL('https://financialcrimes.fyi');
 const opinionCanonicalUrl = new URL(article.url, siteBase).toString();
 const ogImageUrl = new URL('/og-card.png', siteBase).toString();
 const opinionJsonLd = {

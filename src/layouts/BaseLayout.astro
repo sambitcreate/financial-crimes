@@ -46,7 +46,7 @@ const [navArticles, navRollup, latestEdition] = await Promise.all([
 ]);
 
 const editionVolume = latestEdition?.volume ?? 'Vol. I';
-const siteBase = Astro.site ?? new URL('https://financialcrimes.news');
+const siteBase = Astro.site ?? new URL('https://financialcrimes.fyi');
 const normalizedCanonicalPath =
   canonicalPath === '/' || canonicalPath === '/index.html'
     ? '/'

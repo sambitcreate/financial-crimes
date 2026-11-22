@@ -2,6 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "financial-crimes",
   "compatibility_date": "2026-11-19",
+  "routes": [
+    {
+      "pattern": "financialcrimes.fyi",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.financialcrimes.fyi",
+      "custom_domain": true
+    }
+  ],
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page",

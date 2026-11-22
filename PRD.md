@@ -127,7 +127,7 @@ All 22 launch stories below are **real, verified 2025–2026 white-collar cases*
 - **Historical Edition Snapshot (`/edition/<YYYY-MM-DD>`):** Reproduces any archived daily edition from `content/editions/<date>.json` with dynamic `edition.volume`.
 - **Editorial Trust, Transparency & Syndication Pages:**
   - **`/about`:** Editorial Mission, Hard Fact/Satire Wall, Slap-on-the-Wrist Scoring Rubric, Fair Report Privilege, Independence Colophon (not affiliated with NYT), and the complete **Reference Portrait CC Attribution Table** generated from `content/paint-refs.json`.
-  - **`/corrections`:** Corrections Policy, Acquittal & Dismissal Update Protocol, Right of Reply (`corrections@financialcrimes.news`), and live Corrections Log reading any `article.corrections` entries.
+  - **`/corrections`:** Corrections Policy, Acquittal & Dismissal Update Protocol, Right of Reply (direct submissions coming soon), and live Corrections Log reading any `article.corrections` entries.
   - **`/rss.xml` & `/sitemap-index.xml`:** Automated `@astrojs/rss` feed and `@astrojs/sitemap`, paired with `public/robots.txt`, `public/og-card.png` (`1200×630` OpenGraph / Twitter card on every route), `public/favicon.svg`, `NewsMediaOrganization` JSON-LD, and Cloudflare security/cache headers in `public/_headers`.
 
 ### 4.3 Design Tokens (`tokens.css` — 100% SIL OFL Open-Source Fonts)
@@ -198,11 +198,11 @@ All 22 launch stories below are **real, verified 2025–2026 white-collar cases*
 - **CI/CD & Quality Gates (`.github/workflows/ci.yml`):**
   - Enforces top-level `permissions: { contents: read }`, `npm ci`, `npm run validate:content`, `npm test`, `npm run check`, and `npm run build` on every pull request and push to `main`.
   - Uploads verified `dist/` via `actions/upload-artifact@v4` and deploys that exact artifact in `deploy-cloudflare` when `vars.CLOUDFLARE_DEPLOY_ENABLED == 'true'` (or deploys directly via Cloudflare Workers Git Integration).
-- **Phase 2 Daily Sweep Workflow (`.github/workflows/daily-sweep.yml`):**
-  - Target DST-safe schedule (`America/New_York`, 6:00 AM ET `--mode sweep` / 7:00 AM ET `--mode publish`) is **paused (commented out)** until Phase 2 feed fetchers + automated git commit/PR steps are implemented, avoiding wasted Gemini quota.
-  - Manual `workflow_dispatch` remains available, uses configurable `GEMINI_MODEL` (`${{ vars.GEMINI_MODEL || 'gemini-2.5-pro' }}`), scopes `GEMINI_API_KEY` strictly to the pipeline execution step, and holds least-privilege `contents: read` until PR creation is wired.
-- **Newsletter Architecture (Phase 3 — Deferred):** Phase 1 and Phase 2 remain **website-only**. Subscribe (`$0/week`) and Tip Line modals operate honestly as preview UX with direct `/rss.xml` and pre-filled `mailto:tips@financialcrimes.news` handoffs. Phase 3 wires **Cloudflare Email Service (GA)** for automated 7:00 AM ET *Morning Docket* email delivery.
-- **Monthly Indie Run Rate:** **~$10–$30/month** (Cloudflare Workers Static Assets `$0–$5`, GitHub Actions `$0`, Gemini API scoring/Phase 2 sweep `~$10–$20`, Phase 3 Cloudflare Email Service GA `$0–$5`).
+- **Phase 2 Daily Sweep Automation (Antigravity Scheduled Automation — `gemini-4-neon-high`):**
+  - Instead of a GitHub Actions cron workflow, the daily 6:00 AM ET (`America/New_York`) sweep runs as an **Antigravity Scheduled Automation** (`Financial Crimes — Daily Morning Sweep`) on **Gemini 4 Neon (High)**.
+  - Each morning it researches verified global white-collar filings, drafts strict fact-locked HTML + `meta.json`, sources and normalizes `<= 320px` Wikimedia Commons reference JPEGs with CC attribution, updates `content/editions/` & `rollup-stats.json`, runs `npm run validate:content && npm test && npm run check && npm run build`, commits & pushes to `main` (triggering Cloudflare deployment to `https://financialcrimes.fyi`).
+- **Sign-Ups & Tip Line (Phase 3 — Coming Soon):** Phase 1 and Phase 2 remain **website-only** with zero email addresses exposed. Subscribe and Tip Line modals clearly display **Coming Soon** alongside the live `/rss.xml` feed. Phase 3 wires **Cloudflare Email Service (GA)** for automated email digest delivery and public-filing tip intake.
+- **Monthly Indie Run Rate:** **~$0–$15/month** (Cloudflare Workers Static Assets `$0–$5`, GitHub Actions CI `$0`, Antigravity scheduled automation, Phase 3 Cloudflare Email Service GA `$0–$5`).
 
 ---
 
@@ -210,13 +210,13 @@ All 22 launch stories below are **real, verified 2025–2026 white-collar cases*
 
 - **Fair Report Privilege:** 100% anchored to official `https://` government/court filings with primary-source citations and docket numbers.
 - **Hard Fact/Satire Wall:** Zero fabricated quotes, charges, or numbers; strict `legal_stage` enum and editorial/art libel guardrails block premature guilt labels on pre-conviction/civil cases and preserve *"without admitting or denying"* clauses verbatim.
-- **Corrections & Living Acquittal Protocol:** Dedicated `/corrections` page with transparent right-of-reply (`corrections@financialcrimes.news`) and live `article.corrections` log; Phase 3 adds a weekly automated CourtListener acquittal/dismissal watcher.
-- **Funnel Mechanics:** Honest `$0/week` preview modal + live `/rss.xml` feed + viral **`🧾 Crime Receipt`** thermal printer & PNG card + pre-filled `mailto:` Tip Line.
+- **Corrections & Living Acquittal Protocol:** Dedicated `/corrections` page with live `article.corrections` log (direct submission intake coming soon); Phase 3 adds a weekly automated CourtListener acquittal/dismissal watcher.
+- **Funnel Mechanics:** Live `/rss.xml` feed + viral **`🧾 Crime Receipt`** thermal printer & PNG card (`FINANCIALCRIMES.FYI`) + clean **Coming Soon** notices on Subscribe & Tip Line modals.
 
 ---
 
 ## 8. Phased Roadmap
 
-1. **Phase 1 (Complete — Website-Only Launch Broadsheet):** Astro 5 static broadsheet (`format: 'file'`, `trailingSlash: 'never'`), Cloudflare Workers Static Assets (`wrangler.jsonc`, `public/_headers`), modular Canvas 2D impasto `<fc-painting>` engine (22 verified `<= 320px` reference portraits with CC BY/BY-SA attribution in `FcArt.astro` & `/about`, Wet-Oil & Archival Exhibit interactions, keyboard/screen-reader a11y), 22 primary-sourced launch stories, Pagefind `/ledger`, thermal Crime Receipt printer & PNG export, `/about`, `/corrections`, `/rss.xml`, sitemap, `og:image`, JSON-LD, build-time `sanitize-html`, Vitest test suite, Gemini `judge:slap` CLI, and hardened GitHub Actions CI/CD.
-2. **Phase 2 (Scaffolded — Automated 6:00 AM ET Sweep → 7:00 AM ET Auto-Publish):** Implement live court/regulator feed fetchers (`pipeline/fetchers/`), automated Wikimedia 320px portrait sourcing & normalization, Gemini drafting/libel verification, automated git commit/PR creation, and unpause the DST-safe cron schedule in `.github/workflows/daily-sweep.yml`.
-3. **Phase 3 (Planned — Cloudflare Email Service GA Newsletter & Live Operations):** Wire **Cloudflare Email Service (GA)** for automated 7:00 AM ET **The Morning Docket** email delivery, double opt-in `/api/subscribe`, Turnstile-protected `/api/tip`, regional RSS feeds, and weekly automated acquittal/correction watcher.
+1. **Phase 1 (Complete — Live on `https://financialcrimes.fyi`):** Astro 5 static broadsheet (`format: 'file'`, `trailingSlash: 'never'`), Cloudflare Workers Static Assets (`wrangler.jsonc`, custom domains `financialcrimes.fyi` + `www.financialcrimes.fyi`, `public/_headers`), modular Canvas 2D impasto `<fc-painting>` engine (22 verified `<= 320px` reference portraits with CC BY/BY-SA attribution in `FcArt.astro` & `/about`, Wet-Oil & Archival Exhibit interactions, keyboard/screen-reader a11y), 22 primary-sourced launch stories, Pagefind `/ledger`, thermal Crime Receipt printer & PNG export, `/about`, `/corrections`, `/rss.xml`, sitemap, `og:image`, JSON-LD, build-time `sanitize-html`, Vitest test suite, Gemini `judge:slap` CLI, and hardened GitHub Actions CI.
+2. **Phase 2 (Configured — Antigravity Daily 6:00 AM ET Automation):** Scheduled Antigravity Automation (`Financial Crimes — Daily Morning Sweep`, `CRON_TZ=America/New_York 0 6 * * *`, `gemini-4-neon-high`) handling research, drafting, 320px portrait sourcing, validation, tests, build, push to `main`, and live deployment.
+3. **Phase 3 (Coming Soon — Email Sign-Up, Tip Intake & Live Operations):** Wire **Cloudflare Email Service (GA)** for automated morning digest delivery, Turnstile-protected tip/correction intake, regional RSS feeds, and weekly automated acquittal/correction watcher.

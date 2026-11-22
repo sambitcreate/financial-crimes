@@ -140,4 +140,4 @@ If a case is dismissed, overturned, settled on appeal, or contains a factual err
 1. Update `legal_stage`, `financials`, and `body.html` with primary-source citations.
 2. Append a timestamped entry to the article's `corrections` array in `meta.json` so it surfaces automatically on `/corrections`.
 3. Re-run `npm run judge:slap -- --slug <slug> --write` if the legal stage changed.
-4. Run the full verification suite and open a PR (or report via `corrections@financialcrimes.news`).
+4. Run the full verification suite and open a PR (direct correction intake on `/corrections` is coming soon).
