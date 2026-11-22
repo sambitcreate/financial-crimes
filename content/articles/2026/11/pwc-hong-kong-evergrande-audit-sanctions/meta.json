@@ -20,7 +20,7 @@
   "template": "news",
   "eyebrow": "HONG KONG",
   "headline": "PwC Pays $167 Million to Put Evergrande’s Audits Behind It; Evergrande’s Liquidators Present an $8.4 Billion Tab",
-  "deck": "Hong Kong regulators hit PwC with HK$1.3 billion in sanctions and a six-month audit ban — less than 2% of liquidators’ $8.4 billion lawsuit.",
+  "deck": "Hong Kong regulators hit PwC with HK$1.3 billion in fines and shareholder compensation plus a six-month ban on new public-interest audit clients — less than 2% of liquidators’ $8.4 billion lawsuit.",
   "byline": "By The Asia Bureau",
   "dateline": "HONG KONG",
   "read_time_min": 2,
@@ -53,13 +53,20 @@
       "agency": "Accounting and Financial Reporting Council (AFRC), Hong Kong",
       "url": "https://www.afrc.org.hk/en-hk/news-centre/press-releases/afrc-imposes-hk300-million-fine-and-six-month-practice-limitation-on-pricewaterhousecoopers-and-hk10-million-in-fines-on-its-two-former-registered-responsible-persons-over-the-evergrande-audits",
       "date": "2026-04-23"
+    },
+    {
+      "title": "China Evergrande liquidators seek $8.4B from accounting firm PwC in Hong Kong lawsuit",
+      "agency": "Associated Press (via WTOP)",
+      "url": "https://wtop.com/world/2026/05/china-evergrande-liquidators-seek-8-4b-from-pwc-in-hong-kong-lawsuit/",
+      "date": "2026-05-18",
+      "secondary": true
     }
   ],
   "interactive_art_spec": {
     "accent": "gold",
     "theme": "newsprint",
-    "caption": "China Evergrande founder Hui Ka Yan. PwC Hong Kong’s $167 million regulatory bill equals less than two cents on the dollar of liquidators’ $8.4 billion claim.",
-    "credit": "Oil Study · The Financial Crimes"
+    "caption": "Prince’s Building in Central, Hong Kong, home to PwC Hong Kong’s offices. The firm’s $167 million regulatory bill equals less than two cents on the dollar of Evergrande liquidators’ $8.4 billion claim.",
+    "credit": "Oil study after a photograph by WiNG (Wikimedia Commons, CC BY 3.0)"
   },
   "status": "published"
 }

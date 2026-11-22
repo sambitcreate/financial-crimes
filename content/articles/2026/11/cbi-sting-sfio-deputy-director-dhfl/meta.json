@@ -14,12 +14,12 @@
     "CBI",
     "Rouse Avenue Court"
   ],
-  "docket_number": "CBI Trap FIR (Oct. 12–13, 2026)",
+  "docket_number": "CBI Trap FIR (Oct. 2026)",
   "legal_stage": "arrested",
   "template": "news",
   "eyebrow": "NEW DELHI",
-  "headline": "At India’s Serious Fraud Office, an Investigator Offers a Private Settlement Plan",
-  "deck": "India’s C.B.I. arrested S.F.I.O. Deputy Director Harish Kumar Tanwar in an October sting over an alleged ₹1 crore DHFL bribe.",
+  "headline": "At India’s Serious Fraud Office, an Investigator Is Accused of Offering a Private Settlement Plan",
+  "deck": "India’s C.B.I. arrested S.F.I.O. Deputy Director Harish Kumar Tanwar in an October trap case over an alleged ₹1 crore bribe demand tied to the DHFL probe.",
   "byline": "By The New Delhi Bureau",
   "dateline": "NEW DELHI",
   "read_time_min": 2,
@@ -28,24 +28,25 @@
     "amount_usd": 115000,
     "amount_display": "₹1 Cr Demand (₹20L Trap)",
     "fine_usd": null,
-    "fine_display": "₹20L ($23K) Seized in Sting",
+    "fine_display": "₹20L Alleged Part Payment (Trap)",
     "fine_ratio_pct": null,
     "prison_months": null,
-    "prison_display": "Arrested & Remanded (Oct. 2026)",
+    "prison_display": "Arrested (Oct. 2026); Trial Pending",
     "admitted_guilt": null
   },
   "slap_on_wrist_score": null,
   "street_crime_compare": {
-    "exec_summary": "Arrested red-handed Oct. 12–13, 2026 and remanded by Rouse Avenue Court; trial pending on allegations of demanding ₹1 Cr to shield accused in the DHFL probe.",
-    "street_equivalent": "A traffic constable caught accepting a ₹2,000 roadside bribe",
-    "street_sentence": "Instant suspension and trap prosecution — here replicated inside India’s premier white-collar fraud agency"
+    "exec_summary": "Arrested in an October 2026 C.B.I. trap operation; the agency alleges a ₹1 Cr demand to favor a complainant in the S.F.I.O.’s DHFL probe. No charges proven; all three accused are presumed innocent.",
+    "street_equivalent": "If proven, the allegation would resemble a traffic constable pocketing a ₹2,000 roadside bribe",
+    "street_sentence": "Instant suspension and trap prosecution — here alleged inside India’s premier white-collar fraud agency"
   },
   "sources": [
     {
-      "title": "The Hindu (citing CBI FIR & official statement): CBI Arrests SFIO Official and Two Others in Alleged ₹1-Crore DHFL Scam-Linked Case",
-      "agency": "The Hindu / Central Bureau of Investigation (CBI), India",
+      "title": "CBI arrests SFIO official and two others in alleged ₹1 crore graft case",
+      "agency": "The Hindu (reporting a C.B.I. statement)",
       "url": "https://www.thehindu.com/news/national/cbi-arrests-sfio-official-and-two-others-in-alleged-1-crore-dhfl-scam-linked-case/article71587233.ece",
-      "date": "2026-10-15"
+      "date": "2026-10-15",
+      "secondary": true
     }
   ],
   "interactive_art_spec": {

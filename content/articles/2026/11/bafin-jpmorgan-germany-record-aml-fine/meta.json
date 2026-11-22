@@ -24,11 +24,11 @@
   "read_time_min": 2,
   "layout_slot": "rail-opinion",
   "financials": {
-    "amount_usd": 490000000,
+    "amount_usd": null,
     "amount_display": "12-Mo Systematic STR Lapses",
     "fine_usd": 49000000,
     "fine_display": "€45M (~$49M Record BaFin Fine)",
-    "fine_ratio_pct": 10,
+    "fine_ratio_pct": null,
     "prison_months": 0,
     "prison_display": "0 Days (Administrative Fine)",
     "admitted_guilt": false
@@ -50,8 +50,8 @@
   "interactive_art_spec": {
     "accent": "gold",
     "theme": "monochrome",
-    "caption": "Jamie Dimon, chief executive of JPMorgan Chase. Germany’s all-time record €45 million BaFin fine equals roughly eight hours of global parent profit.",
-    "credit": "Oil Study · The Financial Crimes"
+    "caption": "Frankfurt am Main’s banking district, where J.P. Morgan SE is domiciled. Germany’s record €45 million BaFin fine equals roughly eight hours of the global parent’s profit.",
+    "credit": "Oil study after a photograph by Thomas Wolf (Wikimedia Commons, CC BY-SA 3.0)"
   },
   "status": "published"
 }

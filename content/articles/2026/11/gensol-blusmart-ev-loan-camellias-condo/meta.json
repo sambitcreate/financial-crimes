@@ -20,8 +20,8 @@
   "legal_stage": "interim_order",
   "template": "news",
   "eyebrow": "INDIA",
-  "headline": "Borrowed for Electric Cabs, Parked in Gurugram’s Most Exclusive Driveway",
-  "deck": "SEBI banned Gensol and BluSmart promoters Anmol and Puneet Jaggi after tracing ₹42.94 crore of state EV loans to a luxury condo.",
+  "headline": "Borrowed for Electric Cabs, Parked in Gurugram’s Most Exclusive Driveway, SEBI Says",
+  "deck": "SEBI banned Gensol and BluSmart promoters Anmol and Puneet Jaggi, alleging ₹42.94 crore of state EV loans was routed toward a luxury condo.",
   "byline": "By The South Asia Bureau",
   "dateline": "GURUGRAM, India",
   "read_time_min": 2,
@@ -39,7 +39,7 @@
   "slap_on_wrist_score": null,
   "street_crime_compare": {
     "exec_summary": "Market and director bans confirmed July 30, 2025; insolvency and criminal ED/SFIO probes remain active over diverted state EV loans.",
-    "street_equivalent": "Taking a ₹1.5 lakh auto-rickshaw loan and spending it on luxury jewelry",
+    "street_equivalent": "If proven, the diversion SEBI alleges would resemble taking a ₹1.5 lakh auto-rickshaw loan and spending it on luxury jewelry",
     "street_sentence": "Immediate bank repossession and local criminal breach-of-trust FIR"
   },
   "sources": [
@@ -53,7 +53,7 @@
   "interactive_art_spec": {
     "accent": "sage",
     "theme": "newsprint",
-    "caption": "D.L.F. luxury towers in Gurugram. SEBI traced ₹42.94 crore in public electric-vehicle loans toward a DLF The Camellias apartment.",
+    "caption": "D.L.F. luxury towers in Gurugram. SEBI alleges ₹42.94 crore in public electric-vehicle loans was routed toward a DLF The Camellias apartment.",
     "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"

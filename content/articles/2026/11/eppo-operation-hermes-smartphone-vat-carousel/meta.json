@@ -15,11 +15,11 @@
     "Europol"
   ],
   "docket_number": "EPPO Operation Hermes (Oct. 7, 2026)",
-  "legal_stage": "indicted",
+  "legal_stage": "arrested",
   "template": "news",
   "eyebrow": "EUROPE",
-  "headline": "The Same Smartphones Toured Eight European Countries, Collecting Tax Refunds at Every Stop",
-  "deck": "European prosecutors ran 300 dawn raids in Operation Hermes, detaining 62 suspects and freezing €310 million in an alleged €410 million V.A.T. carousel.",
+  "headline": "In a €410 Million Smartphone ‘Carousel,’ Prosecutors Allege, Every Stop Paid Out a Tax Refund",
+  "deck": "European prosecutors ran 300 dawn raids in Operation Hermes, detaining 62 suspects and executing orders to seize up to €310 million in an alleged €410 million V.A.T. carousel.",
   "byline": "By The European Bureau",
   "dateline": "LUXEMBOURG",
   "read_time_min": 2,
@@ -28,7 +28,7 @@
     "amount_usd": 445000000,
     "amount_display": "€410M+ (~$445M VAT Loss)",
     "fine_usd": 336000000,
-    "fine_display": "€310M Frozen + €9M Seized",
+    "fine_display": "Up to €310M Seizure Orders + €9M Seized",
     "fine_ratio_pct": null,
     "prison_months": null,
     "prison_display": "62 Detained (Pre-Trial Active)",
@@ -36,8 +36,8 @@
   },
   "slap_on_wrist_score": null,
   "street_crime_compare": {
-    "exec_summary": "62 suspects detained across 8 EU member states with €310M in freezing orders and €9M physical seizures; pre-trial proceedings active.",
-    "street_equivalent": "Filing a €1,650 ($1,800) fictitious sales-tax refund claim",
+    "exec_summary": "62 suspects detained in Portugal, Spain and Italy after searches in 8 EU member states, with orders to seize up to €310M and €9M in assets seized; investigation active, all suspects presumed innocent.",
+    "street_equivalent": "If proven, the scheme alleged here would resemble filing a €1,650 ($1,800) fictitious sales-tax refund claim",
     "street_sentence": "Audited and prosecuted locally without 300 synchronized pan-European dawn raids"
   },
   "sources": [

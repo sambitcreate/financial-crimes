@@ -18,8 +18,8 @@
   "legal_stage": "regulatory_order",
   "template": "news",
   "eyebrow": "SINGAPORE",
-  "headline": "Nine Elite Banks Helped Move $2.25 Billion in Dirty Cash; Singapore Sends a $21.5 Million Bill",
-  "deck": "Singapore fined Credit Suisse, UOB, UBS, Citi, Julius Baer, LGT and three peers S$27.45 million — 0.915% of the Fujian laundering haul.",
+  "headline": "Singapore’s S$3 Billion Laundering Case Ends With Nine Elite Banks Splitting a $21.5 Million Bill",
+  "deck": "Singapore fined Credit Suisse, UOB, UBS, Citi, Julius Baer, LGT and three peers S$27.45 million for anti-laundering lapses — 0.915% of the assets police seized in the Fujian case.",
   "byline": "By The Asia Bureau",
   "dateline": "SINGAPORE",
   "read_time_min": 2,
@@ -36,8 +36,8 @@
   },
   "slap_on_wrist_score": 96,
   "street_crime_compare": {
-    "exec_summary": "Nine financial institutions fined S$27.45M (~$21.5M) combined — exactly 0.915% of S$3.0B laundered, earning formal FATF criticism.",
-    "street_equivalent": "Laundering $1,800 in illicit cash and receiving a 0.915% civil bill",
+    "exec_summary": "Nine financial institutions fined S$27.45M (~$21.5M) combined for AML/CFT lapses — 0.915% of the S$3.0B+ in assets police seized or froze in the case, which drew formal FATF criticism.",
+    "street_equivalent": "A corner money-changer waving through $1,800 in suspect cash and receiving a 0.915% civil bill",
     "street_sentence": "At Singapore’s institutional bank rate, the penalty would be $16.47 and zero jail time"
   },
   "sources": [
@@ -51,13 +51,20 @@
       "title": "FATF/APG Mutual Evaluation Report of Singapore (Anti-Money Laundering and Counter-Terrorist Financing Measures)",
       "agency": "Financial Action Task Force (FATF)",
       "url": "https://www.fatf-gafi.org/en/publications/Mutualevaluations/mer-singapore-2026.html",
-      "date": "2026-05-01"
+      "date": "2026-05-01",
+      "secondary": true
+    },
+    {
+      "title": "More Than S$3 Billion in Assets Seized or Issued With Prohibition of Disposal Orders",
+      "agency": "Singapore Police Force",
+      "url": "https://www.police.gov.sg/media-hub/news/2024/20240119_more_than_3billion_in_assets_seized_or_issued_with_prohibition",
+      "date": "2024-01-19"
     }
   ],
   "interactive_art_spec": {
     "accent": "crimson",
     "theme": "newsprint",
-    "caption": "Marina Bay in Singapore. Nine banks paid a combined S$27.45 million after S$3 billion in Fujian laundering funds moved through the city-state.",
+    "caption": "Marina Bay in Singapore. Nine banks paid a combined S$27.45 million in a laundering case in which police seized or froze more than S$3 billion in assets.",
     "credit": "Oil Study · The Financial Crimes"
   },
   "status": "published"
