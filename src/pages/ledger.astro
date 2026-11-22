@@ -9,8 +9,12 @@ import {
   formatLegalStage,
   formatShortDate,
 } from '../utils/format';
+import { LEDGER_PAGE_SIZE, paginateItems } from '../utils/ledger';
 
 const [articles, rollup] = await Promise.all([loadAllArticles(), loadRollupStats()]);
+
+const initialPage = paginateItems(articles, 1, LEDGER_PAGE_SIZE);
+const initialArticles = initialPage.items;
 
 const categories = Array.from(new Set(articles.map((a) => a.category))).sort();
 const editions = [
@@ -30,6 +34,7 @@ const topicLinks = [
   { label: 'Full Ledger', href: '/ledger', current: true },
   { label: '$1B+ Cases', href: '/ledger?magnitude=1000000000' },
   { label: 'Zero Prison', href: '/ledger?slap=zero-prison' },
+  { label: 'Archive', href: '/archive' },
   { label: "Today's Docket", href: `/edition/${rollup.edition_date}` },
 ];
 ---
@@ -37,6 +42,7 @@ const topicLinks = [
 <BaseLayout
   title="The Ledger — The Financial Crimes"
   description="Searchable ledger of global white-collar crime, fines, fine-to-loot ratios, and prison sentences."
+  canonicalPath="/ledger"
 >
   <CompactHeader
     slot="header"
@@ -45,7 +51,13 @@ const topicLinks = [
     topicLinks={topicLinks}
   />
 
-  <div class="fc-container" style="padding-bottom: 56px;">
+  <div
+    class="fc-container"
+    id="fc-ledger-root"
+    data-total-cases={articles.length}
+    data-page-size={LEDGER_PAGE_SIZE}
+    style="padding-bottom: 56px;"
+  >
     {/* Ledger Hero Header */}
     <header class="fc-ledger-hero">
       <h1 class="fc-ledger-title" style="margin-top: 0;">The Running Ledger</h1>
@@ -87,7 +99,7 @@ const topicLinks = [
     </header>
 
     {/* Multi-Facet Filter Bar (sticky on desktop, static + collapsible drawer on mobile) */}
-    <section class="fc-ledger-filterbar" aria-label="Filter and sort the Ledger">
+    <section class="fc-ledger-filterbar" id="fc-ledger-filterbar" aria-label="Filter and sort the Ledger">
       <div class="fc-ledger-controls">
         <div class="fc-ledger-primary-row">
           <label class="fc-sr-only" for="fc-ledger-search">Search cases</label>
@@ -203,100 +215,70 @@ const topicLinks = [
       </button>
     </div>
 
-    {/* VIEW 1: Editorial List with Crisp Formatted Dates & Mini-Canvas Portraits */}
+    {/* VIEW 1: Editorial List (Initial page SSR; subsequent pages & queries hydrated from /ledger-index.json) */}
     <section id="fc-ledger-list-view" class="fc-ledger-editorial-list" aria-label="Case list">
-      {articles.map((item) => {
-        const searchBlob = [
-          item.headline,
-          item.deck,
-          item.city,
-          item.edition,
-          item.category,
-          item.agencies.join(' '),
-          item.docket_number ?? '',
-          item.jurisdiction.venue,
-          item.byline,
-        ]
-          .join(' ')
-          .toLowerCase();
-
-        return (
-          <article
-            class="fc-ledger-editorial-row"
-            data-ledger-item
-            data-slug={item.slug}
-            data-search={searchBlob}
-            data-edition={item.edition.toLowerCase()}
-            data-city={item.city.toLowerCase()}
-            data-category={item.category}
-            data-date={item.publish_date}
-            data-loot={item.financials.amount_usd ?? 0}
-            data-fine={item.financials.fine_usd ?? 0}
-            data-ratio={item.financials.fine_ratio_pct ?? -1}
-            data-prison={item.financials.prison_months ?? -1}
-            data-slap={item.slap_on_wrist_score ?? -1}
-          >
-            <div class="fc-ledger-date-col">
-              <span class="fc-ledger-date-str">{formatShortDate(item.publish_date)}</span>
-              <div class="fc-ledger-city-str">{item.city}</div>
-              <div class="fc-ledger-slap-wrap">
-                {item.slap_on_wrist_score !== null ? (
-                  <span
-                    class:list={[
-                      'fc-score-badge',
-                      { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
-                    ]}
-                  >
-                    SLAP {item.slap_on_wrist_score}
-                  </span>
-                ) : (
-                  <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
-                )}
-              </div>
-            </div>
-
-            <div class="fc-ledger-editorial-body">
-              <span
-                class:list={[
-                  'fc-eyebrow',
-                  { 'fc-eyebrow--opinion': item.template === 'opinion' },
-                ]}
-              >
-                {item.template === 'opinion' ? 'OPINION' : item.agencies.join(', ')}
-              </span>
-
-              <h2 class="fc-ledger-editorial-headline">
-                <a href={item.url} class="fc-headline-link">{item.headline}</a>
-              </h2>
-
-              <p class="fc-ledger-editorial-deck">{item.deck}</p>
-
-              <div class="fc-ledger-card-stats">
-                <span>SCALE <strong>{item.financials.amount_display}</strong></span>
-                <span>FINE <strong>{item.financials.fine_display}</strong></span>
-                <span>
-                  RATIO{' '}
-                  <strong style="color: var(--fc-art-crimson);">
-                    {formatFineRatio(item.financials.fine_ratio_pct, 'Pending')}
-                  </strong>
+      {initialArticles.map((item) => (
+        <article class="fc-ledger-editorial-row" data-ledger-item data-slug={item.slug}>
+          <div class="fc-ledger-date-col">
+            <span class="fc-ledger-date-str">{formatShortDate(item.publish_date)}</span>
+            <div class="fc-ledger-city-str">{item.city}</div>
+            <div class="fc-ledger-slap-wrap">
+              {item.slap_on_wrist_score !== null ? (
+                <span
+                  class:list={[
+                    'fc-score-badge',
+                    { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
+                  ]}
+                >
+                  SLAP {item.slap_on_wrist_score}
                 </span>
-                <span>{item.financials.prison_display}</span>
-              </div>
+              ) : (
+                <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
+              )}
             </div>
+          </div>
 
-            <a href={item.url} class="fc-ledger-editorial-thumb" aria-label={item.headline}>
-              <FcArt
-                id={`${item.id}-ledger`}
-                slug={item.slug}
-                spec={item.interactive_art_spec}
-                mode="thumb"
-                aspect="16/10"
-                showCaption={false}
-              />
-            </a>
-          </article>
-        );
-      })}
+          <div class="fc-ledger-editorial-body">
+            <span
+              class:list={[
+                'fc-eyebrow',
+                { 'fc-eyebrow--opinion': item.template === 'opinion' },
+              ]}
+            >
+              {item.template === 'opinion' ? 'OPINION' : item.agencies.join(', ')}
+            </span>
+
+            <h2 class="fc-ledger-editorial-headline">
+              <a href={item.url} class="fc-headline-link">{item.headline}</a>
+            </h2>
+
+            <p class="fc-ledger-editorial-deck">{item.deck}</p>
+
+            <div class="fc-ledger-card-stats">
+              <span>SCALE <strong>{item.financials.amount_display}</strong></span>
+              <span>FINE <strong>{item.financials.fine_display}</strong></span>
+              <span>
+                RATIO{' '}
+                <strong style="color: var(--fc-art-crimson);">
+                  {formatFineRatio(item.financials.fine_ratio_pct, 'Pending')}
+                </strong>
+              </span>
+              <span>{item.financials.prison_display}</span>
+            </div>
+          </div>
+
+          <a href={item.url} class="fc-ledger-editorial-thumb" aria-label={item.headline}>
+            <FcArt
+              id={`${item.id}-ledger`}
+              slug={item.slug}
+              spec={item.interactive_art_spec}
+              mode="thumb"
+              aspect="16/10"
+              showCaption={false}
+            />
+          </a>
+        </article>
+      ))}
     </section>
 
     {/* VIEW 2: Spreadsheet Table */}
@@ -320,88 +302,96 @@ const topicLinks = [
             </tr>
           </thead>
           <tbody id="fc-ledger-tbody">
-            {articles.map((item) => {
-              const searchBlob = [
-                item.headline,
-                item.deck,
-                item.city,
-                item.edition,
-                item.category,
-                item.agencies.join(' '),
-                item.docket_number ?? '',
-                item.jurisdiction.venue,
-              ]
-                .join(' ')
-                .toLowerCase();
-
-              return (
-                <tr
-                  data-ledger-row
-                  data-slug={item.slug}
-                  data-search={searchBlob}
-                  data-edition={item.edition.toLowerCase()}
-                  data-city={item.city.toLowerCase()}
-                  data-category={item.category}
-                  data-date={item.publish_date}
-                  data-loot={item.financials.amount_usd ?? 0}
-                  data-fine={item.financials.fine_usd ?? 0}
-                  data-ratio={item.financials.fine_ratio_pct ?? -1}
-                  data-prison={item.financials.prison_months ?? -1}
-                  data-slap={item.slap_on_wrist_score ?? -1}
-                >
-                  <td class="fc-ledger-col-case">
-                    <a
-                      href={item.url}
-                      class="fc-headline-link fc-ledger-table-headline"
+            {initialArticles.map((item) => (
+              <tr data-ledger-row data-slug={item.slug}>
+                <td class="fc-ledger-col-case">
+                  <a href={item.url} class="fc-headline-link fc-ledger-table-headline">
+                    {item.headline}
+                  </a>
+                  <span class="fc-ledger-case-mobile-meta">
+                    {item.city} &middot; {item.agencies[0]}
+                  </span>
+                  <span class="fc-ledger-table-sub">
+                    {item.docket_number ?? formatLegalStage(item.legal_stage)} &middot; {formatBroadsheetDate(item.publish_date)}
+                  </span>
+                </td>
+                <td class="fc-ledger-col-bureau">
+                  <strong style="display: block;">{item.city}</strong>
+                  <span style="font-size: 11px; color: var(--fc-ink-muted);">
+                    {item.agencies.join(', ')}
+                  </span>
+                </td>
+                <td class="fc-ledger-col-desk">{item.category}</td>
+                <td class="fc-ledger-num fc-ledger-col-scale"><strong>{item.financials.amount_display}</strong></td>
+                <td class="fc-ledger-num fc-ledger-col-penalty">{item.financials.fine_display}</td>
+                <td class="fc-ledger-num fc-ledger-col-ratio" style="color: var(--fc-art-crimson); font-weight: 600;">
+                  {formatFineRatio(item.financials.fine_ratio_pct, '—')}
+                </td>
+                <td class="fc-ledger-num fc-ledger-col-custody">{item.financials.prison_display}</td>
+                <td class="fc-ledger-num fc-ledger-col-slap">
+                  {item.slap_on_wrist_score !== null ? (
+                    <span
+                      class:list={[
+                        'fc-score-badge',
+                        { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
+                      ]}
                     >
-                      {item.headline}
-                    </a>
-                    <span class="fc-ledger-case-mobile-meta">
-                      {item.city} &middot; {item.agencies[0]}
+                      {item.slap_on_wrist_score}/100
                     </span>
-                    <span class="fc-ledger-table-sub">
-                      {item.docket_number ?? formatLegalStage(item.legal_stage)} &middot; {formatBroadsheetDate(item.publish_date)}
-                    </span>
-                  </td>
-                  <td class="fc-ledger-col-bureau">
-                    <strong style="display: block;">{item.city}</strong>
-                    <span style="font-size: 11px; color: var(--fc-ink-muted);">
-                      {item.agencies.join(', ')}
-                    </span>
-                  </td>
-                  <td class="fc-ledger-col-desk">{item.category}</td>
-                  <td class="fc-ledger-num fc-ledger-col-scale"><strong>{item.financials.amount_display}</strong></td>
-                  <td class="fc-ledger-num fc-ledger-col-penalty">{item.financials.fine_display}</td>
-                  <td class="fc-ledger-num fc-ledger-col-ratio" style="color: var(--fc-art-crimson); font-weight: 600;">
-                    {formatFineRatio(item.financials.fine_ratio_pct, '—')}
-                  </td>
-                  <td class="fc-ledger-num fc-ledger-col-custody">{item.financials.prison_display}</td>
-                  <td class="fc-ledger-num fc-ledger-col-slap">
-                    {item.slap_on_wrist_score !== null ? (
-                      <span
-                        class:list={[
-                          'fc-score-badge',
-                          { 'fc-score-badge--high': item.slap_on_wrist_score >= 70 },
-                        ]}
-                      >
-                        {item.slap_on_wrist_score}/100
-                      </span>
-                    ) : (
-                      <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
+                  ) : (
+                    <span class="fc-score-badge fc-score-badge--pending">PENDING</span>
+                  )}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
     </section>
+
+    {/* Pagination Bar */}
+    <nav class="fc-pagination" id="fc-ledger-pagination" aria-label="Ledger pagination">
+      <span class="fc-pagination-summary" id="fc-ledger-page-summary">
+        {initialPage.totalItems > 0
+          ? `Showing ${initialPage.startIndex}–${initialPage.endIndex} of ${initialPage.totalItems} filings`
+          : '0 filings'}
+      </span>
+      <div class="fc-pagination-controls" id="fc-ledger-page-controls" hidden={initialPage.totalPages <= 1}>
+        <button type="button" class="fc-btn-outline fc-pagination-btn" id="fc-ledger-prev" disabled>
+          &larr; Previous
+        </button>
+        <span class="fc-pagination-status" id="fc-ledger-page-status">
+          Page {initialPage.page} of {initialPage.totalPages}
+        </span>
+        <button
+          type="button"
+          class="fc-btn-outline fc-pagination-btn"
+          id="fc-ledger-next"
+          disabled={initialPage.page >= initialPage.totalPages}
+        >
+          Next &rarr;
+        </button>
+      </div>
+    </nav>
   </div>
 </BaseLayout>
 
 <script>
+  import '../painting/element';
   import { formatUsdShort } from '../utils/format';
+  import {
+    computeFilteredTotals,
+    filterAndSortLedger,
+    LEDGER_PAGE_SIZE,
+    paginateItems,
+    type LedgerEntry,
+  } from '../utils/ledger';
+
+  const root = document.getElementById('fc-ledger-root');
+  const pageSize = Number(root?.dataset.pageSize || LEDGER_PAGE_SIZE) || LEDGER_PAGE_SIZE;
+  const totalCasesInitial = Number(root?.dataset.totalCases || 0);
+
+  const filterBar = document.getElementById('fc-ledger-filterbar');
   const searchInput = document.getElementById('fc-ledger-search') as HTMLInputElement | null;
   const editionSel = document.getElementById('fc-ledger-edition') as HTMLSelectElement | null;
   const categorySel = document.getElementById('fc-ledger-category') as HTMLSelectElement | null;
@@ -425,8 +415,12 @@ const topicLinks = [
   const finesOut = document.getElementById('fc-ledger-total-fines');
   const ratioOut = document.getElementById('fc-ledger-avg-ratio');
 
-  const listItems = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-item]'));
-  const tableRows = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-row]'));
+  const paginationNav = document.getElementById('fc-ledger-pagination');
+  const pageSummary = document.getElementById('fc-ledger-page-summary');
+  const pageControls = document.getElementById('fc-ledger-page-controls');
+  const pageStatus = document.getElementById('fc-ledger-page-status');
+  const prevBtn = document.getElementById('fc-ledger-prev') as HTMLButtonElement | null;
+  const nextBtn = document.getElementById('fc-ledger-next') as HTMLButtonElement | null;
 
   // Sync collapsible filter drawer across viewport breakpoint changes
   if (filterDrawer && window.matchMedia) {
@@ -436,6 +430,36 @@ const topicLinks = [
     };
     syncDrawerForViewport(mobileMq.matches);
     mobileMq.addEventListener('change', (e) => syncDrawerForViewport(e.matches));
+  }
+
+  let allEntries: LedgerEntry[] | null = null;
+  let indexPromise: Promise<LedgerEntry[]> | null = null;
+  let currentPage = 1;
+  let renderedListSlugs = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-item]')).map(
+    (el) => el.dataset.slug || ''
+  );
+  let renderedTableSlugs = Array.from(document.querySelectorAll<HTMLElement>('[data-ledger-row]')).map(
+    (el) => el.dataset.slug || ''
+  );
+
+  async function ensureLedgerIndex(): Promise<LedgerEntry[]> {
+    if (allEntries) return allEntries;
+    if (!indexPromise) {
+      indexPromise = fetch('/ledger-index.json')
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data: { entries?: LedgerEntry[] }) => {
+          allEntries = Array.isArray(data.entries) ? data.entries : [];
+          return allEntries;
+        })
+        .catch(() => {
+          indexPromise = null;
+          return [];
+        });
+    }
+    return indexPromise;
   }
 
   let pagefindApi: any = null;
@@ -464,124 +488,362 @@ const topicLinks = [
     return pagefindPromise;
   }
 
-  function matchesEdition(el: HTMLElement, key: string): boolean {
-    if (key === 'all') return true;
-    const ed = el.dataset.edition || '';
-    const city = el.dataset.city || '';
-    if (key === 'us') return ['us', 'new-york', 'chicago', 'los-angeles'].includes(ed);
-    if (key === 'europe') return ed === 'europe' || ed === 'london' || city.includes('frankfurt');
-    if (key === 'global') return ed === 'global' || city.includes('singapore') || city.includes('hong kong');
-    return ed === key || city.includes(key.replace('-', ' '));
+  function sameSlugOrder(a: string[], b: string[]): boolean {
+    return a.length === b.length && a.every((slug, i) => slug === b[i]);
   }
 
-  function matchesFilters(el: HTMLElement): boolean {
-    const q = (searchInput?.value || '').trim().toLowerCase();
-    const ed = editionSel?.value || 'all';
-    const cat = categorySel?.value || 'all';
-    const minLoot = Number(magnitudeSel?.value || 0);
-    const slapMode = slapSel?.value || 'all';
+  function createThumbPainting(entry: LedgerEntry): HTMLElement {
+    const figure = document.createElement('figure');
+    figure.className = 'fc-art-figure';
+    figure.dataset.mode = 'thumb';
+    figure.dataset.slug = entry.slug;
 
-    if (q) {
-      const slug = el.dataset.slug || '';
-      const localMatch = (el.dataset.search || '').includes(q);
-      const pfMatch = pagefindSlugs ? pagefindSlugs.has(slug) : false;
-      if (!localMatch && !pfMatch) return false;
+    const painting = document.createElement('fc-painting');
+    painting.className = 'fc-painting-shell';
+    painting.dataset.id = `${entry.id}-ledger`;
+    painting.dataset.slug = entry.slug;
+    painting.dataset.mode = 'thumb';
+    painting.dataset.aspect = '16/10';
+    painting.dataset.theme = entry.paintRef.monochrome ? 'monochrome' : 'newsprint';
+    painting.style.setProperty('--fc-art-aspect', '16 / 10');
+
+    const stage = document.createElement('div');
+    stage.className = 'fc-painting-stage';
+    stage.setAttribute('role', 'img');
+    stage.setAttribute('aria-label', entry.paintRef.alt);
+
+    (['ground', 'weave', 'live'] as const).forEach((layer) => {
+      const canvas = document.createElement('canvas');
+      canvas.className = `fc-painting-layer fc-painting-layer--${layer}`;
+      canvas.dataset.layer = layer;
+      canvas.setAttribute('aria-hidden', 'true');
+      stage.appendChild(canvas);
+    });
+
+    const configScript = document.createElement('script');
+    configScript.type = 'application/json';
+    configScript.className = 'fc-painting-config';
+    configScript.textContent = JSON.stringify({
+      slug: entry.paintRef.slug,
+      refImage: entry.paintRef.refImage,
+      isPortrait: entry.paintRef.isPortrait,
+      focalPoint: entry.paintRef.focalPoint,
+      paletteMood: entry.paintRef.paletteMood,
+      toyKind: entry.paintRef.toyKind,
+      toyText: entry.paintRef.toyText,
+      toySubtext: entry.paintRef.toySubtext,
+      monochrome: entry.paintRef.monochrome,
+      aspect: 16 / 10,
+      mode: 'thumb',
+    });
+
+    painting.appendChild(stage);
+    painting.appendChild(configScript);
+    figure.appendChild(painting);
+    return figure;
+  }
+
+  function createEditorialCard(entry: LedgerEntry): HTMLElement {
+    const article = document.createElement('article');
+    article.className = 'fc-ledger-editorial-row';
+    article.dataset.ledgerItem = '';
+    article.dataset.slug = entry.slug;
+
+    // Column 1: Date, City, Slap badge
+    const dateCol = document.createElement('div');
+    dateCol.className = 'fc-ledger-date-col';
+
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'fc-ledger-date-str';
+    dateSpan.textContent = entry.short_date;
+    dateCol.appendChild(dateSpan);
+
+    const cityDiv = document.createElement('div');
+    cityDiv.className = 'fc-ledger-city-str';
+    cityDiv.textContent = entry.city;
+    dateCol.appendChild(cityDiv);
+
+    const slapWrap = document.createElement('div');
+    slapWrap.className = 'fc-ledger-slap-wrap';
+    const badge = document.createElement('span');
+    if (entry.slap_on_wrist_score !== null) {
+      badge.className =
+        entry.slap_on_wrist_score >= 70
+          ? 'fc-score-badge fc-score-badge--high'
+          : 'fc-score-badge';
+      badge.textContent = `SLAP ${entry.slap_on_wrist_score}`;
+    } else {
+      badge.className = 'fc-score-badge fc-score-badge--pending';
+      badge.textContent = 'PENDING';
     }
+    slapWrap.appendChild(badge);
+    dateCol.appendChild(slapWrap);
 
-    if (!matchesEdition(el, ed)) return false;
-    if (cat !== 'all' && el.dataset.category !== cat) return false;
+    // Column 2: Body
+    const body = document.createElement('div');
+    body.className = 'fc-ledger-editorial-body';
 
-    const loot = Number(el.dataset.loot || 0);
-    if (minLoot > 0 && loot < minLoot) return false;
+    const eyebrow = document.createElement('span');
+    eyebrow.className =
+      entry.template === 'opinion' ? 'fc-eyebrow fc-eyebrow--opinion' : 'fc-eyebrow';
+    eyebrow.textContent = entry.template === 'opinion' ? 'OPINION' : entry.agencies.join(', ');
+    body.appendChild(eyebrow);
 
-    const slap = Number(el.dataset.slap ?? -1);
-    const prison = Number(el.dataset.prison ?? -1);
-    if (slapMode === '70' && slap < 70) return false;
-    if (slapMode === '85' && slap < 85) return false;
-    if (slapMode === 'zero-prison' && prison !== 0) return false;
-    if (slapMode === 'pending' && slap >= 0) return false;
+    const h2 = document.createElement('h2');
+    h2.className = 'fc-ledger-editorial-headline';
+    const headlineLink = document.createElement('a');
+    headlineLink.href = entry.url;
+    headlineLink.className = 'fc-headline-link';
+    headlineLink.textContent = entry.headline;
+    h2.appendChild(headlineLink);
+    body.appendChild(h2);
 
-    return true;
+    const deck = document.createElement('p');
+    deck.className = 'fc-ledger-editorial-deck';
+    deck.textContent = entry.deck;
+    body.appendChild(deck);
+
+    const stats = document.createElement('div');
+    stats.className = 'fc-ledger-card-stats';
+
+    const scaleSpan = document.createElement('span');
+    scaleSpan.append('SCALE ');
+    const scaleStrong = document.createElement('strong');
+    scaleStrong.textContent = entry.financials.amount_display;
+    scaleSpan.appendChild(scaleStrong);
+    stats.appendChild(scaleSpan);
+
+    const fineSpan = document.createElement('span');
+    fineSpan.append('FINE ');
+    const fineStrong = document.createElement('strong');
+    fineStrong.textContent = entry.financials.fine_display;
+    fineSpan.appendChild(fineStrong);
+    stats.appendChild(fineSpan);
+
+    const ratioSpan = document.createElement('span');
+    ratioSpan.append('RATIO ');
+    const ratioStrong = document.createElement('strong');
+    ratioStrong.style.color = 'var(--fc-art-crimson)';
+    ratioStrong.textContent = entry.financials.fine_ratio_editorial;
+    ratioSpan.appendChild(ratioStrong);
+    stats.appendChild(ratioSpan);
+
+    const prisonSpan = document.createElement('span');
+    prisonSpan.textContent = entry.financials.prison_display;
+    stats.appendChild(prisonSpan);
+
+    body.appendChild(stats);
+
+    // Column 3: Canvas thumbnail (<fc-painting>, zero <img>)
+    const thumbLink = document.createElement('a');
+    thumbLink.href = entry.url;
+    thumbLink.className = 'fc-ledger-editorial-thumb';
+    thumbLink.setAttribute('aria-label', entry.headline);
+    thumbLink.appendChild(createThumbPainting(entry));
+
+    article.appendChild(dateCol);
+    article.appendChild(body);
+    article.appendChild(thumbLink);
+    return article;
   }
 
-  function compareElements(a: HTMLElement, b: HTMLElement, mode: string): number {
-    if (mode === 'loot-desc') return Number(b.dataset.loot || 0) - Number(a.dataset.loot || 0);
-    if (mode === 'fine-desc') return Number(b.dataset.fine || 0) - Number(a.dataset.fine || 0);
-    if (mode === 'slap-desc') return Number(b.dataset.slap || -1) - Number(a.dataset.slap || -1);
-    if (mode === 'ratio-asc') {
-      const ra = Number(a.dataset.ratio ?? -1);
-      const rb = Number(b.dataset.ratio ?? -1);
-      const va = ra < 0 ? 999999 : ra;
-      const vb = rb < 0 ? 999999 : rb;
-      return va - vb;
+  function createTableRow(entry: LedgerEntry): HTMLTableRowElement {
+    const tr = document.createElement('tr');
+    tr.dataset.ledgerRow = '';
+    tr.dataset.slug = entry.slug;
+
+    // Case cell
+    const tdCase = document.createElement('td');
+    tdCase.className = 'fc-ledger-col-case';
+    const link = document.createElement('a');
+    link.href = entry.url;
+    link.className = 'fc-headline-link fc-ledger-table-headline';
+    link.textContent = entry.headline;
+    tdCase.appendChild(link);
+
+    const mobileMeta = document.createElement('span');
+    mobileMeta.className = 'fc-ledger-case-mobile-meta';
+    mobileMeta.textContent = `${entry.city} · ${entry.agencies[0] ?? ''}`;
+    tdCase.appendChild(mobileMeta);
+
+    const sub = document.createElement('span');
+    sub.className = 'fc-ledger-table-sub';
+    sub.textContent = `${entry.docket_number ?? entry.legal_stage_label} · ${entry.broadsheet_date}`;
+    tdCase.appendChild(sub);
+    tr.appendChild(tdCase);
+
+    // Bureau & Agencies
+    const tdBureau = document.createElement('td');
+    tdBureau.className = 'fc-ledger-col-bureau';
+    const cityStrong = document.createElement('strong');
+    cityStrong.style.display = 'block';
+    cityStrong.textContent = entry.city;
+    tdBureau.appendChild(cityStrong);
+    const agencySpan = document.createElement('span');
+    agencySpan.style.fontSize = '11px';
+    agencySpan.style.color = 'var(--fc-ink-muted)';
+    agencySpan.textContent = entry.agencies.join(', ');
+    tdBureau.appendChild(agencySpan);
+    tr.appendChild(tdBureau);
+
+    // Desk
+    const tdDesk = document.createElement('td');
+    tdDesk.className = 'fc-ledger-col-desk';
+    tdDesk.textContent = entry.category;
+    tr.appendChild(tdDesk);
+
+    // Scale
+    const tdScale = document.createElement('td');
+    tdScale.className = 'fc-ledger-num fc-ledger-col-scale';
+    const scaleStrong = document.createElement('strong');
+    scaleStrong.textContent = entry.financials.amount_display;
+    tdScale.appendChild(scaleStrong);
+    tr.appendChild(tdScale);
+
+    // Penalty
+    const tdPenalty = document.createElement('td');
+    tdPenalty.className = 'fc-ledger-num fc-ledger-col-penalty';
+    tdPenalty.textContent = entry.financials.fine_display;
+    tr.appendChild(tdPenalty);
+
+    // Ratio
+    const tdRatio = document.createElement('td');
+    tdRatio.className = 'fc-ledger-num fc-ledger-col-ratio';
+    tdRatio.style.color = 'var(--fc-art-crimson)';
+    tdRatio.style.fontWeight = '600';
+    tdRatio.textContent = entry.financials.fine_ratio_table;
+    tr.appendChild(tdRatio);
+
+    // Custody
+    const tdCustody = document.createElement('td');
+    tdCustody.className = 'fc-ledger-num fc-ledger-col-custody';
+    tdCustody.textContent = entry.financials.prison_display;
+    tr.appendChild(tdCustody);
+
+    // Wrist-Slap
+    const tdSlap = document.createElement('td');
+    tdSlap.className = 'fc-ledger-num fc-ledger-col-slap';
+    const badge = document.createElement('span');
+    if (entry.slap_on_wrist_score !== null) {
+      badge.className =
+        entry.slap_on_wrist_score >= 70
+          ? 'fc-score-badge fc-score-badge--high'
+          : 'fc-score-badge';
+      badge.textContent = `${entry.slap_on_wrist_score}/100`;
+    } else {
+      badge.className = 'fc-score-badge fc-score-badge--pending';
+      badge.textContent = 'PENDING';
     }
-    return (Date.parse(b.dataset.date || '') || 0) - (Date.parse(a.dataset.date || '') || 0);
+    tdSlap.appendChild(badge);
+    tr.appendChild(tdSlap);
+
+    return tr;
   }
 
-  // Moving a node re-runs <fc-painting> disconnect/connect, which repaints it from blank,
-  // so only touch the DOM order when the sort actually changed it.
-  let currentListOrder: HTMLElement[] = [...listItems];
-  let currentRowOrder: HTMLElement[] = [...tableRows];
-  function sameOrder(a: HTMLElement[], b: HTMLElement[]): boolean {
-    return a.length === b.length && a.every((el, i) => el === b[i]);
-  }
-
-  function applyAll() {
-    const sortMode = sortSel?.value || 'newest';
-
-    const sortedList = [...listItems].sort((a, b) => compareElements(a, b, sortMode));
-    const sortedRows = [...tableRows].sort((a, b) => compareElements(a, b, sortMode));
-
-    let shown = 0;
-    let totalLoot = 0;
-    let totalFines = 0;
-    let ratioSum = 0;
-    let ratioCount = 0;
-
-    const reorderList = !sameOrder(sortedList, currentListOrder);
-    const reorderRows = !sameOrder(sortedRows, currentRowOrder);
-    currentListOrder = sortedList;
-    currentRowOrder = sortedRows;
-
-    sortedList.forEach((el) => {
-      const visible = matchesFilters(el);
-      el.hidden = !visible;
-      if (reorderList) listView?.appendChild(el);
-      if (visible) {
-        shown++;
-        totalLoot += Number(el.dataset.loot || 0);
-        totalFines += Number(el.dataset.fine || 0);
-        const r = Number(el.dataset.ratio ?? -1);
-        if (r >= 0) {
-          ratioSum += r;
-          ratioCount++;
-        }
+  function syncPageUrlParam(page: number) {
+    try {
+      const url = new URL(window.location.href);
+      if (page > 1) {
+        url.searchParams.set('page', String(page));
+      } else {
+        url.searchParams.delete('page');
       }
-    });
+      window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    } catch {
+      // Ignore history API restrictions
+    }
+  }
 
-    sortedRows.forEach((row) => {
-      row.hidden = !matchesFilters(row);
-      if (reorderRows) tbody?.appendChild(row);
-    });
+  function updateActiveBadge() {
+    if (!activeCountBadge) return;
+    let activeFilters = 0;
+    if ((editionSel?.value || 'all') !== 'all') activeFilters++;
+    if ((categorySel?.value || 'all') !== 'all') activeFilters++;
+    if ((magnitudeSel?.value || '0') !== '0') activeFilters++;
+    if ((slapSel?.value || 'all') !== 'all') activeFilters++;
+    if ((sortSel?.value || 'newest') !== 'newest') activeFilters++;
+    activeCountBadge.hidden = activeFilters === 0;
+    activeCountBadge.textContent = `${activeFilters} active`;
+  }
 
-    if (emptyEl) emptyEl.hidden = shown > 0;
-    if (countOut) countOut.textContent = String(shown);
-    if (lootOut) lootOut.textContent = formatUsdShort(totalLoot);
-    if (finesOut) finesOut.textContent = formatUsdShort(totalFines);
-    if (ratioOut) {
-      const aggregateRatio = totalLoot > 0 ? (totalFines / totalLoot) * 100 : ratioCount > 0 ? ratioSum / ratioCount : 0;
-      ratioOut.textContent = `${aggregateRatio.toFixed(1)}%`;
+  let applySeq = 0;
+
+  async function applyAll(opts: { resetPage?: boolean; scrollToTop?: boolean } = {}) {
+    const seq = ++applySeq;
+    if (opts.resetPage) currentPage = 1;
+    updateActiveBadge();
+
+    const entries = await ensureLedgerIndex();
+    if (seq !== applySeq) return;
+
+    const filtered = filterAndSortLedger(
+      entries,
+      {
+        query: searchInput?.value || '',
+        edition: editionSel?.value || 'all',
+        category: categorySel?.value || 'all',
+        minLoot: Number(magnitudeSel?.value || 0),
+        slapMode: slapSel?.value || 'all',
+        sortMode: sortSel?.value || 'newest',
+      },
+      pagefindSlugs
+    );
+
+    const totals = computeFilteredTotals(filtered);
+    const paged = paginateItems(filtered, currentPage, pageSize);
+    currentPage = paged.page;
+    syncPageUrlParam(currentPage);
+
+    if (emptyEl) emptyEl.hidden = totals.count > 0;
+    if (countOut) countOut.textContent = String(totals.count);
+    if (lootOut) lootOut.textContent = formatUsdShort(totals.totalLoot);
+    if (finesOut) finesOut.textContent = formatUsdShort(totals.totalFines);
+    if (ratioOut) ratioOut.textContent = `${totals.avgFineRatioPct.toFixed(1)}%`;
+
+    const nextSlugs = paged.items.map((item) => item.slug);
+
+    if (listView && !sameSlugOrder(nextSlugs, renderedListSlugs)) {
+      const frag = document.createDocumentFragment();
+      for (const entry of paged.items) {
+        frag.appendChild(createEditorialCard(entry));
+      }
+      listView.replaceChildren(frag);
+      renderedListSlugs = nextSlugs;
     }
 
-    if (activeCountBadge) {
-      let activeFilters = 0;
-      if ((editionSel?.value || 'all') !== 'all') activeFilters++;
-      if ((categorySel?.value || 'all') !== 'all') activeFilters++;
-      if ((magnitudeSel?.value || '0') !== '0') activeFilters++;
-      if ((slapSel?.value || 'all') !== 'all') activeFilters++;
-      if ((sortSel?.value || 'newest') !== 'newest') activeFilters++;
-      activeCountBadge.hidden = activeFilters === 0;
-      activeCountBadge.textContent = `${activeFilters} active`;
+    if (tbody && !sameSlugOrder(nextSlugs, renderedTableSlugs)) {
+      const frag = document.createDocumentFragment();
+      for (const entry of paged.items) {
+        frag.appendChild(createTableRow(entry));
+      }
+      tbody.replaceChildren(frag);
+      renderedTableSlugs = nextSlugs;
+    }
+
+    if (paginationNav) {
+      paginationNav.hidden = totals.count === 0;
+    }
+    if (pageSummary) {
+      pageSummary.textContent =
+        totals.count > 0
+          ? `Showing ${paged.startIndex}–${paged.endIndex} of ${paged.totalItems} filings`
+          : '0 filings';
+    }
+    if (pageControls) {
+      pageControls.hidden = paged.totalPages <= 1;
+    }
+    if (pageStatus) {
+      pageStatus.textContent = `Page ${paged.page} of ${paged.totalPages}`;
+    }
+    if (prevBtn) {
+      prevBtn.disabled = paged.page <= 1;
+    }
+    if (nextBtn) {
+      nextBtn.disabled = paged.page >= paged.totalPages;
+    }
+
+    if (opts.scrollToTop && filterBar) {
+      filterBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
@@ -592,7 +854,7 @@ const topicLinks = [
     if (!api || !searchInput || searchInput.value.trim() !== q) return;
     try {
       const res = await api.search(q);
-      const top = await Promise.all(res.results.slice(0, 30).map((r: any) => r.data()));
+      const top = await Promise.all(res.results.slice(0, 50).map((r: any) => r.data()));
       const slugs = new Set<string>();
       top.forEach((d: any) => {
         const m = String(d.url || '')
@@ -601,7 +863,7 @@ const topicLinks = [
         if (m) slugs.add(m[1]);
       });
       pagefindSlugs = slugs;
-      applyAll();
+      void applyAll({ resetPage: true });
     } catch {
       pagefindSlugs = null;
     }
@@ -610,6 +872,7 @@ const topicLinks = [
   searchInput?.addEventListener(
     'focus',
     () => {
+      void ensureLedgerIndex();
       void ensurePagefind();
     },
     { once: true }
@@ -619,10 +882,10 @@ const topicLinks = [
     const q = searchInput.value.trim();
     if (!q) {
       pagefindSlugs = null;
-      applyAll();
+      void applyAll({ resetPage: true });
       return;
     }
-    applyAll();
+    void applyAll({ resetPage: true });
     if (pagefindUnavailable) return;
     if (pfDebounce) clearTimeout(pfDebounce);
     pfDebounce = setTimeout(() => {
@@ -631,7 +894,21 @@ const topicLinks = [
   });
 
   [editionSel, categorySel, magnitudeSel, slapSel, sortSel].forEach((sel) => {
-    sel?.addEventListener('change', applyAll);
+    sel?.addEventListener('change', () => {
+      void applyAll({ resetPage: true });
+    });
+  });
+
+  prevBtn?.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage -= 1;
+      void applyAll({ scrollToTop: true });
+    }
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    currentPage += 1;
+    void applyAll({ scrollToTop: true });
   });
 
   function setView(mode: 'editorial' | 'table') {
@@ -653,31 +930,58 @@ const topicLinks = [
     if (slapSel) slapSel.value = 'all';
     if (sortSel) sortSel.value = 'newest';
     pagefindSlugs = null;
-    applyAll();
+    void applyAll({ resetPage: true });
   });
 
   const params = new URLSearchParams(window.location.search);
-  if (params.get('q') && searchInput) searchInput.value = params.get('q')!;
-  if (params.get('edition') && editionSel) editionSel.value = params.get('edition')!.toLowerCase();
+  let hasActiveParams = false;
+
+  if (params.get('q') && searchInput) {
+    searchInput.value = params.get('q')!;
+    hasActiveParams = true;
+  }
+  if (params.get('edition') && editionSel) {
+    editionSel.value = params.get('edition')!.toLowerCase();
+    hasActiveParams = true;
+  }
   if (params.get('category') && categorySel) {
     const wanted = params.get('category')!;
     const opt = Array.from(categorySel.options).find(
       (o) => o.value.toLowerCase() === wanted.toLowerCase()
     );
-    if (opt) categorySel.value = opt.value;
+    if (opt) {
+      categorySel.value = opt.value;
+      hasActiveParams = true;
+    }
   }
   if (params.get('magnitude') && magnitudeSel) {
     const mag = params.get('magnitude')!;
     magnitudeSel.value = mag === '1b' ? '1000000000' : mag;
+    hasActiveParams = true;
   }
   if (params.get('slap') && slapSel) {
     const s = params.get('slap')!;
     slapSel.value = s === '80' ? '70' : s;
+    hasActiveParams = true;
+  }
+  if (params.get('sort') && sortSel) {
+    sortSel.value = params.get('sort')!;
+    hasActiveParams = true;
+  }
+  const pageParam = Number(params.get('page'));
+  if (Number.isInteger(pageParam) && pageParam > 1) {
+    currentPage = pageParam;
+    hasActiveParams = true;
   }
   if (params.get('view') === 'table') setView('table');
 
-  applyAll();
-  if (params.get('q') && !pagefindUnavailable) {
-    void runPagefindSearch(params.get('q')!.trim());
+  if (hasActiveParams) {
+    void applyAll();
+    if (params.get('q') && !pagefindUnavailable) {
+      void runPagefindSearch(params.get('q')!.trim());
+    }
+  } else if (totalCasesInitial > pageSize) {
+    // Pre-warm index in the background when pagination is active
+    void ensureLedgerIndex();
   }
 </script>

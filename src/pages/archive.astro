@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CompactHeader from '../components/CompactHeader.astro';
+import { loadAllArticles, loadAllEditions, loadRollupStats } from '../loaders/articles';
+import {
+  formatBroadsheetDate,
+  formatFineRatio,
+  formatShortDate,
+  formatUsdShort,
+} from '../utils/format';
+import { groupArticlesByMonth } from '../utils/ledger';
+
+const [articles, editions, rollup] = await Promise.all([
+  loadAllArticles(),
+  loadAllEditions(),
+  loadRollupStats(),
+]);
+
+const monthlyGroups = groupArticlesByMonth(articles);
+
+const topicLinks = [
+  { label: 'Front Page', href: '/' },
+  { label: 'Archive', href: '/archive', current: true },
+  { label: 'The Ledger', href: '/ledger' },
+  { label: "Today's Docket", href: `/edition/${rollup.edition_date}` },
+  { label: 'Reference Credits', href: '/credits' },
+];
+---
+
+<BaseLayout
+  title="Edition & Monthly Archive — The Financial Crimes"
+  description="Browse every daily broadsheet edition and monthly docket archive of The Financial Crimes."
+  canonicalPath="/archive"
+>
+  <CompactHeader
+    slot="header"
+    showTopicBar={true}
+    topicTitle="Archive"
+    topicLinks={topicLinks}
+  />
+
+  <div class="fc-container" style="padding-top: 28px; padding-bottom: 56px;">
+    <header class="fc-archive-header">
+      <p class="fc-eyebrow fc-eyebrow--crimson" style="margin: 0 0 6px;">
+        PERMANENT PUBLIC RECORD
+      </p>
+      <h1 class="fc-archive-title">Edition &amp; Monthly Archive</h1>
+      <p class="fc-archive-deck">
+        Every daily 7:00 a.m. ET broadsheet snapshot alongside a chronological index of all{' '}
+        <strong>{articles.length}</strong> documented filings totaling{' '}
+        <strong>{rollup.total_loot_display}</strong> in alleged scale.
+      </p>
+    </header>
+
+    {/* Daily Edition Snapshots */}
+    {editions.length > 0 && (
+      <section class="fc-archive-section" aria-labelledby="fc-archive-editions-heading">
+        <div class="fc-archive-section-head">
+          <h2 id="fc-archive-editions-heading" class="fc-archive-h2">Daily Editions</h2>
+          <span class="fc-archive-count">
+            {editions.length} {editions.length === 1 ? 'edition' : 'editions'}
+          </span>
+        </div>
+
+        <div class="fc-archive-editions-grid">
+          {editions.map((ed) => (
+            <a href={`/edition/${ed.edition_date}`} class="fc-archive-edition-card">
+              <span class="fc-eyebrow">{ed.volume}</span>
+              <strong class="fc-archive-edition-date">{ed.display_date}</strong>
+              <span class="fc-archive-edition-meta">
+                Read Print Docket ({formatBroadsheetDate(ed.edition_date)}) &rarr;
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {/* Month Jump Navigation */}
+    {monthlyGroups.length > 1 && (
+      <nav class="fc-archive-jump" aria-label="Jump to month">
+        <span class="fc-archive-jump-label">Jump to month:</span>
+        {monthlyGroups.map((group) => (
+          <a href={`#month-${group.monthKey}`} class="fc-btn-outline fc-archive-jump-pill">
+            {group.label} ({group.articles.length})
+          </a>
+        ))}
+      </nav>
+    )}
+
+    {/* Chronological Monthly Filing Index */}
+    <section class="fc-archive-section" aria-labelledby="fc-archive-months-heading">
+      <div class="fc-archive-section-head">
+        <h2 id="fc-archive-months-heading" class="fc-archive-h2">Filings by Month</h2>
+        <a href="/ledger" class="fc-see-more">Filter &amp; Search Full Ledger &raquo;</a>
+      </div>
+
+      {monthlyGroups.map((group) => (
+        <div class="fc-archive-month" id={`month-${group.monthKey}`}>
+          <div class="fc-archive-month-bar">
+            <h3 class="fc-archive-month-title">{group.label}</h3>
+            <span class="fc-archive-month-meta">
+              {group.articles.length} {group.articles.length === 1 ? 'filing' : 'filings'} &middot;{' '}
+              Scale {formatUsdShort(group.totalLootUsd)} &middot; Penalties{' '}
+              {formatUsdShort(group.totalFinesUsd)}
+            </span>
+          </div>
+
+          <ul class="fc-archive-list">
+            {group.articles.map((item) => (
+              <li class="fc-archive-row">
+                <span class="fc-archive-row-date">{formatShortDate(item.publish_date)}</span>
+                <div class="fc-archive-row-main">
+                  <a href={item.url} class="fc-headline-link fc-archive-row-headline">
+                    {item.headline}
+                  </a>
+                  <span class="fc-archive-row-sub">
+                    {item.city} &middot; {item.agencies.join(', ')}
+                    {item.docket_number ? ` · ${item.docket_number}` : ''}
+                  </span>
+                </div>
+                <div class="fc-archive-row-stats">
+                  <span>{item.financials.amount_display}</span>
+                  <span class="fc-archive-row-ratio">
+                    {formatFineRatio(item.financials.fine_ratio_pct, 'Pending')}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+  </div>
+</BaseLayout>

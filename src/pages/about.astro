@@ -1,35 +1,18 @@
 ---
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CompactHeader from '../components/CompactHeader.astro';
 import { loadAllArticles } from '../loaders/articles';
-import type { PaintRefManifestEntry } from '../painting/types';
+import { getPaintRefLookup } from '../painting/refs-loader';
+import { buildCreditEntries, summarizeLicenses } from '../utils/ledger';
 
-const articles = await loadAllArticles();
-const articleBySlug = new Map(articles.map((a) => [a.slug, a]));
-
-const paintRefsPath = path.join(process.cwd(), 'content', 'paint-refs.json');
-const rawRefs = await fs.readFile(paintRefsPath, 'utf-8');
-const paintRefs = JSON.parse(rawRefs) as Record<string, PaintRefManifestEntry>;
-
-const creditRows = Object.entries(paintRefs)
-  .map(([slug, ref]) => {
-    const article = articleBySlug.get(slug);
-    return {
-      slug,
-      headline: article?.headline ?? slug,
-      href: article?.url ?? null,
-      subject: ref.subject ?? 'Editorial reference study',
-      sourceUrl: ref.sourceUrl ?? null,
-      sourceLicense: ref.sourceLicense ?? 'Public Reference',
-    };
-  })
-  .sort((a, b) => a.headline.localeCompare(b.headline));
+const [articles, { manifest }] = await Promise.all([loadAllArticles(), getPaintRefLookup()]);
+const creditRows = buildCreditEntries(articles, manifest);
+const licenseSummary = summarizeLicenses(creditRows);
 
 const topicLinks = [
   { label: 'Front Page', href: '/' },
   { label: 'About & Methodology', href: '/about', current: true },
+  { label: 'Reference Credits', href: '/credits' },
   { label: 'Corrections', href: '/corrections' },
   { label: 'The Ledger', href: '/ledger' },
 ];
@@ -171,7 +154,8 @@ const topicLinks = [
         <p>
           Reader sign-ups, public-filing tip submissions, and direct correction intake are
           <strong>coming soon</strong>. Until then, follow new editions via our{' '}
-          <a href="/rss.xml">RSS feed</a> and review our{' '}
+          <a href="/rss.xml">RSS feed</a>, browse past issues in the{' '}
+          <a href="/archive">Edition Archive</a>, and review our{' '}
           <a href="/corrections">Corrections &amp; Legal Updates</a> log.
         </p>
       </div>
@@ -185,48 +169,23 @@ const topicLinks = [
           Canvas as an impressionist oil study derived from open-licensed or public-domain
           reference photographs ({creditRows.length} cataloged studies). In full compliance with
           Creative Commons (CC BY / CC BY-SA), Open Government Licence (OGL), and CC0 attribution
-          terms, each captioned study links directly to its reference source below and beneath its
-          article frame:
+          terms, each captioned study links directly to its reference source beneath its article
+          frame and in our searchable credits directory.
         </p>
-      </div>
 
-      <div class="fc-trust-table-wrap">
-        <table class="fc-trust-table">
-          <thead>
-            <tr>
-              <th scope="col">Dispatch</th>
-              <th scope="col">Reference Subject</th>
-              <th scope="col">License</th>
-              <th scope="col">Source</th>
-            </tr>
-          </thead>
-          <tbody>
-            {creditRows.map((row) => (
-              <tr>
-                <td>
-                  {row.href ? (
-                    <a href={row.href}>{row.headline}</a>
-                  ) : (
-                    <span>{row.headline}</span>
-                  )}
-                </td>
-                <td>{row.subject}</td>
-                <td>
-                  <span class="fc-trust-license-badge">{row.sourceLicense}</span>
-                </td>
-                <td>
-                  {row.sourceUrl ? (
-                    <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">
-                      Wikimedia Commons &nearr;
-                    </a>
-                  ) : (
-                    <span>&mdash;</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div class="fc-credits-license-strip" aria-label="License distribution">
+          {licenseSummary.map((item) => (
+            <span class="fc-trust-license-badge">
+              {item.license} &middot; {item.count}
+            </span>
+          ))}
+        </div>
+
+        <p style="margin-top: 16px;">
+          <a href="/credits" class="fc-btn-outline" style="display: inline-block; text-decoration: none;">
+            Browse All {creditRows.length} Reference Credits &amp; Licenses &rarr;
+          </a>
+        </p>
       </div>
     </section>
   </article>

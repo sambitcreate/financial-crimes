@@ -173,6 +173,16 @@ const normalizedPath =
             <span class="fc-drawer-primary-meta">{volume}</span>
           </a>
         </li>
+        <li>
+          <a
+            class="fc-drawer-primary-link"
+            href="/archive"
+            aria-current={normalizedPath === '/archive' ? 'page' : undefined}
+          >
+            <span>Edition Archive</span>
+            <span class="fc-drawer-primary-meta">By Month</span>
+          </a>
+        </li>
       </ul>
 
       {/* Animated <details> Desk Accordions */}
@@ -244,7 +254,15 @@ const normalizedPath =
           class="fc-drawer-meta-link"
           aria-current={normalizedPath === '/about' ? 'page' : undefined}
         >
-          About &amp; Methodology
+          About
+        </a>
+        <span aria-hidden="true">&middot;</span>
+        <a
+          href="/credits"
+          class="fc-drawer-meta-link"
+          aria-current={normalizedPath === '/credits' ? 'page' : undefined}
+        >
+          Credits
         </a>
         <span aria-hidden="true">&middot;</span>
         <a

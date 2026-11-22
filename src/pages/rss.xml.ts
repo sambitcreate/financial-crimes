@@ -1,9 +1,11 @@
 import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
 import { loadAllArticles } from '../loaders/articles';
+import { RSS_MAX_ITEMS, selectRssItems } from '../utils/ledger';
 
 export async function GET(context: APIContext) {
   const articles = await loadAllArticles();
+  const latest = selectRssItems(articles, RSS_MAX_ITEMS);
   const site = context.site ?? new URL('https://financialcrimes.fyi');
 
   return rss({
@@ -12,7 +14,7 @@ export async function GET(context: APIContext) {
       'All the Crimes Fit to Fine — Daily broadsheet tracking global white-collar crime, regulatory fines, and prison time from primary court and agency filings.',
     site,
     trailingSlash: false,
-    items: articles.map((article) => ({
+    items: latest.map((article) => ({
       title: article.headline,
       description: article.deck,
       pubDate: new Date(article.publish_date),

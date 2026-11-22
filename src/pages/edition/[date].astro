@@ -91,12 +91,20 @@ const listed = new Set([
 
 const pageBusiness = [
   ...resolveList(edition.slots.ledger),
-  ...allArticles.filter((a) => !listed.has(a.slug) && !edition.slots.ledger.includes(a.slug)),
+  ...allArticles.filter(
+    (a) =>
+      a.edition_date === edition.edition_date &&
+      !listed.has(a.slug) &&
+      !edition.slots.ledger.includes(a.slug)
+  ),
 ];
+
+const editionFilingCount = pageA1.length + pageA2.length + pageOpinion.length + pageBusiness.length;
 
 const topicLinks = [
   { label: 'Front Page', href: '/' },
   { label: "Today's Docket", href: `/edition/${edition.edition_date}`, current: true },
+  { label: 'Archive', href: '/archive' },
   { label: 'The Ledger', href: '/ledger' },
 ];
 ---
@@ -123,12 +131,12 @@ const topicLinks = [
         {edition.display_date}
       </h1>
       <p style="font-family: var(--fc-font-body); font-size: 16px; color: var(--fc-ink-muted); margin: 0 0 14px;">
-        {allArticles.length} filings totaling <strong>{rollup.total_loot_display}</strong> in alleged scale.
+        {editionFilingCount} filings in this edition &middot; Running docket totals <strong>{rollup.total_loot_display}</strong> in alleged scale.
       </p>
 
       {allEditions.length > 1 && (
         <div style="display: inline-flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
-          {allEditions.map((ed) => (
+          {allEditions.slice(0, 8).map((ed) => (
             <a
               href={`/edition/${ed.edition_date}`}
               class={ed.edition_date === edition.edition_date ? 'fc-btn-slate' : 'fc-btn-outline'}
@@ -136,6 +144,9 @@ const topicLinks = [
               {formatBroadsheetDate(ed.edition_date)}
             </a>
           ))}
+          {allEditions.length > 8 && (
+            <a href="/archive" class="fc-btn-outline">All Editions &rarr;</a>
+          )}
         </div>
       )}
     </header>

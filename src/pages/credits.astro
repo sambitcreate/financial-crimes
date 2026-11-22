@@ -1,0 +1,312 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CompactHeader from '../components/CompactHeader.astro';
+import { loadAllArticles } from '../loaders/articles';
+import { getPaintRefLookup } from '../painting/refs-loader';
+import {
+  buildCreditEntries,
+  CREDITS_PAGE_SIZE,
+  paginateItems,
+  summarizeLicenses,
+} from '../utils/ledger';
+
+const [articles, { manifest }] = await Promise.all([loadAllArticles(), getPaintRefLookup()]);
+const allCredits = buildCreditEntries(articles, manifest);
+const licenseSummary = summarizeLicenses(allCredits);
+const initialPage = paginateItems(allCredits, 1, CREDITS_PAGE_SIZE);
+
+const topicLinks = [
+  { label: 'Front Page', href: '/' },
+  { label: 'About & Methodology', href: '/about' },
+  { label: 'Reference Credits', href: '/credits', current: true },
+  { label: 'Archive', href: '/archive' },
+  { label: 'The Ledger', href: '/ledger' },
+];
+---
+
+<BaseLayout
+  title="Reference Portrait Credits & Licenses — The Financial Crimes"
+  description="Complete Creative Commons, Open Government Licence, and public-domain attribution directory for every procedurally painted editorial oil study on The Financial Crimes."
+  canonicalPath="/credits"
+>
+  <CompactHeader
+    slot="header"
+    showTopicBar={true}
+    topicTitle="Credits"
+    topicLinks={topicLinks}
+  />
+
+  <article
+    class="fc-trust-page"
+    id="fc-credits-root"
+    data-total-credits={allCredits.length}
+    data-page-size={CREDITS_PAGE_SIZE}
+  >
+    <header class="fc-trust-header">
+      <p class="fc-eyebrow fc-eyebrow--crimson" style="margin: 0;">
+        CREATIVE COMMONS &amp; PUBLIC DOMAIN REGISTRY
+      </p>
+      <h1 class="fc-trust-h1">Reference Portrait Credits</h1>
+      <p class="fc-trust-deck">
+        Every editorial illustration on The Financial Crimes is procedurally rendered in HTML5
+        Canvas from open-licensed or public-domain reference imagery ({allCredits.length} cataloged
+        studies). Each study also carries a direct source link beneath its article frame.
+      </p>
+
+      <div class="fc-credits-license-strip" aria-label="License breakdown">
+        {licenseSummary.map((item) => (
+          <span class="fc-trust-license-badge">
+            {item.license} &middot; {item.count}
+          </span>
+        ))}
+      </div>
+    </header>
+
+    <section class="fc-credits-controls" aria-label="Filter reference credits">
+      <label class="fc-sr-only" for="fc-credits-search">Search credits by dispatch or subject</label>
+      <input
+        type="search"
+        id="fc-credits-search"
+        class="fc-credits-search"
+        placeholder="Search dispatch, subject, or license..."
+      />
+
+      <label class="fc-sr-only" for="fc-credits-license">Filter by license</label>
+      <select id="fc-credits-license" class="fc-credits-select">
+        <option value="all">All Licenses ({allCredits.length})</option>
+        {licenseSummary.map((item) => (
+          <option value={item.license}>
+            {item.license} ({item.count})
+          </option>
+        ))}
+      </select>
+    </section>
+
+    <div
+      id="fc-credits-empty"
+      hidden
+      style="padding: 36px 20px; text-align: center; border-bottom: 1px solid var(--fc-rule-column);"
+    >
+      <p style="font-family: var(--fc-font-headline); font-size: 20px; margin: 0 0 10px;">
+        No reference credits match that filter.
+      </p>
+      <button type="button" class="fc-btn-outline" id="fc-credits-reset">
+        Reset Filter
+      </button>
+    </div>
+
+    <div class="fc-trust-table-wrap" id="fc-credits-table-wrap">
+      <table class="fc-trust-table">
+        <thead>
+          <tr>
+            <th scope="col">Dispatch</th>
+            <th scope="col">Reference Subject</th>
+            <th scope="col">License</th>
+            <th scope="col">Source</th>
+          </tr>
+        </thead>
+        <tbody id="fc-credits-tbody">
+          {initialPage.items.map((row) => (
+            <tr>
+              <td>
+                {row.href ? (
+                  <a href={row.href}>{row.headline}</a>
+                ) : (
+                  <span>{row.headline}</span>
+                )}
+              </td>
+              <td>{row.subject}</td>
+              <td>
+                <span class="fc-trust-license-badge">{row.sourceLicense}</span>
+              </td>
+              <td>
+                {row.sourceUrl ? (
+                  <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">
+                    Reference Source &nearr;
+                  </a>
+                ) : (
+                  <span>&mdash;</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <nav class="fc-pagination" id="fc-credits-pagination" aria-label="Credits pagination">
+      <span class="fc-pagination-summary" id="fc-credits-summary">
+        {initialPage.totalItems > 0
+          ? `Showing ${initialPage.startIndex}–${initialPage.endIndex} of ${initialPage.totalItems} studies`
+          : '0 studies'}
+      </span>
+      <div class="fc-pagination-controls" id="fc-credits-controls-nav" hidden={initialPage.totalPages <= 1}>
+        <button type="button" class="fc-btn-outline fc-pagination-btn" id="fc-credits-prev" disabled>
+          &larr; Previous
+        </button>
+        <span class="fc-pagination-status" id="fc-credits-page-status">
+          Page {initialPage.page} of {initialPage.totalPages}
+        </span>
+        <button
+          type="button"
+          class="fc-btn-outline fc-pagination-btn"
+          id="fc-credits-next"
+          disabled={initialPage.page >= initialPage.totalPages}
+        >
+          Next &rarr;
+        </button>
+      </div>
+    </nav>
+  </article>
+</BaseLayout>
+
+<script>
+  import {
+    CREDITS_PAGE_SIZE,
+    filterCreditEntries,
+    paginateItems,
+    type CreditEntry,
+  } from '../utils/ledger';
+
+  const root = document.getElementById('fc-credits-root');
+  const pageSize = Number(root?.dataset.pageSize || CREDITS_PAGE_SIZE) || CREDITS_PAGE_SIZE;
+  const totalInitial = Number(root?.dataset.totalCredits || 0);
+
+  const searchInput = document.getElementById('fc-credits-search') as HTMLInputElement | null;
+  const licenseSel = document.getElementById('fc-credits-license') as HTMLSelectElement | null;
+  const tableWrap = document.getElementById('fc-credits-table-wrap');
+  const tbody = document.getElementById('fc-credits-tbody');
+  const emptyEl = document.getElementById('fc-credits-empty');
+  const resetBtn = document.getElementById('fc-credits-reset');
+
+  const paginationNav = document.getElementById('fc-credits-pagination');
+  const summaryEl = document.getElementById('fc-credits-summary');
+  const controlsNav = document.getElementById('fc-credits-controls-nav');
+  const pageStatus = document.getElementById('fc-credits-page-status');
+  const prevBtn = document.getElementById('fc-credits-prev') as HTMLButtonElement | null;
+  const nextBtn = document.getElementById('fc-credits-next') as HTMLButtonElement | null;
+
+  let allCredits: CreditEntry[] | null = null;
+  let fetchPromise: Promise<CreditEntry[]> | null = null;
+  let currentPage = 1;
+
+  async function ensureCreditsIndex(): Promise<CreditEntry[]> {
+    if (allCredits) return allCredits;
+    if (!fetchPromise) {
+      fetchPromise = fetch('/credits-index.json')
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data: { entries?: CreditEntry[] }) => {
+          allCredits = Array.isArray(data.entries) ? data.entries : [];
+          return allCredits;
+        })
+        .catch(() => {
+          fetchPromise = null;
+          return [];
+        });
+    }
+    return fetchPromise;
+  }
+
+  function createCreditRow(row: CreditEntry): HTMLTableRowElement {
+    const tr = document.createElement('tr');
+
+    const tdDispatch = document.createElement('td');
+    if (row.href) {
+      const a = document.createElement('a');
+      a.href = row.href;
+      a.textContent = row.headline;
+      tdDispatch.appendChild(a);
+    } else {
+      const span = document.createElement('span');
+      span.textContent = row.headline;
+      tdDispatch.appendChild(span);
+    }
+    tr.appendChild(tdDispatch);
+
+    const tdSubject = document.createElement('td');
+    tdSubject.textContent = row.subject;
+    tr.appendChild(tdSubject);
+
+    const tdLicense = document.createElement('td');
+    const badge = document.createElement('span');
+    badge.className = 'fc-trust-license-badge';
+    badge.textContent = row.sourceLicense;
+    tdLicense.appendChild(badge);
+    tr.appendChild(tdLicense);
+
+    const tdSource = document.createElement('td');
+    if (row.sourceUrl) {
+      const a = document.createElement('a');
+      a.href = row.sourceUrl;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = 'Reference Source ↗';
+      tdSource.appendChild(a);
+    } else {
+      tdSource.textContent = '—';
+    }
+    tr.appendChild(tdSource);
+
+    return tr;
+  }
+
+  async function renderCredits(resetPage = false) {
+    if (resetPage) currentPage = 1;
+    const entries = await ensureCreditsIndex();
+    const filtered = filterCreditEntries(
+      entries,
+      searchInput?.value || '',
+      licenseSel?.value || 'all'
+    );
+    const paged = paginateItems(filtered, currentPage, pageSize);
+    currentPage = paged.page;
+
+    if (emptyEl) emptyEl.hidden = paged.totalItems > 0;
+    if (tableWrap) tableWrap.hidden = paged.totalItems === 0;
+    if (paginationNav) paginationNav.hidden = paged.totalItems === 0;
+
+    if (tbody) {
+      const frag = document.createDocumentFragment();
+      for (const row of paged.items) {
+        frag.appendChild(createCreditRow(row));
+      }
+      tbody.replaceChildren(frag);
+    }
+
+    if (summaryEl) {
+      summaryEl.textContent =
+        paged.totalItems > 0
+          ? `Showing ${paged.startIndex}–${paged.endIndex} of ${paged.totalItems} studies`
+          : '0 studies';
+    }
+    if (controlsNav) controlsNav.hidden = paged.totalPages <= 1;
+    if (pageStatus) pageStatus.textContent = `Page ${paged.page} of ${paged.totalPages}`;
+    if (prevBtn) prevBtn.disabled = paged.page <= 1;
+    if (nextBtn) nextBtn.disabled = paged.page >= paged.totalPages;
+  }
+
+  searchInput?.addEventListener('input', () => void renderCredits(true));
+  licenseSel?.addEventListener('change', () => void renderCredits(true));
+  prevBtn?.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage -= 1;
+      void renderCredits(false);
+    }
+  });
+  nextBtn?.addEventListener('click', () => {
+    currentPage += 1;
+    void renderCredits(false);
+  });
+  resetBtn?.addEventListener('click', () => {
+    if (searchInput) searchInput.value = '';
+    if (licenseSel) licenseSel.value = 'all';
+    void renderCredits(true);
+  });
+
+  if (totalInitial > pageSize) {
+    void ensureCreditsIndex();
+  }
+</script>
