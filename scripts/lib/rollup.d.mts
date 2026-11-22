@@ -12,7 +12,7 @@ export declare const CLEARED_STAGES: readonly ['dismissed', 'acquitted'];
 export declare const ALL_STAGES: readonly string[];
 export declare const REGION_LABELS: Readonly<Record<string, string>>;
 
-export interface RollupRegion {
+export type RollupRegion = {
   label: string;
   case_count: number;
   resolved_case_count: number;
@@ -27,9 +27,9 @@ export interface RollupRegion {
   total_frozen_usd: number;
   total_frozen_display: string;
   avg_fine_ratio_pct: number | null;
-}
+};
 
-export interface RollupBody {
+export type RollupBody = {
   edition_date: string;
   total_cases: number;
   resolved_cases: number;
@@ -49,11 +49,11 @@ export interface RollupBody {
   avg_slap_on_wrist_score: number;
   zero_prison_cases: number;
   regions: Record<string, RollupRegion>;
-}
+};
 
-export interface RollupFile extends RollupBody {
+export type RollupFile = RollupBody & {
   as_of: string;
-}
+};
 
 export interface RollupInputArticle {
   slug: string;

@@ -55,5 +55,10 @@
     "caption": "Shastri Bhawan in New Delhi, home to India’s Ministry of Corporate Affairs, where S.F.I.O. operates.",
     "credit": "Oil Study · The Financial Crimes"
   },
-  "status": "published"
+  "status": "published",
+  "retracted": {
+    "date": "2026-11-22",
+    "note": "Withdrawn pending primary-source verification. This report relied on news accounts of a CBI statement; we have not located the CBI's own press release or a court filing, which our standards require for every story. We are not aware of any factual error. The story will be restored if an official filing becomes available."
+  },
+  "updated_at": "2026-11-22"
 }

@@ -625,7 +625,10 @@ export async function validateContent(options = {}) {
         errors.push(`${where}: sources[${idx}].date ${source.date} is in the future`);
       }
     }
-    if (primaryCount === 0) {
+    if (primaryCount === 0 && meta.retracted) {
+      // A retraction tombstone may exist precisely because no primary filing could be found.
+      warnings.push(`${where}: retracted article has no official primary source (ok while retracted)`);
+    } else if (primaryCount === 0) {
       errors.push(
         `${where}: needs at least one non-secondary source on an official domain (court, regulator, prosecutor)`
       );

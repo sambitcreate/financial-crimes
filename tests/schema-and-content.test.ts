@@ -5,6 +5,7 @@ import {
   clearArticleCache,
   computeRollupFromArticles,
   loadAllArticles,
+  loadAllArticlesIncludingRetracted,
   loadRollupStats,
 } from '../src/loaders/articles';
 import { ArticleMetaSchema, PaintRefsManifestSchema } from '../src/schemas/article';
@@ -147,7 +148,9 @@ describe('Article loaders, caching, rollup parity, and 1:1 paint-refs', () => {
   });
 
   it('validates 1:1 paint-refs.json coverage and valid JPEG files (>5 KB, FF D8 FF)', async () => {
-    const articles = await loadAllArticles();
+    // Retracted articles keep their paint-ref (the tombstone page still exists), so compare
+    // against every article on disk, not just the live listing.
+    const articles = await loadAllArticlesIncludingRetracted();
     const rawRefs = await fs.readFile(
       path.join(PROJECT_ROOT, 'content', 'paint-refs.json'),
       'utf-8'

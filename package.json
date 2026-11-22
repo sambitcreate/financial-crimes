@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "The Financial Crimes — Independent satirical-yet-factually-grounded digital broadsheet covering global white-collar, corporate, and regulatory financial crimes.",
+  "description": "The Financial Crimes \u2014 Independent satirical-yet-factually-grounded digital broadsheet covering global white-collar, corporate, and regulatory financial crimes.",
   "scripts": {
     "dev": "astro dev",
     "build": "npm run validate:content && npm run build:site",
-    "build:site": "astro build && node scripts/generate-og-cards.mjs && npx pagefind --site dist",
+    "build:site": "astro build && node scripts/generate-og-cards.mjs && node scripts/generate-redirects.mjs && npx pagefind --site dist && node scripts/check-csp.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run",
-    "validate:content": "node --experimental-strip-types scripts/validate-content.mjs",
+    "validate:content": "node --experimental-strip-types scripts/validate-content.mjs && node scripts/recompute-rollup.mjs --check",
     "verify": "npm run validate:content && npm test && npm run check && npm run build:site",
     "rollup:recompute": "node scripts/recompute-rollup.mjs",
     "judge:slap": "node pipeline/judge-wrist-slap.mjs",
@@ -36,5 +36,8 @@
     "typescript": "^5.8.3",
     "vitest": "^5.1.1",
     "wrangler": "^4.165.0"
+  },
+  "engines": {
+    "node": ">=22.6"
   }
 }

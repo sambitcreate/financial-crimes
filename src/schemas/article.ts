@@ -245,6 +245,11 @@ export const ScoreProvenanceSchema = z
     judged_at: IsoDateTimeSchema,
     components: z.record(z.string(), z.number().int()).optional(),
     rationale: z.string().optional(),
+    /** sha256 of the case facts sent to the judge; lets the sweep detect changed inputs. */
+    inputs_sha256: z
+      .string()
+      .regex(/^[a-f0-9]{64}$/, 'inputs_sha256 must be 64 lowercase hex chars')
+      .optional(),
   })
   .strict();
 export type ScoreProvenance = z.infer<typeof ScoreProvenanceSchema>;

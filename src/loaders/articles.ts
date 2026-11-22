@@ -7,7 +7,6 @@ import {
   type ArticleMeta,
   type ArticleRecord,
   type EditionManifest,
-  type RollupStats,
 } from '../schemas/article';
 import {
   computeRollup,
@@ -20,7 +19,7 @@ import {
  * Full rollup shape produced by scripts/lib/rollup.mjs. A superset of the schema's RollupStats:
  * adds resolved/alleged loot split, frozen (unresolved-case) money and case-status counts.
  */
-export type LedgerRollup = RollupFile & RollupStats;
+export type LedgerRollup = RollupFile;
 export type LedgerRollupRegion = RollupRegion;
 
 const PROJECT_ROOT = process.cwd();
