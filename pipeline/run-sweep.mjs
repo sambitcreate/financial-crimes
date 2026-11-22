@@ -2,19 +2,26 @@
 /**
  * The Financial Crimes — Daily Remote Sweep & Auto-Publish Orchestrator (v1.4)
  *
- * Target Phase 2 Schedule (America/New_York, DST-safe; cron paused until Phase 2 fetchers land):
+ * Target Phase 2 Schedule (America/New_York, DST-safe; the live daily sweep currently runs as an
+ * Antigravity Scheduled Automation, not this script):
  *   - 6:00 AM ET (`--mode sweep`):   Global white-collar feed sweep -> Gemini research,
  *                                    lean NYT-register drafting, Wikimedia/public-domain
  *                                    reference portrait sourcing (`public/paint-refs/<slug>.jpg`,
  *                                    max 320px RGB JPEG >5KB), and Canvas 2D impasto painting config
  *                                    generation via `pipeline/prompts/js-painting-prompt.md`
  *                                    (`content/paint-refs.json`), plus Gemini wrist-slap scoring.
- *   - 7:00 AM ET (`--mode publish`): Pre-press validation (articles + paint-refs + JPEGs),
- *                                    edition manifest finalization & auto-publish handoff
- *                                    to GitHub + Cloudflare CI/CD.
+ *   - 7:00 AM ET (planned `--mode publish`, not implemented): pre-press validation, edition
+ *                                    manifest finalization & publish handoff.
  *
- * AI Engine: Gemini API (`GEMINI_MODEL`, default `gemini-2.5-pro`; configurable for newer models)
+ * AI Engine: Gemini API (`GEMINI_MODEL`, default DEFAULT_GEMINI_MODEL in pipeline/config.mjs)
  *   or optional Antigravity managed remote agent.
+ *
+ * Modes:
+ *   --mode dry-run  (default) non-mutating audit; needs no API key.
+ *   --mode sweep    requires GEMINI_API_KEY (exits 1 without it). Judges ONLY unscored or changed
+ *                   resolved cases (never re-rolls published scores), writes atomically and
+ *                   recomputes content/ledger/rollup-stats.json.
+ *   Any other --mode value exits 1. Feed fetchers and article drafting remain scaffolded.
  * Painting Architecture: Canvas 2D impasto engine (`src/painting/`) following the Wet-Oil &
  *   Archival Exhibit interaction standard (shared lower-left Archival Exhibit Plate + 6 dignified
  *   wet-oil/fine-print surface reactions; zero floating center text, zero cartoon particles,
@@ -26,8 +33,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { judgeAll } from './judge-wrist-slap.mjs';
+import { resolveGeminiModel } from './config.mjs';
 
-const DEFAULT_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-pro';
+const DEFAULT_MODEL = resolveGeminiModel();
+const MODES = new Set(['dry-run', 'sweep']);
 const ARTICLES_ROOT = path.join(process.cwd(), 'content', 'articles');
 const PAINTING_PROMPT_PATH = path.join(process.cwd(), 'pipeline', 'prompts', 'js-painting-prompt.md');
 const PAINT_REFS_MANIFEST_PATH = path.join(process.cwd(), 'content', 'paint-refs.json');
@@ -207,12 +216,19 @@ function parseArgs(argv) {
     date: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()),
   };
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === '--mode' && argv[i + 1]) {
-      args.mode = argv[++i];
-    } else if (argv[i] === '--date' && argv[i + 1]) {
-      args.date = argv[++i];
+    const arg = argv[i];
+    if (arg === '--mode' || arg === '--date') {
+      const value = argv[++i];
+      if (!value || value.startsWith('--')) throw new Error(`${arg} requires a value`);
+      args[arg.slice(2)] = value;
+    } else {
+      throw new Error(`unknown argument "${arg}"`);
     }
   }
+  if (!MODES.has(args.mode)) {
+    throw new Error(`unknown --mode "${args.mode}" (expected one of: ${[...MODES].join(', ')})`);
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(args.date)) throw new Error(`--date must be YYYY-MM-DD (got "${args.date}")`);
   return args;
 }
 
@@ -221,6 +237,12 @@ async function runSweepBlueprint({ mode, date }) {
   const hasAntigravityAgent = Boolean(
     process.env.ANTIGRAVITY_AGENT_ENDPOINT && process.env.ANTIGRAVITY_AGENT_TOKEN
   );
+
+  if (mode === 'sweep' && !hasGeminiKey) {
+    console.error('[sweep] GEMINI_API_KEY is not set: --mode sweep cannot run. Use --mode dry-run for the non-mutating audit.');
+    process.exitCode = 1;
+    return;
+  }
 
   const promptAudit = await auditPaintingPrompt();
   const paintAudit = await auditPaintRefs().catch((err) => ({
@@ -256,51 +278,46 @@ async function runSweepBlueprint({ mode, date }) {
     return;
   }
 
-  if (mode === 'dry-run' || (!hasGeminiKey && !hasAntigravityAgent)) {
+  if (mode === 'dry-run') {
     console.log('\n[blueprint] Running in safe non-mutating dry-run mode (no files mutated).');
     console.log('[blueprint] Phase 2 activation steps:');
-    console.log('  1. Add GEMINI_API_KEY (or ANTIGRAVITY_AGENT_ENDPOINT + TOKEN) to GitHub Secrets.');
+    console.log('  1. Provide GEMINI_API_KEY (or ANTIGRAVITY_AGENT_ENDPOINT + TOKEN) to the scheduled automation.');
     console.log('  2. Wire feed fetchers + Wikimedia Commons portrait normalizer (max 320px RGB JPEG, >5KB)');
     console.log('     in pipeline/fetchers/ writing to public/paint-refs/<slug>.jpg.');
     console.log('  3. Wire 6:00 AM ET sweep article drafting using pipeline/prompts/js-painting-prompt.md');
     console.log('     (sanitized body.html + meta.json + content/paint-refs.json with https:// CC attribution)');
-    console.log('     and a git commit/PR step, then unpause the cron schedule in daily-sweep.yml.');
+    console.log('     and a git commit/PR step.');
     console.log('  4. 7:00 AM ET publish runs validate:content + test + check + build and merges to main.');
     return;
   }
 
-  // Verify editions directory exists before pipeline execution
-  const editionsDir = path.join(process.cwd(), 'content', 'editions');
-  await fs.mkdir(editionsDir, { recursive: true });
-
-  // Wrist-slap scores are always Gemini's call (PRD §2.3 rubric), never hand-entered
-  let scoredChanges = 0;
-  if (mode === 'sweep' && hasGeminiKey) {
-    scoredChanges = await judgeAll({
-      apiKey: process.env.GEMINI_API_KEY,
-      write: true,
-      model: DEFAULT_MODEL,
-    });
-  }
+  // mode === 'sweep' with GEMINI_API_KEY. Wrist-slap scores are always Gemini's call (PRD §2.3
+  // rubric), never hand-entered; only unscored / changed resolved cases are judged.
+  const summary = await judgeAll({
+    apiKey: process.env.GEMINI_API_KEY,
+    write: true,
+    model: DEFAULT_MODEL,
+  });
 
   console.log(`\n[${mode}] Completed ${DEFAULT_MODEL} run for edition ${date}.`);
-  console.log(`[${mode}] Loaded impasto master prompt (${path.relative(process.cwd(), PAINTING_PROMPT_PATH)}).`);
-  if (mode === 'sweep' && hasGeminiKey) {
-    console.log(
-      `[${mode}] Wrist-slap scoring wrote ${scoredChanges} meta.json update(s). Phase 2 feed fetchers & remote article drafting remain scaffolded (no new articles drafted).`
-    );
-  } else {
-    console.log(`[${mode}] Phase 2 remote article drafting & publish hooks are scaffolded; no files mutated.`);
-  }
+  console.log(
+    `[${mode}] Wrist-slap: ${summary.targets.length} case(s) judged, ${summary.written.length} meta.json update(s), rollup ${summary.rollupChanged ? 'recomputed' : 'unchanged'}. Phase 2 feed fetchers & remote article drafting remain scaffolded (no new articles drafted).`
+  );
 }
 
 const isDirectRun =
   process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 
 if (isDirectRun) {
-  const parsed = parseArgs(process.argv.slice(2));
+  let parsed;
+  try {
+    parsed = parseArgs(process.argv.slice(2));
+  } catch (err) {
+    console.error(`Pipeline error: ${err.message}`);
+    process.exit(1);
+  }
   runSweepBlueprint(parsed).catch((err) => {
-    console.error('Pipeline error:', err);
+    console.error('Pipeline error:', err.message ?? err);
     process.exit(1);
   });
 }
