@@ -56,7 +56,10 @@ const heroRef = await resolvePaintRef({
 const publishedStamp = formatDatelineTimestamp(article.publish_date);
 const siteBase = Astro.site ?? new URL('https://financialcrimes.fyi');
 const articleCanonicalUrl = new URL(article.url, siteBase).toString();
-const ogImageUrl = new URL('/og-card.png', siteBase).toString();
+const ogImagePath = `/og/${article.slug}.png`;
+const ogImageUrl = new URL(ogImagePath, siteBase).toString();
+const ogImageAlt = `${article.headline} — The Financial Crimes`;
+const publisherLogoUrl = new URL('/og-card.png', siteBase).toString();
 const articleJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'NewsArticle',
@@ -80,7 +83,7 @@ const articleJsonLd = {
     url: siteBase.toString().replace(/\/+$/, ''),
     logo: {
       '@type': 'ImageObject',
-      url: ogImageUrl,
+      url: publisherLogoUrl,
       width: 1200,
       height: 630,
     },
@@ -93,6 +96,8 @@ const articleJsonLd = {
   description={article.deck}
   canonicalPath={article.url}
   ogType="article"
+  ogImage={ogImagePath}
+  ogImageAlt={ogImageAlt}
   publishedTime={article.publish_date}
   jsonLd={articleJsonLd}
   preloadImage={heroRef.entry?.refImage}
@@ -121,13 +126,17 @@ const articleJsonLd = {
       <h1 class="fc-article-h1" data-pagefind-meta="title">{article.headline}</h1>
       <p class="fc-article-deck">{article.deck}</p>
 
-      {/* Tight Action Bar: Crime Receipt, Share, Save */}
+      {/* Tight Action Bar: Crime Receipt, Primary Filings, Share, Save */}
       <div class="fc-action-bar fc-article-action-bar">
         <div class="fc-action-left">
           <button type="button" class="fc-btn-pill" data-open-receipt>
             <span aria-hidden="true">&#129534;</span>
             <span>Crime Receipt</span>
           </button>
+          <a href="#primary-filings" class="fc-btn-pill fc-btn-pill--filings">
+            <span>Primary Filings ({article.sources.length})</span>
+            <span aria-hidden="true">&darr;</span>
+          </a>
           <span class="fc-meta-readtime">{article.read_time_min} MIN READ</span>
         </div>
 
@@ -236,7 +245,7 @@ const articleJsonLd = {
     <CompareStreetCrime article={article} />
 
     {/* Compact Primary Filings Box */}
-    <section class="fc-sources-box" aria-label="Primary filings">
+    <section id="primary-filings" class="fc-sources-box" aria-label="Primary filings">
       <h2 class="fc-sources-title">Primary Filings</h2>
       <ul class="fc-sources-list" style="margin-top: 8px;">
         {article.sources.map((src) => (

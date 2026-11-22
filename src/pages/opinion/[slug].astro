@@ -46,7 +46,10 @@ const related = allArticles
 
 const siteBase = Astro.site ?? new URL('https://financialcrimes.fyi');
 const opinionCanonicalUrl = new URL(article.url, siteBase).toString();
-const ogImageUrl = new URL('/og-card.png', siteBase).toString();
+const ogImagePath = `/og/${article.slug}.png`;
+const ogImageUrl = new URL(ogImagePath, siteBase).toString();
+const ogImageAlt = `${article.headline} — The Financial Crimes`;
+const publisherLogoUrl = new URL('/og-card.png', siteBase).toString();
 const opinionJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'NewsArticle',
@@ -70,7 +73,7 @@ const opinionJsonLd = {
     url: siteBase.toString().replace(/\/+$/, ''),
     logo: {
       '@type': 'ImageObject',
-      url: ogImageUrl,
+      url: publisherLogoUrl,
       width: 1200,
       height: 630,
     },
@@ -83,6 +86,8 @@ const opinionJsonLd = {
   description={article.deck}
   canonicalPath={article.url}
   ogType="article"
+  ogImage={ogImagePath}
+  ogImageAlt={ogImageAlt}
   publishedTime={article.publish_date}
   jsonLd={opinionJsonLd}
   preloadImage={heroRef.entry?.refImage}
@@ -100,11 +105,15 @@ const opinionJsonLd = {
         {formattedDate} &middot; {article.city} &middot; {article.read_time_min} min read
       </p>
 
-      <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;">
+      <div class="fc-opinion-actions">
         <button type="button" class="fc-btn-pill" data-open-receipt>
           <span aria-hidden="true">&#129534;</span>
           <span>Crime Receipt</span>
         </button>
+        <a href="#primary-filings" class="fc-btn-pill fc-btn-pill--filings">
+          <span>Primary Filings ({article.sources.length})</span>
+          <span aria-hidden="true">&darr;</span>
+        </a>
         <button type="button" class="fc-btn-pill" id="fc-opinion-copy-btn">
           Share
         </button>
@@ -139,7 +148,7 @@ const opinionJsonLd = {
     <CompareStreetCrime article={article} />
 
     {/* Compact Primary Filings */}
-    <section class="fc-sources-box" aria-label="Primary filings">
+    <section id="primary-filings" class="fc-sources-box" aria-label="Primary filings">
       <h2 class="fc-sources-title">Primary Filings</h2>
       <ul class="fc-sources-list" style="margin-top: 8px;">
         {article.sources.map((src) => (

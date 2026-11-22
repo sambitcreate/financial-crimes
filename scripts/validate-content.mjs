@@ -12,6 +12,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import sanitizeHtml from 'sanitize-html';
 import { z } from 'zod';
 
@@ -33,6 +34,75 @@ function isSafeHttpsUrl(url) {
   } catch {
     return false;
   }
+}
+
+const GENERIC_HUB_TERMINAL_SEGMENTS = new Set([
+  'news',
+  'newsroom',
+  'press',
+  'pr',
+  'press-releases',
+  'news-releases',
+  'media-releases',
+  'recent-actions',
+  'enforcement-actions',
+  'enforcement',
+  'litigation-releases',
+  'orders',
+  'orders.html',
+  'publications',
+  'publications.html',
+  'announcements',
+  'policy-statements-and-announcements',
+  'index.html',
+  'index.htm',
+  'index.php',
+  'index.aspx',
+  'default.aspx',
+  'massnahmen_node_en.html',
+  'health-care-fraud-unit',
+  'foreign-corrupt-practices-act',
+]);
+
+const REDIRECT_WRAPPER_HOSTS = new Set(['vertexaisearch.cloud.google.com']);
+
+/**
+ * Rejects generic agency newsroom hubs, bare root domains, and search redirect
+ * wrappers in sources[].url so every citation resolves to a specific primary
+ * release, order, or court filing.
+ *
+ * Returns a human-readable error reason string when rejected, or null if OK.
+ */
+export function findGenericHubUrlReason(url) {
+  if (typeof url !== 'string') return 'URL must be a string';
+  let parsed;
+  try {
+    parsed = new URL(url.trim());
+  } catch {
+    return 'Invalid URL';
+  }
+
+  const host = parsed.hostname.toLowerCase();
+  if (REDIRECT_WRAPPER_HOSTS.has(host)) {
+    return `redirect wrapper host "${host}" is not allowed; resolve to the canonical official URL`;
+  }
+
+  const normalizedPath = parsed.pathname.replace(/\/+$/, '');
+  const hasQuery = parsed.search.length > 1;
+
+  if (!normalizedPath && !hasQuery) {
+    return 'bare root domain URL with no path or query; cite a specific press release, order, or filing';
+  }
+
+  if (!hasQuery) {
+    const segments = normalizedPath.toLowerCase().split('/').filter(Boolean);
+    const lastSegment = segments[segments.length - 1] ?? '';
+    if (GENERIC_HUB_TERMINAL_SEGMENTS.has(lastSegment)) {
+      return `generic newsroom/hub path ending in "/${lastSegment}"; cite a direct deep-linked release or filing URL`;
+    }
+  }
+
+  return null;
 }
 
 const HttpsUrlSchema = z
@@ -372,6 +442,15 @@ async function main() {
     }
     ids.add(meta.id);
 
+    for (const [idx, source] of meta.sources.entries()) {
+      const hubReason = findGenericHubUrlReason(source.url);
+      if (hubReason) {
+        errors.push(
+          `${relDir}/meta.json: sources[${idx}].url ("${source.url}") rejected — ${hubReason}`
+        );
+      }
+    }
+
     if (!(await pathExists(bodyPath))) {
       errors.push(`${relDir}: missing body.html`);
     } else {
@@ -528,7 +607,13 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  console.error('❌ Unexpected validator error:', err);
-  process.exit(1);
-});
+const isDirectRun =
+  typeof process.argv[1] === 'string' &&
+  import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+
+if (isDirectRun) {
+  main().catch((err) => {
+    console.error('❌ Unexpected validator error:', err);
+    process.exit(1);
+  });
+}

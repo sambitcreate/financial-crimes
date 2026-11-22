@@ -11,6 +11,7 @@ import {
   ArticleMetaSchema,
   PaintRefsManifestSchema,
 } from '../src/schemas/article';
+import { findGenericHubUrlReason } from '../scripts/validate-content.mjs';
 
 const PROJECT_ROOT = process.cwd();
 
@@ -142,5 +143,53 @@ describe('Article loaders, caching, rollup parity, and 1:1 paint-refs', () => {
       expect(buf[1]).toBe(0xd8);
       expect(buf[2]).toBe(0xff);
     }
+  });
+
+  it('rejects generic newsroom hubs, bare root domains, and redirect wrappers in sources[].url', async () => {
+    const rejectedExamples = [
+      'https://www.sfo.gov.uk/news/',
+      'https://www.eppo.europa.eu/en/media/news',
+      'https://www.sec.gov/newsroom/press-releases',
+      'https://www.fca.org.uk/news/press-releases',
+      'https://www.justice.gov/tax/press-releases',
+      'https://www.justice.gov/usao-sdny/pr',
+      'https://www.occ.gov/news-events/newsroom/index.html',
+      'https://ofac.treasury.gov/recent-actions',
+      'https://www.sebi.gov.in/enforcement/orders.html',
+      'https://www.mas.gov.sg/news/media-releases',
+      'https://www.fatf-gafi.org/en/publications.html',
+      'https://www.courtlistener.com/',
+      'https://www.ca7.uscourts.gov/',
+      'https://sat.gov.in/',
+      'https://vertexaisearch.cloud.google.com/grounding-api-redirect/abc123',
+    ];
+    for (const badUrl of rejectedExamples) {
+      expect(findGenericHubUrlReason(badUrl), `Expected hub URL to be rejected: ${badUrl}`).toBeTruthy();
+    }
+
+    const acceptedExamples = [
+      'https://home.treasury.gov/news/press-releases/sb0657',
+      'https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html',
+      'https://ofac.treasury.gov/recent-actions/20261013_33',
+      'https://www.sec.gov/enforcement-litigation/litigation-releases/lr-26254',
+      'https://apps.sfc.hk/edistributionWeb/gateway/EN/news-and-announcements/news/doc?refNo=26PR62',
+      'https://media.ca7.uscourts.gov/cgi-bin/OpinionsWeb/processWebInputExternal.pl?Submit=Display&Path=Y2026/D04-27/C:25-2249:J:Scudder:aut:T:fnOp:N:3530621:S:0',
+    ];
+    for (const goodUrl of acceptedExamples) {
+      expect(findGenericHubUrlReason(goodUrl), `Expected canonical URL to pass: ${goodUrl}`).toBeNull();
+    }
+
+    const articles = await loadAllArticles();
+    expect(articles.length).toBeGreaterThanOrEqual(25);
+    const violations: string[] = [];
+    for (const article of articles) {
+      for (const [idx, source] of article.sources.entries()) {
+        const reason = findGenericHubUrlReason(source.url);
+        if (reason) {
+          violations.push(`${article.slug} sources[${idx}] (${source.url}): ${reason}`);
+        }
+      }
+    }
+    expect(violations).toEqual([]);
   });
 });
