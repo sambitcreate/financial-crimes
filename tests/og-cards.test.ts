@@ -2,8 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   OG_HEIGHT,
   OG_WIDTH,
+  buildLogoSvg,
   buildOgCardSvg,
   escapeXml,
+  isRetractedMeta,
+  renderLogoPng,
+  stageFineRatio,
   layoutHeadline,
   layoutMetricValue,
   renderOgCardPng,
@@ -193,5 +197,48 @@ describe('OG card PNG rasterization', () => {
       // Rendered typography produces a rich PNG well above blank-canvas size
       expect(png.length).toBeGreaterThan(15_000);
     }
+  });
+});
+
+describe('OG cards: stage-aware penalty labels and retractions', () => {
+  it('never shows a fine ratio for frozen money in a pending case', () => {
+    const pending = makeArticle({
+      legal_stage: 'interim_order',
+      slap_on_wrist_score: null,
+      financials: {
+        amount_usd: 553000000,
+        amount_display: '$553M',
+        fine_usd: 553000000,
+        fine_display: '$553M Impounded',
+        fine_ratio_pct: 100,
+        prison_months: null,
+        prison_display: 'Pending',
+        admitted_guilt: null,
+      },
+    });
+    expect(stageFineRatio(pending)).toBeNull();
+    const svg = buildOgCardSvg(pending);
+    expect(svg).toContain('PENALTY STATUS');
+    expect(svg).toContain('Pending');
+    expect(svg).not.toContain('100.00%');
+  });
+
+  it('keeps the ratio for resolved stages', () => {
+    expect(stageFineRatio(makeArticle())).toBe(24.2);
+    expect(buildOgCardSvg(makeArticle())).toContain('24.20%');
+  });
+
+  it('detects retraction tombstones', () => {
+    expect(isRetractedMeta({ retracted: { date: '2026-11-21', note: 'x' } })).toBe(true);
+    expect(isRetractedMeta({ retracted: { note: 'no date' } })).toBe(false);
+    expect(isRetractedMeta({})).toBe(false);
+  });
+
+  it('renders a square publisher logo PNG for JSON-LD', () => {
+    expect(buildLogoSvg(512)).toContain('width="512" height="512"');
+    const png = renderLogoPng(512);
+    expect(png.subarray(1, 4).toString('ascii')).toBe('PNG');
+    expect(png.readUInt32BE(16)).toBe(512);
+    expect(png.readUInt32BE(20)).toBe(512);
   });
 });

@@ -6,6 +6,8 @@ import {
   formatFineRatio,
   formatLegalStage,
   formatShortDate,
+  isResolvedStage,
+  stageFineRatio,
 } from './format';
 
 export const LEDGER_PAGE_SIZE = 24;
@@ -41,6 +43,8 @@ export interface LedgerEntry {
   docket_number: string | null;
   legal_stage: string;
   legal_stage_label: string;
+  /** A penalty was imposed (settlement / regulatory order / sentence / DPA). */
+  resolved?: boolean;
   template: string;
   publish_date: string;
   short_date: string;
@@ -179,6 +183,7 @@ export function buildLedgerEntries(
       docket_number: article.docket_number,
       legal_stage: article.legal_stage,
       legal_stage_label: formatLegalStage(article.legal_stage),
+      resolved: isResolvedStage(article.legal_stage),
       template: article.template,
       publish_date: article.publish_date,
       short_date: formatShortDate(article.publish_date),
@@ -189,9 +194,10 @@ export function buildLedgerEntries(
         amount_display: article.financials.amount_display,
         fine_usd: article.financials.fine_usd,
         fine_display: article.financials.fine_display,
-        fine_ratio_pct: article.financials.fine_ratio_pct,
-        fine_ratio_editorial: formatFineRatio(article.financials.fine_ratio_pct, 'Pending'),
-        fine_ratio_table: formatFineRatio(article.financials.fine_ratio_pct, '—'),
+        // Pending cases have no penalty: frozen / escrowed sums never become a fine ratio
+        fine_ratio_pct: stageFineRatio(article),
+        fine_ratio_editorial: formatFineRatio(stageFineRatio(article), 'Pending'),
+        fine_ratio_table: formatFineRatio(stageFineRatio(article), '—'),
         prison_months: article.financials.prison_months,
         prison_display: article.financials.prison_display,
       },
@@ -325,14 +331,24 @@ export function paginateItems<T>(
   };
 }
 
+/**
+ * Ledger totals, matching the site rollup (scripts/lib/rollup.mjs): loot is the full alleged +
+ * adjudicated scale, but fines count only resolved-stage cases (money frozen in a pending case
+ * is not a fine), and the ratio is resolved fines over resolved scale.
+ */
 export function computeFilteredTotals(entries: LedgerEntry[]): FilteredTotals {
   let totalLoot = 0;
+  let resolvedLoot = 0;
   let totalFines = 0;
   let ratioSum = 0;
   let ratioCount = 0;
 
   for (const entry of entries) {
-    totalLoot += entry.financials.amount_usd ?? 0;
+    const resolved = entry.resolved ?? isResolvedStage(entry.legal_stage);
+    const loot = entry.financials.amount_usd ?? 0;
+    totalLoot += loot;
+    if (!resolved) continue;
+    resolvedLoot += loot;
     totalFines += entry.financials.fine_usd ?? 0;
     const r = entry.financials.fine_ratio_pct;
     if (typeof r === 'number' && Number.isFinite(r) && r >= 0) {
@@ -342,8 +358,8 @@ export function computeFilteredTotals(entries: LedgerEntry[]): FilteredTotals {
   }
 
   const avgFineRatioPct =
-    totalLoot > 0
-      ? (totalFines / totalLoot) * 100
+    resolvedLoot > 0
+      ? (totalFines / resolvedLoot) * 100
       : ratioCount > 0
         ? ratioSum / ratioCount
         : 0;
@@ -403,7 +419,11 @@ export function groupArticlesByMonth(articles: ArticleRecord[]): MonthArchiveGro
         label: formatMonthLabel(monthKey),
         articles: sorted,
         totalLootUsd: sorted.reduce((sum, a) => sum + (a.financials.amount_usd ?? 0), 0),
-        totalFinesUsd: sorted.reduce((sum, a) => sum + (a.financials.fine_usd ?? 0), 0),
+        // Fines only where a penalty was imposed (frozen sums in pending cases excluded)
+        totalFinesUsd: sorted.reduce(
+          (sum, a) => sum + (isResolvedStage(a.legal_stage) ? (a.financials.fine_usd ?? 0) : 0),
+          0,
+        ),
       };
     });
 }
@@ -415,6 +435,8 @@ export function buildCreditEntries(
   const articleBySlug = new Map(articles.map((a) => [a.slug, a]));
 
   return Object.entries(paintRefs)
+    // A retracted story's portrait is no longer shown anywhere, so its credit row goes too
+    .filter(([slug]) => !isArticleRetracted(articleBySlug.get(slug)))
     .map(([slug, ref]) => {
       const article = articleBySlug.get(slug);
       const headline = article?.headline ?? slug;
@@ -455,4 +477,88 @@ export function summarizeLicenses(entries: CreditEntry[]): LicenseSummary[] {
   return Array.from(counts.entries())
     .map(([license, count]) => ({ license, count }))
     .sort((a, b) => b.count - a.count || a.license.localeCompare(b.license));
+}
+
+/* ==========================================================================
+   Retraction tombstones (meta.retracted = { date, note }).
+   The loader (src/loaders/articles.ts) owns the canonical isRetracted(); these helpers read
+   the raw field defensively so listings stay correct whichever loader version is in place.
+   ========================================================================== */
+
+export interface RetractionInfo {
+  date: string;
+  note: string;
+}
+
+export function getRetraction(article: object | null | undefined): RetractionInfo | null {
+  const raw = (article as { retracted?: unknown } | null | undefined)?.retracted;
+  if (!raw || typeof raw !== 'object') return null;
+  const { date, note } = raw as { date?: unknown; note?: unknown };
+  if (typeof date !== 'string' || !date.trim()) return null;
+  return { date: date.trim(), note: typeof note === 'string' ? note.trim() : '' };
+}
+
+export function isArticleRetracted(article: object | null | undefined): boolean {
+  return getRetraction(article) !== null;
+}
+
+/** Drop retracted articles from any listing, feed, index or aggregate. */
+export function listedArticles<T extends object>(articles: readonly T[]): T[] {
+  return articles.filter((article) => !isArticleRetracted(article));
+}
+
+/* ==========================================================================
+   Ledger URLs: static pages (/ledger, /ledger/page/N) work without JavaScript;
+   filtered views live on /ledger?… and are rendered client-side.
+   ========================================================================== */
+
+export interface LedgerUrlState {
+  query?: string;
+  edition?: string;
+  category?: string;
+  minLoot?: number | string;
+  slapMode?: string;
+  sortMode?: string;
+  view?: string;
+}
+
+export function ledgerPagePath(page: number): string {
+  const n = Math.floor(Number(page));
+  return Number.isFinite(n) && n > 1 ? `/ledger/page/${n}` : '/ledger';
+}
+
+export function hasActiveLedgerFilters(state: LedgerUrlState): boolean {
+  return Boolean(
+    (state.query ?? '').trim() ||
+      (state.edition && state.edition !== 'all') ||
+      (state.category && state.category !== 'all') ||
+      (state.minLoot && String(state.minLoot) !== '0') ||
+      (state.slapMode && state.slapMode !== 'all') ||
+      (state.sortMode && state.sortMode !== 'newest'),
+  );
+}
+
+/**
+ * Shareable URL for a ledger view. Unfiltered pages map onto the prerendered static paths;
+ * any filter, search or sort moves to /ledger?… (q, edition, category, magnitude, slap, sort,
+ * view, page).
+ */
+export function buildLedgerUrl(state: LedgerUrlState, page = 1): string {
+  const view = state.view === 'table' ? 'table' : '';
+  if (!hasActiveLedgerFilters(state)) {
+    const base = ledgerPagePath(page);
+    return view ? `${base}?view=table` : base;
+  }
+  const params = new URLSearchParams();
+  const q = (state.query ?? '').trim();
+  if (q) params.set('q', q);
+  if (state.edition && state.edition !== 'all') params.set('edition', state.edition);
+  if (state.category && state.category !== 'all') params.set('category', state.category);
+  if (state.minLoot && String(state.minLoot) !== '0') params.set('magnitude', String(state.minLoot));
+  if (state.slapMode && state.slapMode !== 'all') params.set('slap', state.slapMode);
+  if (state.sortMode && state.sortMode !== 'newest') params.set('sort', state.sortMode);
+  if (view) params.set('view', view);
+  const n = Math.floor(Number(page));
+  if (Number.isFinite(n) && n > 1) params.set('page', String(n));
+  return `/ledger?${params.toString()}`;
 }

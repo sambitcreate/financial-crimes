@@ -2,6 +2,7 @@ import type { Hotspot, PaintMode, PointerKind, Scene } from './types';
 import { fbm, type Rand } from './noise';
 import { clamp, hslCss, lerp } from './color';
 import { paintDab } from './brush';
+import { budgetExhausted } from './loop';
 
 export interface PainterOptions {
   /** Fine dab size as a fraction of canvas width. */
@@ -27,8 +28,8 @@ export const INTERACTION_GRACE = 4;
 export const IDLE_AFTER = 2;
 /** Idle paintings lay one maintenance batch per this many seconds instead of every frame (battery). */
 export const IDLE_INTERVAL = 1;
-/** Under reduced motion the underpainting lands in a few frames; cap each frame's main-thread slice. */
-const REDUCED_MOTION_BUDGET_MS = 10;
+/** Check the shared per-frame budget (loop.ts) every this many dabs. */
+const BUDGET_CHECK_MASK = 63;
 
 /** Tuned presets so hero portraits shine at fine detail while 20+ thumbs glide at 60fps. */
 export function painterOptionsForMode(
@@ -162,8 +163,9 @@ export class Painter {
     });
   }
 
-  step(t: number, dt: number): void {
-    if (this.failed || !this.visible || this.width === 0) return;
+  /** Advance one frame. Returns seconds until the next frame is needed (see loop.ts Tick). */
+  step(t: number, dt: number): number {
+    if (this.failed || !this.visible || this.width === 0) return Infinity;
     this.guard(() => {
       const { scene } = this;
       scene.update?.(t, dt, { reducedMotion: this.reducedMotion });
@@ -199,6 +201,20 @@ export class Painter {
         this.liveDirty = scene.live(this.live, this.width, this.height, t, this.dpr);
       }
     });
+    return this.wakeIn(t);
+  }
+
+  /** Seconds until this painter next needs a frame: 0 = every frame, Infinity = until woken. */
+  wakeIn(t: number): number {
+    if (this.failed || !this.visible || this.width === 0) return Infinity;
+    const { scene } = this;
+    // Waiting on the reference image: the scene wakes the loop when it lands or times out.
+    if (scene.ready && !scene.ready()) return Infinity;
+    if (!this.washed || this.built < this.buildTarget) return 0;
+    if (this.liveDirty || scene.busy?.()) return 0;
+    if (this.reducedMotion) return t - this.lastPlayed < INTERACTION_GRACE ? 0 : Infinity;
+    if (t - this.lastActive < IDLE_AFTER) return 0;
+    return Math.max(0, IDLE_INTERVAL - (t - this.lastIdleBatch));
   }
 
   private applyBaseWash(t: number): void {
@@ -211,8 +227,9 @@ export class Painter {
   }
 
   private underpaint(t: number, dt: number): void {
+    // Every painter on the page shares one frame budget; a starved painter resumes next frame.
+    if (budgetExhausted()) return;
     const remaining = this.buildTarget - this.built;
-    const deadline = this.reducedMotion ? performance.now() + REDUCED_MOTION_BUDGET_MS : Infinity;
     const n = this.reducedMotion
       ? remaining
       : Math.max(24, Math.ceil((this.buildTarget * Math.max(dt, 1 / 120)) / this.buildSeconds));
@@ -237,7 +254,7 @@ export class Painter {
         this.dabAt(this.rand(), this.rand(), baseSize, t);
       }
       // Reduced motion: no visible build animation, but never one giant main-thread task
-      if ((i & 255) === 255 && performance.now() > deadline) {
+      if ((i & BUDGET_CHECK_MASK) === BUDGET_CHECK_MASK && budgetExhausted()) {
         this.built++;
         break;
       }
@@ -245,6 +262,7 @@ export class Painter {
   }
 
   private maintain(t: number): void {
+    if (budgetExhausted()) return;
     const hot: Hotspot[] = this.scene.hotspots?.(t) ?? [];
     const aspect = this.width / this.height;
     this.ground.lineCap = 'round';
@@ -260,6 +278,7 @@ export class Painter {
       } else {
         this.dabAt(this.rand(), this.rand(), this.fine * (0.9 + this.rand() * 0.68), t);
       }
+      if ((i & BUDGET_CHECK_MASK) === BUDGET_CHECK_MASK && budgetExhausted()) break;
     }
   }
 

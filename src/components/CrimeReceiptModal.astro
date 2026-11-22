@@ -2,9 +2,10 @@
 import type { ArticleRecord } from '../schemas/article';
 import {
   formatBroadsheetDate,
-  formatFineRatio,
   formatGuiltAdmission,
   formatLegalStage,
+  formatReceiptFineRatio,
+  isResolvedStage,
 } from '../utils/format';
 
 interface Props {
@@ -15,7 +16,15 @@ const { article } = Astro.props;
 const { financials } = article;
 
 const formattedDate = formatBroadsheetDate(article.publish_date);
-const fineRatioText = formatFineRatio(financials.fine_ratio_pct, 'PENDING');
+// Pending cases have no penalty: never print a fine-to-loot ratio for frozen or escrowed sums
+const resolved = isResolvedStage(article.legal_stage);
+const fineRatioText = formatReceiptFineRatio(article);
+const fineRatioLabel =
+  resolved && (article.legal_stage === 'sentenced' || financials.admitted_guilt === true)
+    ? 'FINE-TO-LOOT'
+    : 'FINE RATIO';
+const penaltyLabel = resolved ? 'PENALTY' : 'PENALTY STATUS';
+const docketText = article.docket_number ?? 'NOT LISTED';
 const guiltText = formatGuiltAdmission(article);
 const guiltParts = /^([^(]+?)\s*(\(.+\))$/.exec(guiltText);
 const guiltLead = guiltParts ? guiltParts[1].trim() : guiltText;
@@ -57,12 +66,14 @@ const receiptPayload = JSON.stringify({
   city: article.city,
   venue: article.jurisdiction.venue,
   agencies: article.agencies.join(', '),
-  docket: article.docket_number ?? 'REGULATORY ORDER',
+  docket: docketText,
   legalStage: legalStageText,
   date: formattedDate,
   amount: financials.amount_display,
   fine: financials.fine_display,
   ratio: fineRatioText,
+  ratioLabel: fineRatioLabel,
+  penaltyLabel,
   prison: financials.prison_display,
   guilt: guiltText,
   slap: slapText,
@@ -129,7 +140,7 @@ const receiptPayload = JSON.stringify({
             <div class="fc-receipt-band" data-receipt-band="2">
               <div class="fc-receipt-row">
                 <span class="fc-receipt-row-label">DOCKET</span>
-                <span class="fc-receipt-row-val">{article.docket_number ?? 'REGULATORY ORDER'}</span>
+                <span class="fc-receipt-row-val">{docketText}</span>
               </div>
               <div class="fc-receipt-row">
                 <span class="fc-receipt-row-label">AGENCIES</span>
@@ -148,11 +159,11 @@ const receiptPayload = JSON.stringify({
                 <span class="fc-receipt-row-val" style="font-weight: 700;">{financials.amount_display}</span>
               </div>
               <div class="fc-receipt-row">
-                <span class="fc-receipt-row-label">PENALTY</span>
+                <span class="fc-receipt-row-label">{penaltyLabel}</span>
                 <span class="fc-receipt-row-val" style="font-weight: 700;">{financials.fine_display}</span>
               </div>
               <div class="fc-receipt-row">
-                <span class="fc-receipt-row-label">FINE-TO-LOOT</span>
+                <span class="fc-receipt-row-label">{fineRatioLabel}</span>
                 <span class="fc-receipt-row-val" style="font-weight: 700; color: var(--fc-art-crimson);">
                   {fineRatioText}
                 </span>
@@ -445,15 +456,15 @@ const receiptPayload = JSON.stringify({
     const headLines = wrapCanvasText(mctx, String(data.headline || '').toUpperCase(), innerW);
 
     const rowsSectionA = [
-      { label: 'DOCKET', val: String(data.docket || 'REGULATORY ORDER'), accent: false },
+      { label: 'DOCKET', val: String(data.docket || 'NOT LISTED'), accent: false },
       { label: 'AGENCIES', val: String(data.agencies || ''), accent: false },
       { label: 'STATUS', val: String(data.legalStage || ''), accent: false },
     ];
 
     const rowsSectionB = [
       { label: 'ALLEGED SCALE', val: String(data.amount || ''), accent: false },
-      { label: 'PENALTY', val: String(data.fine || ''), accent: false },
-      { label: 'FINE-TO-LOOT', val: String(data.ratio || ''), accent: true },
+      { label: String(data.penaltyLabel || 'PENALTY'), val: String(data.fine || ''), accent: false },
+      { label: String(data.ratioLabel || 'FINE RATIO'), val: String(data.ratio || ''), accent: true },
       { label: 'CUSTODY', val: String(data.prison || ''), accent: false },
       { label: 'ADMITTED GUILT', val: String(data.guilt || ''), accent: false },
     ];

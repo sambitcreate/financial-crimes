@@ -1,6 +1,12 @@
 ---
 import type { ArticleRecord } from '../schemas/article';
-import { formatLegalStage } from '../utils/format';
+import {
+  articleModifiedAt,
+  describeLeadPenalty,
+  formatDatelineTimestamp,
+  formatLegalStage,
+  formatLiveUpdateStamp,
+} from '../utils/format';
 import FcArt from './FcArt.astro';
 
 interface Props {
@@ -13,34 +19,35 @@ interface Props {
 
 const { leadHero, leadLive, leadRight, leadGrid, secondaryBlurb } = Astro.props;
 
-const liveUpdates =
+// Content live_updates carry frozen relative strings ("18m ago"): only a real ISO timestamp is
+// shown, as an absolute time. Never fabricate recency.
+const liveUpdates = (
   leadLive.live_updates && leadLive.live_updates.length > 0
     ? leadLive.live_updates
     : [
-        {
-          text: `${leadLive.jurisdiction.venue}: ${leadLive.financials.amount_display} at issue.`,
-          ago: '27m ago',
-        },
-        {
-          text: `${leadLive.agencies.join(', ')} · ${formatLegalStage(leadLive.legal_stage)}.`,
-          ago: '52m ago',
-        },
-      ];
+        { text: `${leadLive.jurisdiction.venue}: ${leadLive.financials.amount_display} at issue.`, ago: '' },
+        { text: `${leadLive.agencies.join(', ')} · ${formatLegalStage(leadLive.legal_stage)}.`, ago: '' },
+      ]
+).map((u) => ({ text: u.text, stamp: formatLiveUpdateStamp(u.ago) }));
 
-const heroFineRatio =
-  leadHero.financials.fine_ratio_pct !== null
-    ? `${leadHero.financials.fine_ratio_pct.toFixed(1)}% OF LOOT`
-    : 'CIVIL SETTLEMENT';
+const leadLiveModified = articleModifiedAt(leadLive);
+const leadLiveStamp = formatDatelineTimestamp(leadLiveModified);
+const leadLiveWasUpdated = leadLiveModified !== leadLive.publish_date;
+
+// Derived from legal_stage: pending cases show status + alleged amount, never a "settlement"
+const heroPenalty = describeLeadPenalty(leadHero);
 ---
 
 <section class="fc-lead-box" aria-label="Front-Page Lead Docket">
   <div class="fc-lead-upper">
-    {/* LEFT COLUMN: LIVE stack + crisp secondary headline */}
+    {/* LEFT COLUMN: latest-updates stack + crisp secondary headline */}
     <div class="fc-lead-left">
       <article data-story-card data-edition={leadLive.edition} data-city={leadLive.city.toLowerCase()}>
         <div class="fc-live-kicker">
-          <span class="fc-live-badge">LIVE</span>
-          <span class="fc-live-ago">{liveUpdates[0]?.ago ?? '7m ago'}</span>
+          <span class="fc-live-badge">LATEST</span>
+          <time class="fc-live-ago" datetime={leadLiveModified}>
+            {leadLiveWasUpdated ? 'Updated ' : ''}{leadLiveStamp}
+          </time>
         </div>
 
         <h2 class="fc-lead-live-title">
@@ -52,7 +59,7 @@ const heroFineRatio =
             <li>
               <a href={leadLive.url} class="fc-headline-link">
                 {u.text}
-                <span class="fc-live-bullet-ago">{u.ago}</span>
+                {u.stamp && <span class="fc-live-bullet-ago">{u.stamp}</span>}
               </a>
             </li>
           ))}
@@ -119,15 +126,14 @@ const heroFineRatio =
 
     {/* RIGHT COLUMN: Compact Penalty Ratio Box + International Lead */}
     <div class="fc-lead-right">
-      <div class="fc-crime-ticker-box" aria-label="Lead case penalty ratio">
-        <p class="fc-eyebrow" style="margin: 0 0 5px;">PENALTY RATIO</p>
+      <div class="fc-crime-ticker-box" role="group" aria-label={heroPenalty.ariaLabel}>
+        <p class="fc-eyebrow" style="margin: 0 0 5px;">{heroPenalty.eyebrow}</p>
         <div class="fc-crime-ticker-row">
-          <span class="fc-crime-ticker-figure">{leadHero.financials.fine_display}</span>
-          <span class="fc-crime-ticker-delta">{heroFineRatio}</span>
+          <span class="fc-crime-ticker-figure">{heroPenalty.figure}</span>
+          <span class="fc-crime-ticker-delta">{heroPenalty.delta}</span>
         </div>
         <p class="fc-crime-ticker-sub">
-          vs. <strong>{leadHero.financials.amount_display}</strong> &middot;{' '}
-          {leadHero.financials.prison_display}
+          <strong>{heroPenalty.subLead}</strong> &middot; {heroPenalty.subTail}
         </p>
       </div>
 

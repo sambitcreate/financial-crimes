@@ -2,7 +2,7 @@ import type { HSL, Hotspot, Sample, ToyKind } from './types';
 import { fbm, type Rand } from './noise';
 import { clamp, hslCss, lerp, mixHslShortest } from './color';
 import { FC_OIL } from './palette';
-import { easeOutCubic, mixHslViaRgb, oilContrast } from './pixel-field';
+import { easeOutCubic, isDarkGround, mixHslViaRgb, oilContrast } from './pixel-field';
 
 const TAU = Math.PI * 2;
 
@@ -840,7 +840,7 @@ export function renderGavelRipples(
 
     const cx = wv.u * cw;
     const cy = wv.v * ch;
-    const isDark = wv.bgLum < 0.45;
+    const isDark = isDarkGround(wv.bgLum);
 
     g.save();
     g.setLineDash([]);
@@ -950,7 +950,7 @@ export function renderStamps(
     const cx = st.u * cw;
     const cy = st.v * ch;
     const r = clamp(unit * 0.068, 22, 36);
-    const isDark = st.bgLum < 0.48;
+    const isDark = isDarkGround(st.bgLum);
 
     const tickIn = r * 0.72;
     const tickOut = r * 1.12;
@@ -1116,7 +1116,7 @@ export function renderCoins(
       const rad = lerp(6, unit * 0.18, easeOutCubic(p));
       const alpha = reducedMotion ? 0.52 : (1 - p) * 0.72;
       const isVeryLight = patch.bgLum > 0.72;
-      const isDark = patch.bgLum < 0.45;
+      const isDark = isDarkGround(patch.bgLum);
 
       g.save();
       if (isVeryLight) {
@@ -1149,7 +1149,7 @@ export function renderCoins(
     if (alpha <= 0.02) continue;
 
     const isVeryLight = f.bgLum > 0.72;
-    const isDark = f.bgLum < 0.45;
+    const isDark = isDarkGround(f.bgLum);
 
     g.save();
     g.translate(f.u * cw, f.v * ch);
@@ -1243,7 +1243,7 @@ export function renderCrashLines(
   const peakY = Math.round(peakPt.v * ch) + 0.5;
   const startX = pts[0].u * cw;
   const endX = floorPt.u * cw;
-  const isDark = activeCrash.bgLum < 0.45;
+  const isDark = isDarkGround(activeCrash.bgLum);
 
   g.save();
 
@@ -1396,7 +1396,7 @@ export function renderEnvelopes(
   const fade = age < 5.42 ? 1 : clamp(1 - (age - 5.42) / 1.1, 0, 1);
   const ox = activeRoute.u * cw;
   const oy = activeRoute.v * ch;
-  const isDark = activeRoute.bgLum < 0.45;
+  const isDark = isDarkGround(activeRoute.bgLum);
 
   g.save();
 

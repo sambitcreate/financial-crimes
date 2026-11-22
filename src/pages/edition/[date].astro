@@ -4,14 +4,16 @@ import CompactHeader from '../../components/CompactHeader.astro';
 import FcArt from '../../components/FcArt.astro';
 import { loadAllArticles, loadAllEditions, loadEdition, loadRollupStats } from '../../loaders/articles';
 import type { ArticleRecord, EditionManifest } from '../../schemas/article';
-import { formatBroadsheetDate } from '../../utils/format';
+import { formatBroadsheetDate, penaltyLabel } from '../../utils/format';
+import { listedArticles } from '../../utils/ledger';
 
 export async function getStaticPaths() {
-  const [editions, allArticles, rollup] = await Promise.all([
+  const [editions, loadedArticles, rollup] = await Promise.all([
     loadAllEditions(),
     loadAllArticles(),
     loadRollupStats(),
   ]);
+  const allArticles = listedArticles(loadedArticles);
 
   if (editions.length > 0) {
     return editions.map((edition) => ({
@@ -24,7 +26,8 @@ export async function getStaticPaths() {
   const fallbackDate = latest?.edition_date ?? rollup.edition_date;
   const fallbackEdition: EditionManifest = latest ?? {
     edition_date: fallbackDate,
-    volume: `Vol. I · ${fallbackDate}`,
+    // No manifest on disk: never invent a volume number
+    volume: `Docket · ${formatBroadsheetDate(fallbackDate)}`,
     display_date: formatBroadsheetDate(fallbackDate),
     tagline: 'All the Crimes Fit to Fine.',
     slots: {
@@ -101,16 +104,33 @@ const pageBusiness = [
 
 const editionFilingCount = pageA1.length + pageA2.length + pageOpinion.length + pageBusiness.length;
 
+// Only the newest edition is "today's"; older editions are titled by their own date
+const latestEdition = await loadEdition();
+const latestDate =
+  latestEdition?.edition_date ??
+  [...allEditions.map((e) => e.edition_date)].sort().at(-1) ??
+  edition.edition_date;
+const isLatest = edition.edition_date === latestDate;
+const editionDateLabel = formatBroadsheetDate(edition.edition_date);
+const pageTitle = isLatest
+  ? `Today's Docket (${editionDateLabel}) — The Financial Crimes`
+  : `Docket — ${editionDateLabel} — The Financial Crimes`;
+
 const topicLinks = [
   { label: 'Front Page', href: '/' },
-  { label: "Today's Docket", href: `/edition/${edition.edition_date}`, current: true },
+  ...(isLatest
+    ? [{ label: "Today's Docket", href: `/edition/${edition.edition_date}`, current: true }]
+    : [
+        { label: `Docket — ${editionDateLabel}`, href: `/edition/${edition.edition_date}`, current: true },
+        { label: "Today's Docket", href: `/edition/${latestDate}` },
+      ]),
   { label: 'Archive', href: '/archive' },
   { label: 'The Ledger', href: '/ledger' },
 ];
 ---
 
 <BaseLayout
-  title={`Today's Docket (${formatBroadsheetDate(edition.edition_date)}) — The Financial Crimes`}
+  title={pageTitle}
   description={`Daily print snapshot for ${formatBroadsheetDate(edition.edition_date)} (${edition.volume}).`}
   canonicalPath={`/edition/${edition.edition_date}`}
 >
@@ -180,7 +200,7 @@ const topicLinks = [
             </p>
             <div class="fc-ledger-card-stats">
               <span><strong>{item.financials.amount_display}</strong></span>
-              <span>FINE <strong>{item.financials.fine_display}</strong></span>
+              <span>{penaltyLabel(item.legal_stage)} <strong>{item.financials.fine_display}</strong></span>
             </div>
           </article>
         ))}
@@ -204,7 +224,7 @@ const topicLinks = [
             <p class="fc-ledger-card-deck">{item.deck}</p>
             <div class="fc-ledger-card-stats">
               <span><strong>{item.financials.amount_display}</strong></span>
-              <span>FINE <strong>{item.financials.fine_display}</strong></span>
+              <span>{penaltyLabel(item.legal_stage)} <strong>{item.financials.fine_display}</strong></span>
               <span>{item.financials.prison_display}</span>
             </div>
           </article>
@@ -249,7 +269,7 @@ const topicLinks = [
               </h3>
               <div class="fc-ledger-card-stats">
                 <span><strong>{item.financials.amount_display}</strong></span>
-                <span>FINE <strong>{item.financials.fine_display}</strong></span>
+                <span>{penaltyLabel(item.legal_stage)} <strong>{item.financials.fine_display}</strong></span>
                 <span>{item.financials.prison_display}</span>
               </div>
             </article>

@@ -1,0 +1,125 @@
+---
+/**
+ * Retraction tombstone. Rendered in place of a story whose meta.json carries
+ * `retracted: { date, note }`: the URL keeps resolving (no 404, no silent deletion), the
+ * corrections trail stays public, and none of the retracted claims are repeated. No body, no
+ * painting, no structured data; noindex and excluded from Pagefind.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CompactHeader from './CompactHeader.astro';
+import type { ArticleRecord } from '../schemas/article';
+import type { RetractionInfo } from '../utils/ledger';
+import { formatBroadsheetDate } from '../utils/format';
+
+interface Props {
+  article: ArticleRecord;
+  retraction: RetractionInfo;
+}
+
+const { article, retraction } = Astro.props;
+const corrections = [...(article.corrections ?? [])].sort((a, b) => b.date.localeCompare(a.date));
+const headingId = `fc-retraction-${article.slug}`;
+---
+
+<BaseLayout
+  title="Retracted story — The Financial Crimes"
+  description={`This story was retracted on ${formatBroadsheetDate(retraction.date)}.`}
+  canonicalPath={article.url}
+  noindex={true}
+>
+  <CompactHeader slot="header" showTopicBar={false} />
+
+  <article class="fc-article-page fc-retraction-page" data-pagefind-ignore="all">
+    <section class="fc-retraction-notice" aria-labelledby={headingId}>
+      <p class="fc-retraction-kicker">
+        Retracted &middot; <time datetime={retraction.date}>{formatBroadsheetDate(retraction.date)}</time>
+      </p>
+      <h1 class="fc-retraction-title" id={headingId}>This story has been retracted</h1>
+      <p class="fc-retraction-lede">
+        The Financial Crimes has withdrawn this story. It no longer appears in the ledger, the
+        archive, search, or the RSS feed, and its figures are excluded from every docket total.
+      </p>
+      {retraction.note && (
+        <div class="fc-retraction-note">
+          <h2 class="fc-retraction-subhead">Editor&rsquo;s note</h2>
+          <p>{retraction.note}</p>
+        </div>
+      )}
+
+      {corrections.length > 0 && (
+        <div class="fc-retraction-corrections">
+          <h2 class="fc-retraction-subhead">Corrections record</h2>
+          <ul>
+            {corrections.map((c) => (
+              <li>
+                <time datetime={c.date}>{formatBroadsheetDate(c.date)}</time>
+                {c.type && <span class="fc-retraction-ctype"> &middot; {c.type}</span>}
+                <span> &mdash; {c.note}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p class="fc-retraction-links">
+        <a href="/corrections">Corrections policy &amp; log</a> &middot; <a href="/ledger">Back to the Ledger</a>
+      </p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .fc-retraction-notice {
+    max-width: var(--fc-article-width);
+    margin: 40px auto 56px;
+    padding: 22px 22px 18px;
+    border: 2px solid var(--fc-ink-primary);
+    border-top-width: 6px;
+    background: var(--fc-bg-newsprint);
+  }
+  .fc-retraction-kicker {
+    margin: 0 0 8px;
+    font-family: var(--fc-font-sans);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fc-accent-crimson);
+  }
+  .fc-retraction-title {
+    margin: 0 0 12px;
+    font-family: var(--fc-font-headline);
+    font-size: clamp(26px, 5vw, 34px);
+    line-height: 1.1;
+  }
+  .fc-retraction-lede,
+  .fc-retraction-note p {
+    font-family: var(--fc-font-body);
+    font-size: 16.5px;
+    line-height: 1.55;
+    margin: 0 0 14px;
+  }
+  .fc-retraction-subhead {
+    margin: 18px 0 6px;
+    font-family: var(--fc-font-sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .fc-retraction-corrections ul {
+    margin: 0;
+    padding-left: 18px;
+    font-family: var(--fc-font-body);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .fc-retraction-ctype {
+    text-transform: capitalize;
+  }
+  .fc-retraction-links {
+    margin: 18px 0 0;
+    font-family: var(--fc-font-sans);
+    font-size: 13px;
+  }
+</style>

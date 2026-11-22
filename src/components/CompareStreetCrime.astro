@@ -1,5 +1,6 @@
 ---
 import type { ArticleRecord } from '../schemas/article';
+import { penaltyLabel } from '../utils/format';
 
 interface Props {
   article: ArticleRecord;
@@ -43,7 +44,7 @@ const streetBarPct = toPct(streetMonths);
       </h2>
     </div>
 
-    <div class="fc-compare-tabs" role="tablist" aria-label="Outcome comparison">
+    <div class="fc-compare-tabs" role="tablist" aria-label="Outcome comparison" data-requires-js>
       <button
         type="button"
         role="tab"
@@ -81,7 +82,7 @@ const streetBarPct = toPct(streetMonths);
     </p>
     <div style="display: flex; flex-wrap: wrap; gap: 8px 16px; font-family: var(--fc-font-mono); font-size: 11px; color: var(--fc-ink-muted);">
       <span>SCALE <strong style="color: var(--fc-ink-primary);">{financials.amount_display}</strong></span>
-      <span>PENALTY <strong style="color: var(--fc-ink-primary);">{financials.fine_display}</strong></span>
+      <span>{penaltyLabel(article.legal_stage, 'long')} <strong style="color: var(--fc-ink-primary);">{financials.fine_display}</strong></span>
       <span>CUSTODY <strong style="color: var(--fc-ink-primary);">{financials.prison_display}</strong></span>
       <span>
         WRIST-SLAP{' '}

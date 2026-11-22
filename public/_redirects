@@ -1,0 +1,3 @@
+# Static redirects. scripts/generate-redirects.mjs copies these into dist/_redirects and appends
+# per-story /article/<slug> <-> /opinion/<slug> rules generated from content at build time.
+/ledger/page/1 /ledger 301

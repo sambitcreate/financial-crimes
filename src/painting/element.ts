@@ -2,7 +2,8 @@ import type { PaintMode, PaintRefConfig, PointerKind } from './types';
 import { clamp } from './color';
 import { hashString, mulberry32 } from './noise';
 import { paintWeave } from './weave';
-import { addTick, now } from './loop';
+import { addTick, now, wake } from './loop';
+import { PAINTING_HINT, paintingButtonLabel } from './a11y';
 import { Painter, painterOptionsForMode } from './engine';
 import { createPortraitScene } from './portrait-scene';
 
@@ -35,17 +36,28 @@ export class FcPaintingElement extends HTMLElement {
     const stage = this.querySelector<HTMLElement>('.fc-painting-stage');
     const groundCanvas = this.querySelector<HTMLCanvasElement>('canvas[data-layer="ground"]');
     const weaveCanvas = this.querySelector<HTMLCanvasElement>('canvas[data-layer="weave"]');
-    const liveCanvas = this.querySelector<HTMLCanvasElement>('canvas[data-layer="live"]');
-
-    if (!stage || !groundCanvas || !weaveCanvas || !liveCanvas) return;
-
-    const ground = groundCanvas.getContext('2d');
-    const weave = weaveCanvas.getContext('2d');
-    const live = liveCanvas.getContext('2d');
-    if (!ground || !weave || !live) return;
+    let liveCanvas = this.querySelector<HTMLCanvasElement>('canvas[data-layer="live"]');
+    const repaintBtn = this.querySelector<HTMLButtonElement>('button[data-fc-repaint]');
 
     const config = this.readConfig();
     const mode = parseMode(this.dataset.mode ?? config.mode);
+
+    // Thumbnails never draw on the live layer: drop it so it never gets a backing store.
+    if (mode === 'thumb' && liveCanvas) {
+      liveCanvas.remove();
+      liveCanvas = null;
+    }
+
+    const ground = groundCanvas?.getContext('2d') ?? null;
+    const weave = weaveCanvas?.getContext('2d') ?? null;
+    const live = liveCanvas?.getContext('2d') ?? null;
+    if (!stage || !groundCanvas || !weaveCanvas || !ground || !weave || (mode !== 'thumb' && !live)) {
+      // No canvas (blocked, unsupported, or out of memory): a Repaint control would do nothing.
+      repaintBtn?.remove();
+      this.dataset.state = 'unavailable';
+      return;
+    }
+
     const aspect = config.aspect ?? parseAspect(this.dataset.aspect);
     const seed = config.seed ?? hashString(this.dataset.id || config.slug || config.refImage || 'fc');
     const motionQuery =
@@ -67,6 +79,7 @@ export class FcPaintingElement extends HTMLElement {
     if (motionQuery) {
       const onMotion = () => {
         painter.reducedMotion = motionQuery.matches;
+        wake();
       };
       motionQuery.addEventListener('change', onMotion);
       this.cleanupListeners.push(() => motionQuery.removeEventListener('change', onMotion));
@@ -86,11 +99,14 @@ export class FcPaintingElement extends HTMLElement {
       groundCanvas.height = h;
       weaveCanvas.width = w;
       weaveCanvas.height = h;
-      liveCanvas.width = w;
-      liveCanvas.height = h;
+      if (liveCanvas) {
+        liveCanvas.width = w;
+        liveCanvas.height = h;
+      }
 
       paintWeave(weave, w, h);
       painter.resize(w, h);
+      wake();
     };
 
     resize();
@@ -121,6 +137,7 @@ export class FcPaintingElement extends HTMLElement {
           const entry = entries[entries.length - 1];
           if (!entry) return;
           painter.visible = entry.isIntersecting;
+          if (entry.isIntersecting) wake();
         },
         { rootMargin: '120px 0px' },
       );
@@ -129,10 +146,8 @@ export class FcPaintingElement extends HTMLElement {
       painter.visible = true;
     }
 
-    // Shared single-rAF clock for all paintings on the page
-    this.stopTick = addTick((t, dt) => {
-      painter.step(t, dt);
-    });
+    // Shared single-rAF clock for all paintings on the page; step() says when it next needs a frame
+    this.stopTick = addTick((t, dt) => painter.step(t, dt));
 
     const interactive = mode !== 'thumb';
     const isPortrait = config.isPortrait ?? true;
@@ -142,19 +157,28 @@ export class FcPaintingElement extends HTMLElement {
     // Keyboard & screen-reader accessibility (interactive hero/inline paintings only; thumbs stay non-focusable)
     let announceExhibit = () => {};
     if (interactive) {
-      if (!stage.hasAttribute('role')) {
-        stage.setAttribute('role', 'img');
-      }
+      // Server markup is a static role="img"; once it responds to Enter/Space it is a button.
+      stage.setAttribute('role', 'button');
       stage.setAttribute('tabindex', '0');
-      stage.setAttribute('aria-roledescription', 'interactive oil painting');
-
-      const baseLabel =
+      stage.removeAttribute('aria-roledescription');
+      const baseLabel = (
         stage.dataset.baseAriaLabel ??
         stage.getAttribute('aria-label') ??
-        'Editorial oil painting';
+        'Editorial oil painting'
+      ).trim();
       stage.dataset.baseAriaLabel = baseLabel;
-      const hint = 'Activate to inspect archival exhibit';
-      stage.setAttribute('aria-label', baseLabel.includes(hint) ? baseLabel : `${baseLabel}. ${hint}.`);
+      stage.setAttribute('aria-label', paintingButtonLabel(baseLabel));
+
+      let hintEl = this.querySelector<HTMLElement>('.fc-painting-sr-hint');
+      if (!hintEl) {
+        hintEl = document.createElement('span');
+        hintEl.className = 'fc-painting-sr-hint';
+        hintEl.id = `fc-painting-hint-${seed.toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`;
+        hintEl.textContent = PAINTING_HINT;
+        hintEl.hidden = true;
+        this.appendChild(hintEl);
+      }
+      stage.setAttribute('aria-describedby', hintEl.id);
 
       let statusRegion = this.querySelector<HTMLElement>('.fc-painting-sr-status');
       if (!statusRegion) {
@@ -193,6 +217,7 @@ export class FcPaintingElement extends HTMLElement {
         const t = now();
         painter.pointer('down', focusU, focusV, t);
         painter.pointer('up', focusU, focusV, t);
+        wake();
         announceExhibit();
       };
       const onBlur = () => {
@@ -219,6 +244,7 @@ export class FcPaintingElement extends HTMLElement {
       const u = clamp((e.clientX - rect.left) / rect.width, 0, 1);
       const v = clamp((e.clientY - rect.top) / rect.height, 0, 1);
       painter.pointer(kind, u, v, now());
+      if (kind !== 'leave') wake();
     };
 
     // Mouse toys fire on press. Touch/pen toys fire on lift, and only for a tap: a scroll or
@@ -264,11 +290,13 @@ export class FcPaintingElement extends HTMLElement {
     });
 
     // Optional whisper-quiet Repaint button (hero / inline only)
-    const repaintBtn = this.querySelector<HTMLButtonElement>('button[data-fc-repaint]');
-    if (repaintBtn) {
+    if (repaintBtn && !interactive) {
+      repaintBtn.remove();
+    } else if (repaintBtn) {
       const onRepaint = (e: MouseEvent) => {
         e.stopPropagation();
         painter.repaint();
+        wake();
         repaintBtn.classList.remove('is-spinning');
         void repaintBtn.offsetWidth;
         repaintBtn.classList.add('is-spinning');

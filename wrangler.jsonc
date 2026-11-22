@@ -2,12 +2,18 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "financial-crimes",
   "compatibility_date": "2026-11-19",
+  // Serve only on the custom domains: no duplicate *.workers.dev copy, no per-version preview URLs
+  "workers_dev": false,
+  "preview_urls": false,
   "routes": [
     {
       "pattern": "financialcrimes.fyi",
       "custom_domain": true
     },
     {
+      // www must 301 to the apex. Static assets cannot redirect by hostname, so this needs a
+      // zone Redirect Rule: http.host eq "www.financialcrimes.fyi" ->
+      // concat("https://financialcrimes.fyi", http.request.uri.path), 301, preserve query string.
       "pattern": "www.financialcrimes.fyi",
       "custom_domain": true
     }

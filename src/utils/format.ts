@@ -162,6 +162,8 @@ export function formatLegalStage(stage: string): string {
     dpa: 'DEFERRED PROSECUTION',
     investigation: 'UNDER INVESTIGATION',
     appeal: 'ON APPEAL',
+    dismissed: 'CHARGES DISMISSED',
+    acquitted: 'ACQUITTED',
   };
   return labels[key] ?? key.replace(/[_-]+/g, ' ').toUpperCase();
 }
@@ -181,10 +183,18 @@ export function formatGuiltAdmission(
     return 'YES (GUILTY PLEA)';
   }
 
-  // A conviction is not an admission: only a plea counts as admitting guilt.
+  // A conviction is not an admission: only a plea counts as admitting guilt. "Convicted at
+  // trial" is only claimed when the record says there was no admission (admitted_guilt false).
   if (stage === 'conviction' || stage === 'convicted' || stage === 'sentenced') {
-    return admitted === true ? 'YES (GUILTY PLEA)' : 'NO (CONVICTED AT TRIAL)';
+    if (admitted === true) return 'YES (GUILTY PLEA)';
+    if (admitted === false) return 'NO (CONVICTED AT TRIAL)';
+    return stage === 'sentenced'
+      ? 'SENTENCED (ADMISSION NOT RECORDED)'
+      : 'CONVICTED (ADMISSION NOT RECORDED)';
   }
+
+  if (stage === 'dismissed') return 'NO (CHARGES DISMISSED)';
+  if (stage === 'acquitted') return 'NO (ACQUITTED)';
 
   if (stage === 'settlement') {
     if (admitted === true) return 'YES (CIVIL ADMISSION · 0 CRIMINAL)';
@@ -226,4 +236,235 @@ export function formatGuiltAdmission(
 export function formatFineRatio(pct: number | null, fallback = 'Pending'): string {
   if (pct === null || Number.isNaN(pct)) return fallback;
   return `${pct.toFixed(2)}%`;
+}
+
+
+/* ==========================================================================
+   Stage-aware money language (presumption of innocence, AGENTS.md §2C).
+   Contract: these stage groups mirror RESOLVED_STAGES / PENDING_STAGES in
+   src/schemas/article.ts once that export lands.
+   ========================================================================== */
+
+const STAGE_ALIASES: Record<string, string> = {
+  plea: 'guilty_plea',
+  conviction: 'convicted',
+  indictment: 'indicted',
+  arrest: 'arrested',
+};
+
+export const RESOLVED_STAGE_KEYS = ['settlement', 'regulatory_order', 'sentenced', 'dpa'] as const;
+export const PENDING_STAGE_KEYS = [
+  'investigation',
+  'civil_complaint',
+  'indicted',
+  'arrested',
+  'interim_order',
+  'appeal',
+] as const;
+
+function normalizeStage(stage: string | null | undefined): string {
+  const key = String(stage ?? '').trim().toLowerCase();
+  return STAGE_ALIASES[key] ?? key;
+}
+
+/** A penalty has actually been imposed (fine ratios and "loot" language are allowed). */
+export function isResolvedStage(stage: string | null | undefined): boolean {
+  return (RESOLVED_STAGE_KEYS as readonly string[]).includes(normalizeStage(stage));
+}
+
+/** Contested / pending: presumed innocent, no penalty imposed, money is "alleged" or "at issue". */
+export function isPendingStage(stage: string | null | undefined): boolean {
+  return (PENDING_STAGE_KEYS as readonly string[]).includes(normalizeStage(stage));
+}
+
+/**
+ * Status line that keeps the presumption of innocence visible:
+ * "CHARGED · PRESUMED INNOCENT", "INTERIM ORDER · CONTESTED", "SETTLEMENT".
+ */
+export function formatStageStatus(stage: string | null | undefined): string {
+  switch (normalizeStage(stage)) {
+    case 'indicted':
+      return 'CHARGED · PRESUMED INNOCENT';
+    case 'arrested':
+      return 'ARRESTED · PRESUMED INNOCENT';
+    case 'investigation':
+      return 'UNDER INVESTIGATION · NOT CHARGED';
+    case 'civil_complaint':
+      return 'CIVIL COMPLAINT · ALLEGATIONS UNPROVEN';
+    case 'interim_order':
+      return 'INTERIM ORDER · CONTESTED';
+    case 'appeal':
+      return 'ON APPEAL · CONTESTED';
+    case 'guilty_plea':
+      return 'GUILTY PLEA · AWAITING SENTENCE';
+    case 'convicted':
+      return 'CONVICTED · AWAITING SENTENCE';
+    default:
+      return formatLegalStage(String(stage ?? ''));
+  }
+}
+
+type StageFinancials = Pick<ArticleMeta, 'legal_stage' | 'financials'>;
+
+/**
+ * Label for the fine_display column. In pending cases that field holds frozen / seized sums or
+ * "Pending Trial", which are not fines, so it reads "STATUS" (or "PENALTY STATUS").
+ */
+export function penaltyLabel(stage: string | null | undefined, variant: 'short' | 'long' = 'short'): string {
+  if (isResolvedStage(stage)) return variant === 'short' ? 'FINE' : 'PENALTY';
+  return variant === 'short' ? 'STATUS' : 'PENALTY STATUS';
+}
+
+/** The fine ratio, but only when a penalty was imposed. Frozen or escrowed sums are not fines. */
+export function stageFineRatio(article: StageFinancials): number | null {
+  if (!isResolvedStage(article.legal_stage)) return null;
+  const pct = article.financials?.fine_ratio_pct;
+  return typeof pct === 'number' && Number.isFinite(pct) ? pct : null;
+}
+
+/** Stage-aware formatFineRatio: pending / unresolved cases always read as the fallback. */
+export function formatStageFineRatio(article: StageFinancials, fallback = 'Pending'): string {
+  return formatFineRatio(stageFineRatio(article), fallback);
+}
+
+/** Receipt / docket row for the fine ratio, e.g. "PENDING — NO PENALTY IMPOSED". */
+export function formatReceiptFineRatio(article: StageFinancials): string {
+  const ratio = stageFineRatio(article);
+  if (ratio !== null) return formatFineRatio(ratio);
+  const stage = normalizeStage(article.legal_stage);
+  if (stage === 'dismissed' || stage === 'acquitted') return 'NONE — NO PENALTY';
+  if (isResolvedStage(stage)) return 'NOT COMPUTED';
+  return 'PENDING — NO PENALTY IMPOSED';
+}
+
+export interface LeadPenaltySummary {
+  eyebrow: string;
+  figure: string;
+  delta: string;
+  subLead: string;
+  subTail: string;
+  ariaLabel: string;
+}
+
+/**
+ * Front-page lead box. Resolved cases show the penalty against the sum at issue; everything
+ * else shows the case status and the alleged amount (never "CIVIL SETTLEMENT" or "% OF LOOT").
+ */
+export function describeLeadPenalty(article: StageFinancials): LeadPenaltySummary {
+  const f = article.financials;
+  const stage = normalizeStage(article.legal_stage);
+
+  if (isResolvedStage(stage)) {
+    const ratio = stageFineRatio(article);
+    const proven = stage === 'sentenced' || f.admitted_guilt === true;
+    const delta =
+      ratio !== null
+        ? `${ratio.toFixed(1)}% OF ${proven ? 'LOOT' : 'SUM AT ISSUE'}`
+        : formatLegalStage(stage);
+    return {
+      eyebrow: 'PENALTY RATIO',
+      figure: f.fine_display,
+      delta,
+      subLead: `vs. ${f.amount_display}`,
+      subTail: f.prison_display,
+      ariaLabel: 'Lead case penalty ratio',
+    };
+  }
+
+  const delta =
+    stage === 'guilty_plea' || stage === 'convicted'
+      ? 'AWAITING SENTENCE'
+      : stage === 'interim_order' || stage === 'appeal'
+        ? 'AT ISSUE'
+        : 'ALLEGED';
+  return {
+    eyebrow: 'CASE STATUS',
+    figure: f.amount_display,
+    delta,
+    subLead: formatStageStatus(stage),
+    subTail: f.prison_display,
+    ariaLabel: 'Lead case status',
+  };
+}
+
+const ISO_STAMP_RE = /^\d{4}-\d{2}-\d{2}(?:[T ][\d:.]+(?:Z|[+-]\d{2}:?\d{2})?)?$/;
+
+/**
+ * Live-update timestamps: only a real ISO date/datetime is rendered (as an absolute AP
+ * timestamp). Frozen relative strings like "18m ago" return null and are not shown.
+ */
+export function formatLiveUpdateStamp(raw: string | null | undefined): string | null {
+  const value = String(raw ?? '').trim();
+  if (!ISO_STAMP_RE.test(value)) return null;
+  if (Number.isNaN(Date.parse(value))) return null;
+  return formatDatelineTimestamp(value);
+}
+
+/** Last-modified stamp for a story: updated_at when present and parseable, else publish_date. */
+export function articleModifiedAt(
+  article: Pick<ArticleMeta, 'publish_date'> & { updated_at?: string | null },
+): string {
+  const updated = typeof article.updated_at === 'string' ? article.updated_at.trim() : '';
+  return updated && !Number.isNaN(Date.parse(updated)) ? updated : article.publish_date;
+}
+
+export interface LootTotals {
+  /** Short label for the ticker / pulse bar. */
+  label: string;
+  /** Formatted amount. */
+  value: string;
+  /** Full sentence for aria-label / title. */
+  description: string;
+  /** Fines as a share of the amount behind `value`, or null. */
+  ratioPct: number | null;
+}
+
+export interface LootRollupLike {
+  total_loot_usd: number;
+  total_loot_display: string;
+  total_fines_usd: number;
+  avg_fine_ratio_pct?: number | null;
+  total_loot_resolved_usd?: number | null;
+  total_loot_resolved_display?: string | null;
+  total_loot_alleged_usd?: number | null;
+  total_loot_alleged_display?: string | null;
+}
+
+function compactUsd(usd: number, fallback: string): string {
+  return usd >= 1e6 ? formatUsdShort(usd, { M: 0 }) : fallback;
+}
+
+/**
+ * Honest site-wide "loot" figure. When the rollup splits resolved from alleged amounts
+ * (total_loot_resolved_usd / total_loot_alleged_usd), the headline figure is the resolved-case
+ * scale and the ratio is fines against it (matching avg_fine_ratio_pct in scripts/lib/rollup.mjs). Otherwise the combined total is labelled as
+ * alleged + adjudicated, never as proven loot.
+ */
+export function describeLootTotals(rollup: LootRollupLike): LootTotals {
+  const resolved = rollup.total_loot_resolved_usd;
+  if (typeof resolved === 'number' && Number.isFinite(resolved)) {
+    const value = compactUsd(resolved, rollup.total_loot_resolved_display ?? formatUsdShort(resolved));
+    const alleged = rollup.total_loot_alleged_usd;
+    const allegedText =
+      typeof alleged === 'number' && Number.isFinite(alleged)
+        ? `; a further ${compactUsd(alleged, rollup.total_loot_alleged_display ?? formatUsdShort(alleged))} is alleged in pending cases`
+        : '';
+    const ratioPct =
+      resolved > 0 ? Number(((rollup.total_fines_usd / resolved) * 100).toFixed(2)) : null;
+    return {
+      // "Resolved", not "adjudicated": settlements and regulatory orders are not court findings
+      label: 'RESOLVED',
+      value,
+      description: `${value} at issue in resolved cases${allegedText}`,
+      ratioPct,
+    };
+  }
+  const value = compactUsd(rollup.total_loot_usd, rollup.total_loot_display);
+  const ratio = rollup.avg_fine_ratio_pct;
+  return {
+    label: 'ALLEGED + ADJUDICATED',
+    value,
+    description: `${value} at issue across alleged and adjudicated cases`,
+    ratioPct: typeof ratio === 'number' && Number.isFinite(ratio) ? ratio : null,
+  };
 }

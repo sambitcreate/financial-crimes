@@ -27,6 +27,7 @@ import {
   triggerToy,
   updateToys,
 } from './toys';
+import { wake } from './loop';
 
 export { loadPixels, type PixelField };
 
@@ -100,8 +101,10 @@ export function createPortraitScene(
     status = 'loading';
     // Slow networks paint the procedural fallback after LOAD_TIMEOUT_MS, but a late image
     // still lands and bumps the revision so the painter restarts from the real portrait.
+    // The painter sleeps while the image loads; every outcome wakes the shared loop.
     const timer = setTimeout(() => {
       if (status === 'loading') status = 'failed';
+      wake();
     }, LOAD_TIMEOUT_MS);
     loadFn(config.refImage).then(
       (field) => {
@@ -112,10 +115,12 @@ export function createPortraitScene(
         applyCrop();
         status = 'ready';
         if (late) pixelRevision++;
+        wake();
       },
       () => {
         clearTimeout(timer);
         if (!pixels) status = 'failed';
+        wake();
       },
     );
   };

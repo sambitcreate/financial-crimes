@@ -275,7 +275,9 @@ describe('filterAndSortLedger & computeFilteredTotals', () => {
     expect(totals.count).toBe(4);
     expect(totals.totalLoot).toBe(2_950_000_000);
     expect(totals.totalFines).toBe(315_000_000);
-    expect(totals.avgFineRatioPct).toBeCloseTo((315_000_000 / 2_950_000_000) * 100, 4);
+    // Fines count only resolved stages, and the ratio is over resolved scale (the indicted
+    // $300M case is excluded from the denominator), matching scripts/lib/rollup.mjs.
+    expect(totals.avgFineRatioPct).toBeCloseTo((315_000_000 / 2_650_000_000) * 100, 4);
   });
 });
 
@@ -310,9 +312,9 @@ describe('groupArticlesByMonth & archive helpers', () => {
     const real = await loadAllArticles();
     const base = real[0];
     const synthetic: ArticleRecord[] = [
-      { ...base, id: 'fc-1', slug: 's-1', edition_date: '2026-10-15', publish_date: '2026-10-15T12:00:00Z', financials: { ...base.financials, amount_usd: 100, fine_usd: 10 } },
-      { ...base, id: 'fc-2', slug: 's-2', edition_date: '2026-12-03', publish_date: '2026-12-03T12:00:00Z', financials: { ...base.financials, amount_usd: 500, fine_usd: 50 } },
-      { ...base, id: 'fc-3', slug: 's-3', edition_date: '2026-10-20', publish_date: '2026-10-20T12:00:00Z', financials: { ...base.financials, amount_usd: 200, fine_usd: 20 } },
+      { ...base, id: 'fc-1', slug: 's-1', legal_stage: 'settlement', edition_date: '2026-10-15', publish_date: '2026-10-15T12:00:00Z', financials: { ...base.financials, amount_usd: 100, fine_usd: 10 } },
+      { ...base, id: 'fc-2', slug: 's-2', legal_stage: 'settlement', edition_date: '2026-12-03', publish_date: '2026-12-03T12:00:00Z', financials: { ...base.financials, amount_usd: 500, fine_usd: 50 } },
+      { ...base, id: 'fc-3', slug: 's-3', legal_stage: 'settlement', edition_date: '2026-10-20', publish_date: '2026-10-20T12:00:00Z', financials: { ...base.financials, amount_usd: 200, fine_usd: 20 } },
     ];
 
     const groups = groupArticlesByMonth(synthetic);
@@ -335,8 +337,12 @@ describe('Real repository integration (ledger index & credits directory)', () =>
     expect(entries).toHaveLength(articles.length);
     expect(totals.count).toBe(rollup.total_cases);
     expect(totals.totalLoot).toBe(rollup.total_loot_usd);
-    expect(totals.totalFines).toBe(rollup.total_fines_usd);
-    expect(totals.avgFineRatioPct).toBeCloseTo(rollup.avg_fine_ratio_pct, 1);
+    // Resolved-only fines semantics arrive with the shared rollup (total_loot_resolved_usd);
+    // older rollups summed frozen sums in pending cases as fines, which the ledger no longer does.
+    if ('total_loot_resolved_usd' in rollup) {
+      expect(totals.totalFines).toBe(rollup.total_fines_usd);
+      expect(totals.avgFineRatioPct).toBeCloseTo(rollup.avg_fine_ratio_pct, 1);
+    }
 
     for (const entry of entries) {
       expect(entry.paintRef.refImage).toMatch(/^\/paint-refs\/.+\.jpg$/);

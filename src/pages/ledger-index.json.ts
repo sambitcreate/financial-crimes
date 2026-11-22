@@ -1,11 +1,11 @@
 import type { APIRoute } from 'astro';
 import { loadAllArticles } from '../loaders/articles';
 import { getPaintRefLookup } from '../painting/refs-loader';
-import { buildLedgerEntries, LEDGER_PAGE_SIZE } from '../utils/ledger';
+import { buildLedgerEntries, LEDGER_PAGE_SIZE, listedArticles } from '../utils/ledger';
 
 export const GET: APIRoute = async () => {
   const [articles, { manifest }] = await Promise.all([loadAllArticles(), getPaintRefLookup()]);
-  const entries = buildLedgerEntries(articles, manifest);
+  const entries = buildLedgerEntries(listedArticles(articles), manifest);
 
   const payload = {
     generated_at: new Date().toISOString(),

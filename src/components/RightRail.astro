@@ -81,7 +81,7 @@ const { featureArticle, miniArticles, opinionArticles } = Astro.props;
       </div>
 
       {miniArticles.length > 1 && (
-        <div class="fc-carousel-controls">
+        <div class="fc-carousel-controls" data-requires-js>
           <span class="fc-carousel-counter" data-carousel-status aria-hidden="true">
             1&ndash;{Math.min(2, miniArticles.length)} OF {miniArticles.length}
           </span>

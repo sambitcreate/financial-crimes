@@ -278,7 +278,15 @@ export function sampleLocalLuminance(
   v: number,
   radius = 0.045,
 ): number {
-  if (!pixels) return 0.5;
+  // A zero-size or truncated field (failed decode, 0x0 image) would index NaN pixels.
+  if (
+    !pixels ||
+    !(pixels.width > 0) ||
+    !(pixels.height > 0) ||
+    pixels.data.length < pixels.width * pixels.height * 4
+  ) {
+    return 0.5;
+  }
   const hasWings = crop.canvasU0 > 0.005 || crop.canvasU1 < 0.995;
   const spanU = Math.max(0.001, crop.canvasU1 - crop.canvasU0);
   const shadowL = mood.shadow[2] / 100;
@@ -331,5 +339,16 @@ export function sampleLocalLuminance(
     }
   }
 
-  return sum / offsets.length;
+  const mean = sum / offsets.length;
+  return Number.isFinite(mean) ? mean : 0.5;
+}
+
+/**
+ * AGENTS.md adaptive-contrast rule: grounds darker than this get 'screen' ivory/gilt ink,
+ * lighter grounds get 'multiply' press-black. One threshold for every surface overlay.
+ */
+export const DARK_GROUND_THRESHOLD = 0.48;
+
+export function isDarkGround(luminance: number): boolean {
+  return luminance < DARK_GROUND_THRESHOLD;
 }

@@ -5,7 +5,7 @@ interface Props {
   /** Dynamic edition volume from content/editions/latest.json (e.g. "Vol. I, No. 1"). */
   volume?: string;
 }
-const { editionDate, volume = 'Vol. I' } = Astro.props;
+const { editionDate, volume } = Astro.props;
 const currentYear = editionDate.slice(0, 4);
 const editionHref = `/edition/${editionDate}`;
 ---
@@ -67,8 +67,9 @@ const editionHref = `/edition/${editionDate}`;
       <div class="fc-footer-col">
         <h3>Reader Desk</h3>
         <ul>
-          <li><button type="button" data-open-subscribe>Subscribe ($0)</button></li>
-          <li><button type="button" data-open-tipline>Tip Line</button></li>
+          <li data-requires-js><button type="button" data-open-subscribe>Subscribe ($0)</button></li>
+          <li data-requires-js><button type="button" data-open-tipline>Tip Line</button></li>
+          <li data-nojs-only><a href="/rss.xml">RSS Feed</a></li>
           <li><a href="/about">About &amp; Methodology</a></li>
           <li><a href="/credits">Reference Credits</a></li>
           <li><a href="/corrections">Corrections Policy</a></li>
@@ -93,7 +94,7 @@ const editionHref = `/edition/${editionDate}`;
 
     <div class="fc-footer-bottom">
       <span>&copy; {currentYear} The Financial Crimes. &ldquo;All the Crimes Fit to Fine.&rdquo;</span>
-      <span>{volume} &middot; Published Daily at 7:00 a.m. ET</span>
+      <span>{volume ? <>{volume} &middot; </> : null}Published Daily at 7:00 a.m. ET</span>
     </div>
   </div>
 </footer>

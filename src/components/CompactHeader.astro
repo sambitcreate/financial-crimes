@@ -26,6 +26,7 @@ const {
         class="fc-icon-btn"
         id="fc-compact-menu-btn"
         data-open-nav-drawer
+        data-requires-js
         aria-label="Open navigation menu"
         aria-controls="fc-nav-drawer"
         aria-expanded="false"
@@ -51,12 +52,16 @@ const {
     <a href="/" class="fc-compact-brand">The Financial Crimes</a>
 
     <div class="fc-compact-right">
-      <button type="button" class="fc-btn-slate" data-open-subscribe>
+      <button type="button" class="fc-btn-slate" data-open-subscribe data-requires-js>
         Subscribe $0
       </button>
-      <button type="button" class="fc-btn-outline" data-open-tipline>
+      <button type="button" class="fc-btn-outline" data-open-tipline data-requires-js>
         Tip Line
       </button>
+      <span data-nojs-only>
+        <a href="/rss.xml" class="fc-btn-slate">RSS Feed</a>
+        <a href="/about" class="fc-btn-outline">About</a>
+      </span>
     </div>
   </div>
 </header>
