@@ -1,0 +1,88 @@
+{
+  "id": "fc-2026-026",
+  "slug": "sfo-guralp-systems-bribery-dpa-enforcement",
+  "publish_date": "2026-11-22T06:00:00-05:00",
+  "edition_date": "2026-11-22",
+  "city": "London",
+  "edition": "london",
+  "jurisdiction": {
+    "country_iso": "GB",
+    "venue": "Southwark Crown Court & High Court of Justice, London"
+  },
+  "category": "Europe",
+  "agencies": [
+    "UK SFO"
+  ],
+  "docket_number": null,
+  "legal_stage": "dpa",
+  "template": "news",
+  "eyebrow": "LONDON",
+  "headline": "Seven Years After Skipping Its Bribery Settlement Tab, U.K. Seismology Firm Gets a New Payment Plan",
+  "deck": "Southwark Crown Court approved a variation to Güralp Systems Limited’s 2019 Deferred Prosecution Agreement, ordering £2.5 million including interest and Serious Fraud Office legal costs—with prosecution deferred unless it defaults again.",
+  "byline": "By The London Bureau",
+  "dateline": "LONDON",
+  "read_time_min": 3,
+  "layout_slot": "lead-live",
+  "live_updates": [
+    {
+      "text": "Southwark Crown Court approves DPA variation requiring Güralp Systems Limited to pay £2.5 million including up to £400,000 in interest and S.F.O. legal costs.",
+      "ago": "14m ago"
+    },
+    {
+      "text": "First £400,000 installment is due Dec. 1, 2026, paired with clauses barring removal of company assets or intellectual property.",
+      "ago": "42m ago"
+    },
+    {
+      "text": "Variation closes a two-year S.F.O. breach battle after the High Court ruled in January and February 2026 that the 2019 agreement remained enforceable.",
+      "ago": "1h ago"
+    }
+  ],
+  "financials": {
+    "amount_usd": 2622500,
+    "amount_display": "£2.07M (~$2.62M Gross Profit)",
+    "fine_usd": 3167500,
+    "fine_display": "£2.50M (~$3.17M incl. Interest & Costs)",
+    "fine_ratio_pct": 120.8,
+    "prison_months": 0,
+    "prison_display": "0 Days (Corporate DPA; 3 Ex-Execs Acquitted)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 42,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-22T06:08:00-05:00",
+    "components": {
+      "fine_ratio": 14,
+      "no_admission": 0,
+      "accountability_gap": 28
+    },
+    "rationale": "Güralp Systems accepted corporate bribery charges and now faces £2.5 million (~$3.17M, or 120.8% of the £2.07M unlawful gross profit) including interest and costs, but paid zero punitive fine above disgorgement, avoided corporate conviction despite a five-year default, and saw zero prison sentences."
+  },
+  "street_crime_compare": {
+    "exec_summary": "Seven years after signing a 2019 UK DPA accepting bribery charges and £2.07M disgorgement without paying, Güralp Systems received a court-approved variation requiring £2.5M (with interest and SFO costs) starting Dec. 1, 2026, with zero criminal conviction.",
+    "street_equivalent": "Ignoring a £2,070 court-ordered criminal restitution bill for five years and litigating whether the order expired",
+    "street_sentence": "Immediate default warrant, contempt proceedings, and revocation of suspended sentence"
+  },
+  "sources": [
+    {
+      "title": "Technology company to pay £2.5m penalty to taxpayers",
+      "agency": "UK Serious Fraud Office (GOV.UK)",
+      "url": "https://www.gov.uk/government/news/technology-company-to-pay-25m-penalty-to-taxpayers",
+      "date": "2026-11-20"
+    },
+    {
+      "title": "Güralp Systems Limited — SFO Case File",
+      "agency": "UK Serious Fraud Office (GOV.UK)",
+      "url": "https://www.gov.uk/sfo-cases/guralp-sytems-ltd",
+      "date": "2026-11-20"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "The Royal Courts of Justice on the Strand in London, where the High Court ruled in 2026 that Güralp Systems Limited’s 2019 bribery Deferred Prosecution Agreement remained enforceable past its five-year term.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

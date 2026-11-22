@@ -1,0 +1,68 @@
+{
+  "id": "fc-2026-029",
+  "slug": "bafin-state-street-germany-aml-order",
+  "publish_date": "2026-11-22T06:01:00-05:00",
+  "edition_date": "2026-11-22",
+  "city": "Munich",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "DE",
+    "venue": "Federal Financial Supervisory Authority (BaFin), Bonn & Munich"
+  },
+  "category": "Wall Street",
+  "agencies": [
+    "BaFin"
+  ],
+  "docket_number": null,
+  "legal_stage": "regulatory_order",
+  "template": "news",
+  "eyebrow": "WALL STREET",
+  "headline": "Germany’s Watchdog Finds ‘Serious and Recurring’ Money-Laundering Lapses at State Street’s Munich Bank—and Orders a Remediation Plan",
+  "deck": "BaFin cited State Street Bank International GmbH for six categories of Money Laundering Act and Banking Act violations, from transaction monitoring to outsourcing controls, without announcing a monetary fine.",
+  "byline": "By The European Bureau",
+  "dateline": "MUNICH",
+  "read_time_min": 2,
+  "layout_slot": "lead-right",
+  "financials": {
+    "amount_usd": null,
+    "amount_display": "Not Quantified (AML Systemic Lapses)",
+    "fine_usd": 0,
+    "fine_display": "€0 (Remediation Order Only)",
+    "fine_ratio_pct": null,
+    "prison_months": 0,
+    "prison_display": "0 Days (Administrative Order)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 98,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-22T06:08:00-05:00",
+    "components": {
+      "fine_ratio": 50,
+      "no_admission": 15,
+      "accountability_gap": 33
+    },
+    "rationale": "BaFin cited State Street Bank International GmbH for numerous serious and recurring GwG and KWG anti-money laundering violations while imposing €0 in monetary fines, requiring no admission, and charging zero individuals."
+  },
+  "street_crime_compare": {
+    "exec_summary": "BaFin ordered State Street Bank International GmbH in Munich to submit a remediation plan and progress reports over serious, recurring AML violations across six compliance pillars, with €0 fine announced and zero executives sanctioned.",
+    "street_equivalent": "Repeatedly failing mandatory health and safety inspections across six kitchen stations at a neighborhood diner",
+    "street_sentence": "Immediate municipal fines and temporary permit suspension pending re-inspection"
+  },
+  "sources": [
+    {
+      "title": "State Street Bank International GmbH: BaFin orders comprehensive remediation of shortcomings",
+      "agency": "Federal Financial Supervisory Authority (BaFin)",
+      "url": "https://www.bafin.de/SharedDocs/Veroeffentlichungen/EN/Massnahmen/60b_KWG_84_WpIG_und_57_GwG/meldung_2026_11_20_state_street_bank_international_gmbh_en.html",
+      "date": "2026-11-20"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "sage",
+    "theme": "newsprint",
+    "caption": "Headquarters of Germany’s Federal Financial Supervisory Authority (BaFin) in Bonn. On Nov. 20, the regulator ordered Munich-based State Street Bank International GmbH to submit a remediation plan for recurring anti-money laundering deficiencies.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

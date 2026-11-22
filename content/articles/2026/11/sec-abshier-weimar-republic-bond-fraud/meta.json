@@ -1,0 +1,68 @@
+{
+  "id": "fc-2026-028",
+  "slug": "sec-abshier-weimar-republic-bond-fraud",
+  "publish_date": "2026-11-22T06:03:00-05:00",
+  "edition_date": "2026-11-22",
+  "city": "Los Angeles",
+  "edition": "los-angeles",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Central District of California"
+  },
+  "category": "Courts",
+  "agencies": [
+    "SEC"
+  ],
+  "docket_number": "2:24-cv-10745",
+  "legal_stage": "settlement",
+  "template": "news",
+  "eyebrow": "COURTS",
+  "headline": "Promoters Accused of Selling $3.85 Million in Weimar Republic and Tsarist Bonds Settle With S.E.C. for $354,676",
+  "deck": "Regulators alleged Billy and Christopher W. Abshier promised $250,000 advances and multimillion-dollar government redemptions on century-old German, Chinese, and Russian paper. Both settled without admitting the allegations.",
+  "byline": "By The Courts Desk",
+  "dateline": "LOS ANGELES",
+  "read_time_min": 2,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 3850000,
+    "amount_display": ">$3.85M Raised",
+    "fine_usd": 354676,
+    "fine_display": "$354,676 Civil Penalties",
+    "fine_ratio_pct": 9.2,
+    "prison_months": 0,
+    "prison_display": "0 Days (Civil Consent Judgments)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 81,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-22T06:08:00-05:00",
+    "components": {
+      "fine_ratio": 40,
+      "no_admission": 15,
+      "accountability_gap": 26
+    },
+    "rationale": "Combined civil penalties of $354,676 equal just 9.2% of the more than $3.85 million allegedly raised from 85 investors, with no admission of the allegations and zero criminal custody."
+  },
+  "street_crime_compare": {
+    "exec_summary": "SEC final consent judgments order Billy and Christopher W. Abshier to pay $236,451 and $118,225 ($354,676 total, 9.2% of >$3.85M raised) without admitting allegations, with civil injunctions and zero prison time.",
+    "street_equivalent": "Selling $38,500 worth of defunct novelty paper bills by promising a secret Treasury cash-out window",
+    "street_sentence": "State felony theft charges with restitution typically matching 100% of investor losses, not 9.2%"
+  },
+  "sources": [
+    {
+      "title": "SEC Obtains Final Consent Judgments as to Two Defendants Charged in Alleged Multimillion Dollar Fraudulent Scheme Involving the Sale of Historic Bonds (Litigation Release No. 26688)",
+      "agency": "U.S. Securities and Exchange Commission",
+      "url": "https://www.sec.gov/enforcement-litigation/litigation-releases/lr-26688",
+      "date": "2026-11-19"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "A 1923 German Weimar Republic 10-billion-mark Reichsbanknote. The S.E.C. alleged Historic Asset Placement Services Global raised over $3.85 million pitching mythical government redemptions on Weimar-era and pre-revolutionary Chinese and Russian bonds.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

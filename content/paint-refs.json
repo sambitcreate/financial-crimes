@@ -5,7 +5,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:CFM56_dsc04641.jpg",
     "sourceLicense": "CC BY-SA 3.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.30, "v": 0.46 },
+    "focalPoint": {
+      "u": 0.3,
+      "v": 0.46
+    },
     "paletteMood": "subpoena-cobalt",
     "toyKind": "stamp",
     "toyText": "FORGED FORM 1",
@@ -18,7 +21,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:New_York_Stock_Exchange_Facade_2015.jpg",
     "sourceLicense": "CC BY 2.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.48, "v": 0.46 },
+    "focalPoint": {
+      "u": 0.48,
+      "v": 0.46
+    },
     "paletteMood": "verdict-crimson",
     "toyKind": "crash-line",
     "toyText": "6%/MO ALLEGED",
@@ -31,12 +37,31 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bankenviertel_Frankfurt.jpg",
     "sourceLicense": "CC BY-SA 3.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.50, "v": 0.45 },
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.45
+    },
     "paletteMood": "monochrome-noir",
     "toyKind": "stamp",
     "toyText": "€45M RECORD FINE",
     "toySubtext": "≈ 9 HRS NET INCOME",
     "alt": "Monochrome impressionist oil painting of the Frankfurt am Main banking-district skyline, accompanying an Opinion column on BaFin's record €45 million administrative fine against J.P. Morgan SE."
+  },
+  "bafin-state-street-germany-aml-order": {
+    "refImage": "/paint-refs/bafin-state-street-germany-aml-order.jpg",
+    "subject": "Federal Financial Supervisory Authority (BaFin) headquarters, Bonn",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bundesanstalt_f%C3%BCr_Finanzdienstleistungsaufsicht.jpg",
+    "sourceLicense": "CC0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.62,
+      "v": 0.66
+    },
+    "paletteMood": "banknote-emerald",
+    "toyKind": "stamp",
+    "toyText": "€0 FINE · AML PLAN",
+    "toySubtext": "6 VIOLATION AREAS · BAFIN",
+    "alt": "Impressionist oil study of Germany's Federal Financial Supervisory Authority headquarters in Bonn, accompanying coverage of BaFin's anti-money laundering remediation order against State Street Bank International GmbH."
   },
   "bank-of-america-aml-bundle-discount": {
     "refImage": "/paint-refs/bank-of-america-aml-bundle-discount.jpg",
@@ -44,7 +69,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Brian_Moynihan,_official_portrait,_Homeland_Security_Council.jpg",
     "sourceLicense": "Public Domain",
     "isPortrait": true,
-    "focalPoint": { "u": 0.49, "v": 0.34 },
+    "focalPoint": {
+      "u": 0.49,
+      "v": 0.34
+    },
     "paletteMood": "verdict-crimson",
     "toyKind": "stamp",
     "toyText": "$750M DISCOUNT",
@@ -57,7 +85,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:John_Joseph_Moakley_United_States_Courthouse_September_2024.jpg",
     "sourceLicense": "CC BY 4.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.50, "v": 0.48 },
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.48
+    },
     "paletteMood": "subpoena-cobalt",
     "toyKind": "envelopes",
     "toyText": "30 CHARGED",
@@ -70,7 +101,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Thurgood_Marshall_United_States_Courthouse_(55314071684).jpg",
     "sourceLicense": "CC BY 4.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.50, "v": 0.44 },
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.44
+    },
     "paletteMood": "subpoena-cobalt",
     "toyKind": "redaction",
     "toyText": "NO AI PRIVILEGE",
@@ -83,7 +117,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shastri_Bhawan,_a_Government_buildings_in_New_Delhi_11.jpg",
     "sourceLicense": "CC BY-SA 4.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.50, "v": 0.52 },
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.52
+    },
     "paletteMood": "courtroom-ochre",
     "toyKind": "envelopes",
     "toyText": "₹20L STING TRAP",
@@ -96,7 +133,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sunseeker_130_Sport_Yacht_(7542161830).jpg",
     "sourceLicense": "CC BY-SA 2.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.48, "v": 0.52 },
+    "focalPoint": {
+      "u": 0.48,
+      "v": 0.52
+    },
     "paletteMood": "bullion-gold",
     "toyKind": "coins",
     "toyText": "47-FT YACHT SEIZED",
@@ -109,7 +149,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:JPMorgan_Chase_Headquarters_New_York_City.jpg",
     "sourceLicense": "CC0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.50, "v": 0.42 },
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.42
+    },
     "paletteMood": "verdict-crimson",
     "toyKind": "envelopes",
     "toyText": "4M FAKE STUDENTS",
@@ -122,12 +165,31 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Do_Kwon.png",
     "sourceLicense": "CC BY 3.0",
     "isPortrait": true,
-    "focalPoint": { "u": 0.49, "v": 0.36 },
+    "focalPoint": {
+      "u": 0.49,
+      "v": 0.36
+    },
     "paletteMood": "verdict-crimson",
     "toyKind": "crash-line",
     "toyText": "$40B COLLAPSE",
     "toySubtext": "15 YRS · $7.3M/DAY",
     "alt": "Impressionist oil portrait of Terraform Labs co-founder Do Kwon, who was sentenced to 15 years in federal prison following the $40 billion TerraUSD and LUNA collapse."
+  },
+  "doj-innovage-pace-false-claims-settlement": {
+    "refImage": "/paint-refs/doj-innovage-pace-false-claims-settlement.jpg",
+    "subject": "Robert F. Kennedy Department of Justice Building, Washington",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2014-04-04-Robert-F-Kennedy-Department-of-Justice-Building-Washington-DC.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.52,
+      "v": 0.48
+    },
+    "paletteMood": "verdict-crimson",
+    "toyKind": "stamp",
+    "toyText": "$36M · NO ADMISSION",
+    "toySubtext": "FIRST PACE SETTLEMENT · 0 PRISON",
+    "alt": "Impressionist oil study of the Robert F. Kennedy Department of Justice Building in Washington, accompanying coverage of InnovAge Holding Corporation's $36 million False Claims Act settlement."
   },
   "elie-schwartz-nightingale-crowdstreet-fraud": {
     "refImage": "/paint-refs/elie-schwartz-nightingale-crowdstreet-fraud.jpg",
@@ -135,12 +197,31 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Patek_Philippe_Golden_Ellipse_ref._3748.jpg",
     "sourceLicense": "CC BY-SA 4.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.49, "v": 0.50 },
+    "focalPoint": {
+      "u": 0.49,
+      "v": 0.5
+    },
     "paletteMood": "bullion-gold",
     "toyKind": "coins",
     "toyText": "$62.8M DIVERTED",
     "toySubtext": "87 MOS · LUXURY WATCHES",
     "alt": "Impressionist oil painting of a gold Swiss luxury wristwatch, illustrating the diverted CrowdStreet investor funds in former Nightingale Properties chief executive Elie Schwartz's sentencing."
+  },
+  "eppo-bulgaria-railway-insolvent-consortium": {
+    "refImage": "/paint-refs/eppo-bulgaria-railway-insolvent-consortium.jpg",
+    "subject": "Bulgarian State Railways Class 44 electric locomotive",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skoda_68E_-_BDZ_class_44_02.jpg",
+    "sourceLicense": "CC BY 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.72,
+      "v": 0.48
+    },
+    "paletteMood": "subpoena-cobalt",
+    "toyKind": "envelopes",
+    "toyText": "€213.7M RAIL GRANT",
+    "toySubtext": "INDICTED · TRIAL PENDING",
+    "alt": "Impressionist oil painting of a Bulgarian State Railways electric locomotive at a station platform, accompanying coverage of an E.P.P.O. indictment over an alleged false solvency declaration on a €213.7 million Sofia–Plovdiv rail grant."
   },
   "eppo-operation-hermes-smartphone-vat-carousel": {
     "refImage": "/paint-refs/eppo-operation-hermes-smartphone-vat-carousel.jpg",
@@ -148,7 +229,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Laura_K%C3%B6vesi_(2022).jpg",
     "sourceLicense": "CC BY 4.0",
     "isPortrait": true,
-    "focalPoint": { "u": 0.48, "v": 0.35 },
+    "focalPoint": {
+      "u": 0.48,
+      "v": 0.35
+    },
     "paletteMood": "subpoena-cobalt",
     "toyKind": "gavel-ripple",
     "toyText": "€410M VAT PROBE",
@@ -161,7 +245,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Buildings_in_DLF,_Gurgaon.jpg",
     "sourceLicense": "CC BY 2.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.68, "v": 0.44 },
+    "focalPoint": {
+      "u": 0.68,
+      "v": 0.44
+    },
     "paletteMood": "banknote-emerald",
     "toyKind": "coins",
     "toyText": "₹978 CR EV LOANS",
@@ -174,7 +261,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bandra-Kurla-Complex-Mumbai-Maharashtra-India.jpg",
     "sourceLicense": "CC BY 4.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.45, "v": 0.56 },
+    "focalPoint": {
+      "u": 0.45,
+      "v": 0.56
+    },
     "paletteMood": "subpoena-cobalt",
     "toyKind": "crash-line",
     "toyText": "$230M FX HOLE",
@@ -187,7 +277,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:London_Southwark_Crown_Court_(50604622932).jpg",
     "sourceLicense": "CC BY 2.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.52, "v": 0.52 },
+    "focalPoint": {
+      "u": 0.52,
+      "v": 0.52
+    },
     "paletteMood": "courtroom-ochre",
     "toyKind": "gavel-ripple",
     "toyText": "4-MIN TRADE GAP",
@@ -200,7 +293,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Michael_Madigan_Cropped.png",
     "sourceLicense": "CC BY 3.0",
     "isPortrait": true,
-    "focalPoint": { "u": 0.55, "v": 0.36 },
+    "focalPoint": {
+      "u": 0.55,
+      "v": 0.36
+    },
     "paletteMood": "courtroom-ochre",
     "toyKind": "gavel-ripple",
     "toyText": "APPEAL DENIED",
@@ -213,7 +309,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nighttime_Metro_Manila_skyline_seen_from_atop_of_Metrobank_Center_in_Taguig_City.jpg",
     "sourceLicense": "CC0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.50, "v": 0.58 },
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.58
+    },
     "paletteMood": "subpoena-cobalt",
     "toyKind": "redaction",
     "toyText": "~0% AI ALLEGED",
@@ -226,7 +325,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:HK_Princes_Building.jpg",
     "sourceLicense": "CC BY 3.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.52, "v": 0.45 },
+    "focalPoint": {
+      "u": 0.52,
+      "v": 0.45
+    },
     "paletteMood": "bullion-gold",
     "toyKind": "stamp",
     "toyText": "$167M vs $8.4B CLAIM",
@@ -239,7 +341,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Roger_Ver.jpg",
     "sourceLicense": "CC BY-SA 4.0",
     "isPortrait": true,
-    "focalPoint": { "u": 0.51, "v": 0.21 },
+    "focalPoint": {
+      "u": 0.51,
+      "v": 0.21
+    },
     "paletteMood": "monochrome-noir",
     "toyKind": "stamp",
     "toyText": "0 PRISON DAYS",
@@ -252,12 +357,79 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Phiroze_Jeejeebhoy_Towers_(Bombay_Stock_Exchange).jpg",
     "sourceLicense": "CC BY-SA 2.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.50, "v": 0.42 },
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.42
+    },
     "paletteMood": "verdict-crimson",
     "toyKind": "crash-line",
     "toyText": "₹4,844 CR ESCROW",
     "toySubtext": "APPEAL PENDING",
     "alt": "Impressionist oil painting of Phiroze Jeejeebhoy Towers on Dalal Street in Mumbai, illustrating SEBI's ₹4,843.57 crore options-manipulation order against Jane Street trading affiliates."
+  },
+  "sec-abshier-weimar-republic-bond-fraud": {
+    "refImage": "/paint-refs/sec-abshier-weimar-republic-bond-fraud.jpg",
+    "subject": "1923 German Weimar Republic 10-billion-mark Reichsbanknote",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:GER-116-Reichsbanknote-10_Billion_Mark_(1923).jpg",
+    "sourceLicense": "Public Domain",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.44,
+      "v": 0.46
+    },
+    "paletteMood": "bullion-gold",
+    "toyKind": "coins",
+    "toyText": "9.2% CIVIL PENALTY",
+    "toySubtext": "NO ADMISSION · 0 PRISON",
+    "alt": "Impressionist oil painting of a 1923 German Weimar Republic 10-billion-mark Reichsbanknote, illustrating S.E.C. final consent judgments in a $3.85 million historical bond case settled without admission."
+  },
+  "sec-colorado-fake-crypto-advisers-ring": {
+    "refImage": "/paint-refs/sec-colorado-fake-crypto-advisers-ring.jpg",
+    "subject": "Byron White United States Courthouse, Denver",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Colorado_-_Byron_White_United_States_Courthouse_-_20170713170112.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.46,
+      "v": 0.44
+    },
+    "paletteMood": "courtroom-ochre",
+    "toyKind": "crash-line",
+    "toyText": "4 SHELL PAIRS · $37.4M",
+    "toySubtext": "S.E.C. CIVIL COMPLAINT · D. COLO.",
+    "alt": "Impressionist oil study of the neoclassical colonnade at the Byron White United States Courthouse in Denver, illustrating the S.E.C.'s civil complaint against eight Colorado entities over fake crypto platforms."
+  },
+  "sfo-guralp-systems-bribery-dpa-enforcement": {
+    "refImage": "/paint-refs/sfo-guralp-systems-bribery-dpa-enforcement.jpg",
+    "subject": "Royal Courts of Justice, Strand, London",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Royal_Courts_of_Justice_exterior_-_01.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.48,
+      "v": 0.44
+    },
+    "paletteMood": "courtroom-ochre",
+    "toyKind": "gavel-ripple",
+    "toyText": "£2.5M · 7 YRS LATE",
+    "toySubtext": "D.P.A. VARIED · 0 PRISON",
+    "alt": "Impressionist oil study of the Royal Courts of Justice on the Strand in London, accompanying coverage of Southwark Crown Court's £2.5 million Deferred Prosecution Agreement variation for Güralp Systems Limited."
+  },
+  "sfo-london-capital-finance-minibond-charges": {
+    "refImage": "/paint-refs/sfo-london-capital-finance-minibond-charges.jpg",
+    "subject": "Westminster Magistrates' Court, London",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Entrance_to_Westminster_Magistrates%27_Court,_March_2025.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.45,
+      "v": 0.34
+    },
+    "paletteMood": "subpoena-cobalt",
+    "toyKind": "gavel-ripple",
+    "toyText": "£251M · 8 CHARGED",
+    "toySubtext": "HEARING DEC. 7 · PRESUMED INNOCENT",
+    "alt": "Impressionist oil study of Westminster Magistrates' Court in London, where eight defendants charged by the U.K. Serious Fraud Office in the London Capital & Finance collapse are scheduled to appear."
   },
   "singapore-mas-nine-banks-fujian-laundering": {
     "refImage": "/paint-refs/singapore-mas-nine-banks-fujian-laundering.jpg",
@@ -265,7 +437,10 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marina_Bay_Singapore-3499.jpg",
     "sourceLicense": "CC BY-SA 4.0",
     "isPortrait": false,
-    "focalPoint": { "u": 0.56, "v": 0.48 },
+    "focalPoint": {
+      "u": 0.56,
+      "v": 0.48
+    },
     "paletteMood": "banknote-emerald",
     "toyKind": "coins",
     "toyText": "0.915% FINE",
@@ -278,50 +453,14 @@
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:AG_Todd_Blanche_Official_Portrait.jpg",
     "sourceLicense": "Public Domain",
     "isPortrait": true,
-    "focalPoint": { "u": 0.50, "v": 0.36 },
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.36
+    },
     "paletteMood": "courtroom-ochre",
     "toyKind": "stamp",
     "toyText": "50% D.P.A. DISCOUNT",
     "toySubtext": "NO COMPLIANCE MONITOR",
     "alt": "Impressionist oil portrait of U.S. Attorney General Todd Blanche, accompanying coverage of the Justice Department's post-Blanche Memo F.C.P.A. and F.E.P.A. bribery enforcement shift."
-  },
-  "sfo-london-capital-finance-minibond-charges": {
-    "refImage": "/paint-refs/sfo-london-capital-finance-minibond-charges.jpg",
-    "subject": "Westminster Magistrates' Court, London",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Entrance_to_Westminster_Magistrates%27_Court,_March_2025.jpg",
-    "sourceLicense": "CC BY-SA 4.0",
-    "isPortrait": false,
-    "focalPoint": { "u": 0.45, "v": 0.34 },
-    "paletteMood": "subpoena-cobalt",
-    "toyKind": "gavel-ripple",
-    "toyText": "£251M · 8 CHARGED",
-    "toySubtext": "HEARING DEC. 7 · PRESUMED INNOCENT",
-    "alt": "Impressionist oil study of Westminster Magistrates' Court in London, where eight defendants charged by the U.K. Serious Fraud Office in the London Capital & Finance collapse are scheduled to appear."
-  },
-  "sec-colorado-fake-crypto-advisers-ring": {
-    "refImage": "/paint-refs/sec-colorado-fake-crypto-advisers-ring.jpg",
-    "subject": "Byron White United States Courthouse, Denver",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Colorado_-_Byron_White_United_States_Courthouse_-_20170713170112.jpg",
-    "sourceLicense": "CC BY-SA 4.0",
-    "isPortrait": false,
-    "focalPoint": { "u": 0.46, "v": 0.44 },
-    "paletteMood": "courtroom-ochre",
-    "toyKind": "crash-line",
-    "toyText": "4 SHELL PAIRS · $37.4M",
-    "toySubtext": "S.E.C. CIVIL COMPLAINT · D. COLO.",
-    "alt": "Impressionist oil study of the neoclassical colonnade at the Byron White United States Courthouse in Denver, illustrating the S.E.C.'s civil complaint against eight Colorado entities over fake crypto platforms."
-  },
-  "doj-innovage-pace-false-claims-settlement": {
-    "refImage": "/paint-refs/doj-innovage-pace-false-claims-settlement.jpg",
-    "subject": "Robert F. Kennedy Department of Justice Building, Washington",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2014-04-04-Robert-F-Kennedy-Department-of-Justice-Building-Washington-DC.jpg",
-    "sourceLicense": "CC BY-SA 4.0",
-    "isPortrait": false,
-    "focalPoint": { "u": 0.52, "v": 0.48 },
-    "paletteMood": "verdict-crimson",
-    "toyKind": "stamp",
-    "toyText": "$36M · NO ADMISSION",
-    "toySubtext": "FIRST PACE SETTLEMENT · 0 PRISON",
-    "alt": "Impressionist oil study of the Robert F. Kennedy Department of Justice Building in Washington, accompanying coverage of InnovAge Holding Corporation's $36 million False Claims Act settlement."
   }
 }

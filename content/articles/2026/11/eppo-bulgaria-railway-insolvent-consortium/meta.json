@@ -1,0 +1,58 @@
+{
+  "id": "fc-2026-027",
+  "slug": "eppo-bulgaria-railway-insolvent-consortium",
+  "publish_date": "2026-11-22T06:05:00-05:00",
+  "edition_date": "2026-11-22",
+  "city": "Sofia",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "EU",
+    "venue": "Sofia City Court & European Public Prosecutor’s Office (EPPO)"
+  },
+  "category": "Europe",
+  "agencies": [
+    "EPPO",
+    "OLAF"
+  ],
+  "docket_number": null,
+  "legal_stage": "indicted",
+  "template": "news",
+  "eyebrow": "EUROPE",
+  "headline": "Company Declared Insolvent in 2012 Helped Win €213.7 Million E.U. Railway Grant Seven Years Later, Prosecutors Allege",
+  "deck": "The European Public Prosecutor’s Office indicted a corporate representative at the Sofia City Court after Bulgaria’s rail authority paid €68.2 million to a consortium for Sofia–Plovdiv track upgrades. The defendant is presumed innocent.",
+  "byline": "By The European Bureau",
+  "dateline": "SOFIA",
+  "read_time_min": 2,
+  "layout_slot": "lead-hero",
+  "financials": {
+    "amount_usd": 232000000,
+    "amount_display": "€213.7M Grant (~$232M; €68.2M Paid)",
+    "fine_usd": null,
+    "fine_display": "Pending Trial",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending Trial",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "EPPO indicted a consortium company representative at Sofia City Court over an allegedly false solvency declaration used to secure a €213.7M (~$232M) EU railway grant with €68.2M disbursed; defendant presumed innocent.",
+    "street_equivalent": "If proven, the allegations would resemble certifying zero bankruptcies on a €5,000 municipal small-business grant seven years after filing for insolvency",
+    "street_sentence": "Routine automated registry rejection before a single euro leaves the treasury"
+  },
+  "sources": [
+    {
+      "title": "Bulgaria: EPPO indicts individual in €213.7 million fraud investigation involving the modernisation of the railway infrastructure",
+      "agency": "European Public Prosecutor’s Office (EPPO)",
+      "url": "https://www.eppo.europa.eu/media/news/bulgaria-eppo-indicts-individual-eur2137-million-fraud-investigation-involving-modernisation-railway-2026-11-19_en",
+      "date": "2026-11-19"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "A Bulgarian State Railways electric locomotive on the national network. European prosecutors filed an indictment in Sofia over an alleged false solvency declaration tied to a €213.7 million Sofia–Plovdiv rail modernization grant.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

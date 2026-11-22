@@ -1,33 +1,37 @@
 {
   "edition_date": "2026-11-22",
-  "volume": "Vol. I, No. 2",
+  "volume": "Vol. I, No. 3",
   "display_date": "Sunday, November 22, 2026",
   "tagline": "All the Crimes Fit to Fine.",
-  "published_at": "2026-11-22T07:00:00-05:00",
+  "published_at": "2026-11-22T06:10:00-05:00",
   "slots": {
-    "lead_hero": "sfo-london-capital-finance-minibond-charges",
-    "lead_live": "sec-colorado-fake-crypto-advisers-ring",
-    "lead_right": "doj-innovage-pace-false-claims-settlement",
+    "lead_hero": "eppo-bulgaria-railway-insolvent-consortium",
+    "lead_live": "sfo-guralp-systems-bribery-dpa-enforcement",
+    "lead_right": "bafin-state-street-germany-aml-order",
     "lead_grid": [
-      "bank-of-america-aml-bundle-discount",
-      "backward-hat-capital-forex-ponzi",
-      "sebi-jane-street-mumbai-options-manipulation",
-      "do-kwon-terraform-fifteen-years"
+      "sec-abshier-weimar-republic-bond-fraud",
+      "sfo-london-capital-finance-minibond-charges",
+      "sec-colorado-fake-crypto-advisers-ring",
+      "doj-innovage-pace-false-claims-settlement"
     ],
-    "secondary_1": "biglaw-merger-insider-trading-ring",
-    "secondary_2": "eppo-operation-hermes-smartphone-vat-carousel",
-    "rail_feature": "bradley-heppner-gwg-ai-privilege",
+    "secondary_1": "bank-of-america-aml-bundle-discount",
+    "secondary_2": "backward-hat-capital-forex-ponzi",
+    "rail_feature": "sebi-jane-street-mumbai-options-manipulation",
     "rail_mini": [
-      "chad-monroe-medicare-rogue-shark-yacht",
-      "gensol-blusmart-ev-loan-camellias-condo",
-      "aog-technics-forged-jet-engine-parts",
-      "pwc-hong-kong-evergrande-audit-sanctions"
+      "do-kwon-terraform-fifteen-years",
+      "biglaw-merger-insider-trading-ring",
+      "eppo-operation-hermes-smartphone-vat-carousel",
+      "bradley-heppner-gwg-ai-privilege"
     ],
     "rail_opinion": [
       "roger-ver-bitcoin-exit-tax-dpa",
       "bafin-jpmorgan-germany-record-aml-fine"
     ],
     "ledger": [
+      "chad-monroe-medicare-rogue-shark-yacht",
+      "gensol-blusmart-ev-loan-camellias-condo",
+      "aog-technics-forged-jet-engine-parts",
+      "pwc-hong-kong-evergrande-audit-sanctions",
       "nate-app-zero-percent-ai-manila",
       "singapore-mas-nine-banks-fujian-laundering",
       "michael-madigan-comed-bribery-appeal",
@@ -39,6 +43,10 @@
     ]
   },
   "article_slugs": [
+    "eppo-bulgaria-railway-insolvent-consortium",
+    "sfo-guralp-systems-bribery-dpa-enforcement",
+    "bafin-state-street-germany-aml-order",
+    "sec-abshier-weimar-republic-bond-fraud",
     "sfo-london-capital-finance-minibond-charges",
     "sec-colorado-fake-crypto-advisers-ring",
     "doj-innovage-pace-false-claims-settlement",
@@ -49,12 +57,12 @@
     "biglaw-merger-insider-trading-ring",
     "eppo-operation-hermes-smartphone-vat-carousel",
     "bradley-heppner-gwg-ai-privilege",
+    "roger-ver-bitcoin-exit-tax-dpa",
+    "bafin-jpmorgan-germany-record-aml-fine",
     "chad-monroe-medicare-rogue-shark-yacht",
     "gensol-blusmart-ev-loan-camellias-condo",
     "aog-technics-forged-jet-engine-parts",
     "pwc-hong-kong-evergrande-audit-sanctions",
-    "roger-ver-bitcoin-exit-tax-dpa",
-    "bafin-jpmorgan-germany-record-aml-fine",
     "nate-app-zero-percent-ai-manila",
     "singapore-mas-nine-banks-fujian-laundering",
     "michael-madigan-comed-bribery-appeal",
