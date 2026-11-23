@@ -1,0 +1,69 @@
+{
+  "id": "fc-2026-032",
+  "slug": "doj-jingbin-jiang-elder-fraud-gold-bars",
+  "publish_date": "2026-11-23T06:03:00-05:00",
+  "edition_date": "2026-11-23",
+  "city": "New York",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Southern District of New York, Manhattan"
+  },
+  "category": "Courts",
+  "agencies": [
+    "DOJ",
+    "USAO-SDNY"
+  ],
+  "docket_number": null,
+  "legal_stage": "sentenced",
+  "template": "news",
+  "eyebrow": "COURTS",
+  "headline": "Organizer of $100 Million-Plus Gold-Bar Elder Fraud Network Receives 20 Years in Prison and $148.2 Million Restitution Order",
+  "deck": "A Manhattan federal judge sentenced Jingbin Jiang to 240 months in prison, $148.18 million in restitution, and $10.16 million in forfeiture for leading an international pop-up and call-center syndicate that coerced seniors into handing couriers cash and bullion.",
+  "byline": "By The Courts Desk",
+  "dateline": "NEW YORK",
+  "read_time_min": 2,
+  "layout_slot": "lead-right",
+  "financials": {
+    "amount_usd": 148182727,
+    "amount_display": "$148.18M Victim Loss ($100M+ Scheme)",
+    "fine_usd": 158395456,
+    "fine_display": "$148.18M Restitution + $10.16M Forfeiture + $50K Fine",
+    "fine_ratio_pct": 106.9,
+    "prison_months": 240,
+    "prison_display": "240 Mos (20 Yrs) Prison + 3 Yrs Sup. Release",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 6,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-23T06:08:00-05:00",
+    "components": {
+      "fine_ratio": 4,
+      "no_admission": 0,
+      "accountability_gap": 2
+    },
+    "rationale": "Judge Mary Kay Vyskocil imposed a 240-month prison term and $158.40 million in combined restitution, forfeiture, and fines (106.9% of the $148.18 million verified victim loss) following Jingbin Jiang’s guilty plea, delivering a near-full custodial and financial deterrent."
+  },
+  "street_crime_compare": {
+    "exec_summary": "Manhattan federal Judge Mary Kay Vyskocil sentenced international elder-fraud organizer Jingbin Jiang to 240 months (20 years) in prison, $148.18M restitution, $10.16M forfeiture, and a $50,000 fine after his guilty plea to a pop-up and gold-bar courier scheme.",
+    "street_equivalent": "Impersonating a federal agent on a victim's doorstep to extort their life savings in cash and gold bars",
+    "street_sentence": "Two-decade federal prison term with full restitution—the rare financial case sentenced at street-crime severity"
+  },
+  "sources": [
+    {
+      "title": "Leader of International Elder Fraud Scheme Sentenced to 240 Months in Prison",
+      "agency": "U.S. Attorney’s Office, Southern District of New York",
+      "url": "https://www.justice.gov/usao-sdny/pr/leader-international-elder-fraud-scheme-sentenced-240-months-prison",
+      "date": "2026-11-20"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "Gold bullion bars on display at the Banque de France. Manhattan federal prosecutors said Jingbin Jiang’s international fraud network coerced hundreds of elderly Americans into buying gold bars and handing them to couriers, resulting in a 20-year prison sentence and $148.18 million restitution order.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

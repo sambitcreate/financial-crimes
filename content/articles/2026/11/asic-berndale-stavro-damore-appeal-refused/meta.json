@@ -1,0 +1,89 @@
+{
+  "id": "fc-2026-031",
+  "slug": "asic-berndale-stavro-damore-appeal-refused",
+  "publish_date": "2026-11-23T06:04:00-05:00",
+  "edition_date": "2026-11-23",
+  "city": "Melbourne",
+  "edition": "global",
+  "jurisdiction": {
+    "country_iso": "AU",
+    "venue": "Full Federal Court of Australia, Melbourne"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "ASIC",
+    "CDPP"
+  ],
+  "docket_number": null,
+  "legal_stage": "sentenced",
+  "template": "news",
+  "eyebrow": "ASIA-PACIFIC",
+  "headline": "Full Federal Court Refuses Appeal by Collapsed Derivatives Director Jailed Over A$681,497 Client-Fund Diversion",
+  "deck": "Former Berndale Capital Securities director Stavro D’Amore must finish his 23-month prison term after failing to overturn his sentence for misusing company funds backed by retail deposits and falsifying overseas bank statements to Australia’s regulator.",
+  "byline": "By The Asia-Pacific Desk",
+  "dateline": "MELBOURNE",
+  "read_time_min": 3,
+  "layout_slot": "lead-live",
+  "live_updates": [
+    {
+      "text": "Full Federal Court refuses Stavro D’Amore’s application for leave to appeal his three-year, 10-month sentence (23 months to serve in prison).",
+      "ago": "18m ago"
+    },
+    {
+      "text": "A.S.I.C. Chair Sarah Court says the ruling confirms serious consequences for directors who abuse positions of trust and conceal misconduct.",
+      "ago": "46m ago"
+    },
+    {
+      "text": "Former retail clients of Berndale Capital Securities remain owed more than A$8.9 million nearly eight years after the O.T.C. derivatives broker collapsed.",
+      "ago": "1h ago"
+    }
+  ],
+  "financials": {
+    "amount_usd": 443000,
+    "amount_display": "A$681.5K (~$443K Diverted; A$8.9M Client Claims)",
+    "fine_usd": 0,
+    "fine_display": "A$0 Monetary Fine (Imprisonment Only)",
+    "fine_ratio_pct": 0,
+    "prison_months": 23,
+    "prison_display": "23 Mos Custody (3 Yrs 10 Mos Head Sentence)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 44,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-23T06:08:00-05:00",
+    "components": {
+      "fine_ratio": 30,
+      "no_admission": 0,
+      "accountability_gap": 14
+    },
+    "rationale": "Stavro D’Amore pleaded guilty and must serve 23 months of a 46-month prison sentence after losing his appeal, but faced A$0 in monetary fines on A$681,497 in diverted client-backed funds while former Berndale retail clients remain owed over A$8.9 million."
+  },
+  "street_crime_compare": {
+    "exec_summary": "Full Federal Court refused former Berndale Capital Securities director Stavro D'Amore leave to appeal his 3-year-10-month sentence (23 months custody) after his guilty plea to diverting A$681,497 in client-backed company funds and submitting false overseas bank records to ASIC; clients are still owed A$8.9M.",
+    "street_equivalent": "Draining A$68,000 from a neighborhood credit union's customer deposit ledger and handing auditors forged foreign bank statements",
+    "street_sentence": "Multi-year custodial sentence with court-ordered restitution and asset confiscation"
+  },
+  "sources": [
+    {
+      "title": "26-291MR Berndale director Stavro D’Amore refused leave to appeal jail sentence",
+      "agency": "Australian Securities and Investments Commission (ASIC)",
+      "url": "https://www.asic.gov.au/about-asic/news-centre/find-a-media-release/2026-releases/26-291mr-berndale-director-stavro-d-amore-refused-leave-to-appeal-jail-sentence",
+      "date": "2026-11-23"
+    },
+    {
+      "title": "26-182MR Stavro D’Amore jailed for misusing nearly $700,000 in Berndale funds",
+      "agency": "Australian Securities and Investments Commission (ASIC)",
+      "url": "https://www.asic.gov.au/about-asic/news-centre/find-a-media-release/2026-releases/26-182mr-stavro-d-amore-jailed-for-misusing-nearly-700-000-in-berndale-funds",
+      "date": "2026-07-23"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "Collins Street in Melbourne’s financial district. On Nov. 23, the Full Federal Court refused former Berndale Capital Securities director Stavro D’Amore leave to appeal his prison sentence for dishonestly diverting A$681,497 in company funds.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

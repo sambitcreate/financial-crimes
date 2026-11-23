@@ -1,0 +1,58 @@
+{
+  "id": "fc-2026-030",
+  "slug": "doj-dallas-370m-bank-account-takeover-ring",
+  "publish_date": "2026-11-23T06:05:00-05:00",
+  "edition_date": "2026-11-23",
+  "city": "Dallas",
+  "edition": "us",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Northern District of Texas, Dallas"
+  },
+  "category": "Wall Street",
+  "agencies": [
+    "DOJ",
+    "USAO-NDTX"
+  ],
+  "docket_number": null,
+  "legal_stage": "indicted",
+  "template": "news",
+  "eyebrow": "WALL STREET",
+  "headline": "Fourteen Indicted in Alleged $370 Million Bank-Account-Takeover Ring Featuring Corrupt Bank and Telecom Insiders",
+  "deck": "Federal prosecutors in Dallas unsealed a 22-count indictment accusing Muhamed Dieye—allegedly known as ‘Medici’ and ‘Lambomotion Tony’—and 13 co-defendants of targeting nearly 3,000 victims’ accounts across major U.S. banks. All defendants are presumed innocent.",
+  "byline": "By The National Desk",
+  "dateline": "DALLAS",
+  "read_time_min": 3,
+  "layout_slot": "lead-hero",
+  "financials": {
+    "amount_usd": 370000000,
+    "amount_display": "$370M+ Targeted Accounts (~3,000 Victims)",
+    "fine_usd": null,
+    "fine_display": "Pending Trial",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending Trial",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "Federal grand jury in Dallas indicted 14 defendants in a 22-count indictment alleging a nationwide bank-account-takeover conspiracy targeting nearly 3,000 victims with over $370M in combined account balances using SIM swaps and alleged insiders at major banks and telecom carriers; defendants presumed innocent.",
+    "street_equivalent": "If proven, the allegations would resemble bribing a neighborhood bank teller and locksmith to copy safe-deposit keys for 3,000 customers at once",
+    "street_sentence": "Immediate felony arrest warrants and mandatory consecutive aggravated identity-theft enhancements"
+  },
+  "sources": [
+    {
+      "title": "Federal Grand Jury Indicts Fourteen Defendants in $370 Million Nationwide Bank-Account-Takeover Conspiracy",
+      "agency": "U.S. Attorney’s Office, Northern District of Texas",
+      "url": "https://www.justice.gov/usao-ndtx/pr/federal-grand-jury-indicts-fourteen-defendants-370-million-nationwide-bank-account",
+      "date": "2026-11-20"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "Classical limestone facade of the 1920 Federal Reserve Bank building in Dallas. Federal prosecutors in the Northern District of Texas unsealed a 22-count indictment charging 14 defendants in an alleged $370 million nationwide bank-account-takeover conspiracy.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

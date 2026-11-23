@@ -1,0 +1,58 @@
+{
+  "id": "fc-2026-034",
+  "slug": "india-cgst-faridabad-pan-masala-cess-evasion",
+  "publish_date": "2026-11-23T06:01:00-05:00",
+  "edition_date": "2026-11-23",
+  "city": "Rewari",
+  "edition": "india",
+  "jurisdiction": {
+    "country_iso": "IN",
+    "venue": "CGST Faridabad Commissionerate, Rewari, Haryana"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "CGST Faridabad",
+    "Ministry of Finance (India)"
+  ],
+  "docket_number": null,
+  "legal_stage": "arrested",
+  "template": "news",
+  "eyebrow": "INDIA & ASIA",
+  "headline": "Four Undeclared Pouch-Packing Machines Rack Up ₹116.48 Crore Tax Evasion Allegation Under India’s New Pan Masala Cess",
+  "deck": "Central G.S.T. officers in Faridabad raided a Haryana factory churning out ‘Dhanraj’ brand pan masala without registering under the 2025 Health Security se National Security Cess Act, seizing four machines and arresting the operator. The accused is presumed innocent.",
+  "byline": "By The South Asia Bureau",
+  "dateline": "REWARI, India",
+  "read_time_min": 2,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 13800000,
+    "amount_display": "₹116.48 Crore (~$13.8M Evaded Cess)",
+    "fine_usd": null,
+    "fine_display": "Pending Investigation",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "14 Days Judicial Remand (Pending Trial)",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "CGST Faridabad raided a Rewari, Haryana manufacturing unit running four undeclared vertical pouch-packing machines making 'Dhanraj' brand pan masala without registering under India's HSNS Cess Act, 2025; evaded cess calculated at ₹116.48 crore (~$13.8M), owner arrested and remanded 14 days; presumed innocent.",
+    "street_equivalent": "If proven, the allegations would resemble running four unregistered commercial excise presses off the books for nine months straight",
+    "street_sentence": "Immediate machinery confiscation, capacity-based statutory tax assessment, and custodial remand"
+  },
+  "sources": [
+    {
+      "title": "CGST Faridabad detects pan masala manufacturing unit running undeclared pouch-packing machines in Rewari; four machines seized; one arrested under HSNS Cess Act, 2025",
+      "agency": "Press Information Bureau, Ministry of Finance (India)",
+      "url": "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2338858&reg=1&lang=1",
+      "date": "2026-11-20"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "North Block on Raisina Hill in New Delhi, headquarters of India’s Ministry of Finance. On Nov. 20, the Ministry announced that C.G.S.T. Faridabad seized four undeclared pan masala pouch-packing machines in Rewari tied to ₹116.48 crore in alleged unpaid cess.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

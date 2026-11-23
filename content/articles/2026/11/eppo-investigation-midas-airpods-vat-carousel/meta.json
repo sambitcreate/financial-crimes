@@ -1,0 +1,59 @@
+{
+  "id": "fc-2026-033",
+  "slug": "eppo-investigation-midas-airpods-vat-carousel",
+  "publish_date": "2026-11-23T06:02:00-05:00",
+  "edition_date": "2026-11-23",
+  "city": "Munich",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "EU",
+    "venue": "European Public Prosecutor’s Office (EPPO), Munich"
+  },
+  "category": "Europe",
+  "agencies": [
+    "EPPO",
+    "FIOD",
+    "Finanzamt Berlin"
+  ],
+  "docket_number": null,
+  "legal_stage": "arrested",
+  "template": "news",
+  "eyebrow": "EUROPE",
+  "headline": "European Prosecutors Arrest Three Across Three Nations in Alleged €23 Million AirPods V.A.T. Carousel Tied to €195 Million ‘Midas’ Probe",
+  "deck": "At the request of the E.P.P.O. in Munich, police and tax investigators detained suspects in Bulgaria, the Netherlands, and Poland over suspected cross-border missing-trader trades in Apple earbuds. All suspects are presumed innocent.",
+  "byline": "By The European Bureau",
+  "dateline": "MUNICH",
+  "read_time_min": 2,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 25000000,
+    "amount_display": "€23M (~$25M; Part of €195M Midas Probe)",
+    "fine_usd": null,
+    "fine_display": "Pending Investigation",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending Trial",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "EPPO Munich announced three arrests across Bulgaria, the Netherlands, and Poland in an alleged €23M (~$25M) German VAT carousel involving AirPods traded through German and Bulgarian missing traders, part of the wider €195M Investigation Midas probe; suspects presumed innocent.",
+    "street_equivalent": "If proven, the allegations would resemble collecting €2,300 in sales tax on retail headphones and vanishing before filing a return",
+    "street_sentence": "Immediate tax audit freeze, asset seizure, and prosecution for aggravated tax evasion"
+  },
+  "sources": [
+    {
+      "title": "Investigation Midas: Three arrests in Bulgaria, the Netherlands and Poland in probe into multimillion VAT fraud",
+      "agency": "European Public Prosecutor’s Office (EPPO)",
+      "url": "https://www.eppo.europa.eu/media/news/investigation-midas-three-arrests-bulgaria-netherlands-and-poland-probe-multimillion-vat-fraud-2026-11-19_en",
+      "date": "2026-11-19"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "The Neo-Baroque Palace of Justice (Justizpalast) in Munich at dusk. European prosecutors in Munich coordinated arrests and searches across Bulgaria, the Netherlands, and Poland in the €195 million Investigation Midas V.A.T. probe.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}
