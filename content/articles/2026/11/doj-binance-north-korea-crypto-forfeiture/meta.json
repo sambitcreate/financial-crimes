@@ -1,0 +1,67 @@
+{
+  "id": "fc-2026-035",
+  "slug": "doj-binance-north-korea-crypto-forfeiture",
+  "publish_date": "2026-11-24T06:05:00-05:00",
+  "edition_date": "2026-11-24",
+  "city": "Washington",
+  "edition": "us",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the District of Columbia"
+  },
+  "category": "Crypto & AI",
+  "agencies": [
+    "DOJ",
+    "USAO-DC",
+    "FBI",
+    "USSS",
+    "IRS-CI"
+  ],
+  "docket_number": null,
+  "legal_stage": "civil_complaint",
+  "template": "news",
+  "eyebrow": "CRYPTO & AI",
+  "headline": "Justice Department Files to Forfeit Over $1.1 Billion in Stablecoins Traced to $6 Billion Binance Hack",
+  "deck": "Federal prosecutors in Washington filed a civil forfeiture complaint targeting more than $1.1 billion in Circle-issued USDC allegedly laundered by North Korean cyber actors after the Oct. 29 theft, bringing U.S.-assisted freezes and recoveries past $2.9 billion.",
+  "byline": "By The Washington Bureau",
+  "dateline": "WASHINGTON",
+  "read_time_min": 4,
+  "layout_slot": "lead-hero",
+  "financials": {
+    "amount_usd": 6000000000,
+    "amount_display": "$6B+ Stolen ($1.1B+ USDC Forfeiture Action)",
+    "fine_usd": null,
+    "fine_display": "Pending Forfeiture ($2.9B+ Frozen/Recovered)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "In Rem Civil Action (No Arrests Announced)",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "DOJ filed an in rem civil forfeiture complaint in D.D.C. targeting over $1.1 billion in Circle-issued USDC allegedly stolen and laundered by North Korean cyber actors in the Oct. 29 $6 billion Binance theft, with over $2.9 billion frozen, seized, or returned to date.",
+    "street_equivalent": "Clearing out $60 million from an armored-car depot in a single night while the central bank freezes $11 million of serialized bills before they cross the border",
+    "street_sentence": "Federal bank robbery and money-laundering warrants carrying decades in custody upon capture"
+  },
+  "sources": [
+    {
+      "title": "United States Files Action to Recover More Than $1 Billion in Cryptocurrency Assets Stolen by North Korean Cyber Actors in Binance Hack",
+      "agency": "U.S. Department of Justice, Office of Public Affairs",
+      "url": "https://www.justice.gov/opa/pr/united-states-files-action-recover-more-1-billion-cryptocurrency-assets-stolen-north-korean",
+      "date": "2026-11-23"
+    },
+    {
+      "title": "United States Files Action to Recover More Than $1 Billion in Cryptocurrency Assets Related to North Korean Cyber Actors in Binance Hack",
+      "agency": "U.S. Attorney’s Office, District of Columbia",
+      "url": "https://www.justice.gov/usao-dc/pr/united-states-files-action-recover-more-1-billion-cryptocurrency-assets-related-north",
+      "date": "2026-11-23"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "The E. Barrett Prettyman United States Courthouse in Washington, where federal prosecutors filed a civil forfeiture complaint seeking over $1.1 billion in USDC stablecoins traced to the Oct. 29 Binance theft.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

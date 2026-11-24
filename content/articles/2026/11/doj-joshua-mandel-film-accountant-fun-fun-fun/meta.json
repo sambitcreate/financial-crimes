@@ -1,0 +1,70 @@
+{
+  "id": "fc-2026-037",
+  "slug": "doj-joshua-mandel-film-accountant-fun-fun-fun",
+  "publish_date": "2026-11-24T06:03:00-05:00",
+  "edition_date": "2026-11-24",
+  "city": "Los Angeles",
+  "edition": "los-angeles",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Central District of California, Los Angeles"
+  },
+  "category": "Courts",
+  "agencies": [
+    "DOJ",
+    "USAO-CDCA",
+    "FBI"
+  ],
+  "docket_number": null,
+  "legal_stage": "sentenced",
+  "template": "news",
+  "eyebrow": "COURTS",
+  "headline": "Film Accountant Who Named Embezzlement Account ‘Fun Fun Fun’ Gets 41 Months in Federal Prison",
+  "deck": "Joshua Mandel, head of Woodland Hills-based First J Productions, must also pay $1,747,935 in restitution after pleading guilty to draining 17 independent film productions to fund Las Vegas trips, Louis Vuitton shopping, and six-figure personal payments.",
+  "byline": "By The Courts Desk",
+  "dateline": "LOS ANGELES",
+  "read_time_min": 3,
+  "layout_slot": "lead-right",
+  "financials": {
+    "amount_usd": 1747935,
+    "amount_display": "$1.75M Embezzled (17 Independent Film Productions)",
+    "fine_usd": 1747935,
+    "fine_display": "$1,747,935 Court-Ordered Restitution",
+    "fine_ratio_pct": 100,
+    "prison_months": 41,
+    "prison_display": "41 Mos Federal Prison (Nearly 3½ Years)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 19,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-24T06:08:00-05:00",
+    "components": {
+      "fine_ratio": 8,
+      "no_admission": 0,
+      "accountability_gap": 11
+    },
+    "rationale": "U.S. District Judge John F. Walter imposed a 41-month federal prison term and $1,747,935 in full restitution (100% of verified losses) after Joshua Mandel’s guilty plea to six wire-fraud counts, though no separate punitive criminal fine was added on top of restitution."
+  },
+  "street_crime_compare": {
+    "exec_summary": "Woodland Hills film production accountant Joshua Mandel pleaded guilty to six counts of wire fraud and was sentenced to 41 months in federal prison plus $1,747,935 in restitution for embezzling from 17 independent film productions via an account named 'Fun Fun Fun.'",
+    "street_equivalent": "Stealing $175,000 from a local theater company's cash box over four years and labeling the personal stash jar 'Fun Fun Fun'",
+    "street_sentence": "Multi-year felony grand-theft prison sentence with mandatory full restitution"
+  },
+  "sources": [
+    {
+      "title": "Woodland Hills Accountant Sentenced to Nearly 3½ Years in Federal Prison for Embezzling More Than $1.7 Million from Independent Film Productions",
+      "agency": "U.S. Attorney’s Office, Central District of California",
+      "url": "https://www.justice.gov/usao-cdca/pr/woodland-hills-accountant-sentenced-nearly-3-12-years-federal-prison-embezzling-more",
+      "date": "2026-11-23"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "The First Street United States Courthouse in Downtown Los Angeles, where U.S. District Judge John F. Walter sentenced Woodland Hills film accountant Joshua Mandel to 41 months in federal prison and $1,747,935 in restitution.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

@@ -1,0 +1,72 @@
+{
+  "id": "fc-2026-036",
+  "slug": "india-ed-royal-twinkle-citrus-ponzi-attachment",
+  "publish_date": "2026-11-24T06:04:00-05:00",
+  "edition_date": "2026-11-24",
+  "city": "Mumbai",
+  "edition": "india",
+  "jurisdiction": {
+    "country_iso": "IN",
+    "venue": "Enforcement Directorate, Mumbai Zonal Office-I (Supreme Court Proceedings)"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "ED",
+    "Mumbai Police"
+  ],
+  "docket_number": null,
+  "legal_stage": "interim_order",
+  "template": "news",
+  "eyebrow": "INDIA & ASIA",
+  "headline": "India’s Enforcement Directorate Attaches ₹556.72 Crore in Real Estate Tied to ₹8,852 Crore Holiday-Club Ponzi Probe",
+  "deck": "Mumbai anti-money-laundering investigators provisionally attached immovable properties linked to Royal Twinkle Star Club and Citrus Check Inns, alleging promoter Om Prakash Goenka’s 87-entity network paid ₹3,077 crore in agent commissions while circulating investor cash.",
+  "byline": "By The Mumbai Bureau",
+  "dateline": "MUMBAI",
+  "read_time_min": 3,
+  "layout_slot": "lead-live",
+  "live_updates": [
+    {
+      "text": "E.D. Mumbai Zonal Office-I provisionally attaches immovable properties valued at approximately ₹556.72 crore under the Prevention of Money Laundering Act.",
+      "ago": "22m ago"
+    },
+    {
+      "text": "Investigators trace ₹8,852 crore mobilized between 2008 and 2017 through unregistered holiday-membership schemes across more than 87 group entities.",
+      "ago": "51m ago"
+    },
+    {
+      "text": "Attachment executed in furtherance of ongoing Supreme Court of India proceedings aimed at safeguarding investor recoveries; probe continues.",
+      "ago": "1h ago"
+    }
+  ],
+  "financials": {
+    "amount_usd": 1040000000,
+    "amount_display": "₹8,852 Crore (~$1.04B Mobilized; ₹556.72Cr Attached)",
+    "fine_usd": null,
+    "fine_display": "₹556.72Cr Provisionally Attached (Pending Adjudication)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Investigation Ongoing",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "India's Enforcement Directorate provisionally attached ₹556.72 crore (~$65.5M) in immovable properties under PMLA in its probe of Royal Twinkle Star Club and Citrus Check Inns, which allegedly raised ₹8,852 crore (~$1.04B) without SEBI registration and routed funds across 87+ entities.",
+    "street_equivalent": "Selling ₹1 lakh vacation vouchers to neighbors without a license, spending a third on sales brokers, and paying old voucher holders with new sign-ups",
+    "street_sentence": "Immediate arrest under economic-offenses statutes and property seizure pending trial"
+  },
+  "sources": [
+    {
+      "title": "ED Mumbai Provisionally Attaches Immovable Properties Worth ₹556.72 Crore in Royal Twinkle Star Club and Citrus Check Inns Investigation",
+      "agency": "Directorate of Enforcement (ED), India",
+      "url": "https://enforcementdirectorate.gov.in/media/press-release-documents/9f35deed-d0cf-476d-87f5-a66bb52a9467_Draft%20PR%20_%20Royal%20Twinkle%20PAO_1.pdf",
+      "date": "2026-11-23"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "The Supreme Court of India in New Delhi. On Nov. 23, the Enforcement Directorate in Mumbai provisionally attached ₹556.72 crore in immovable properties in furtherance of Supreme Court proceedings over the ₹8,852 crore Royal Twinkle Star Club investigation.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

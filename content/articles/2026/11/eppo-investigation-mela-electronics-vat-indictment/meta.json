@@ -1,0 +1,57 @@
+{
+  "id": "fc-2026-038",
+  "slug": "eppo-investigation-mela-electronics-vat-indictment",
+  "publish_date": "2026-11-24T06:02:00-05:00",
+  "edition_date": "2026-11-24",
+  "city": "Würzburg",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "DE",
+    "venue": "Regional Court of Würzburg, Germany (EPPO Munich)"
+  },
+  "category": "Europe",
+  "agencies": [
+    "EPPO"
+  ],
+  "docket_number": null,
+  "legal_stage": "indicted",
+  "template": "news",
+  "eyebrow": "EUROPE",
+  "headline": "E.P.P.O. Indicts Three in Bavaria Over Alleged €48 Million ‘Second-Hand’ Smartphone VAT Scheme",
+  "deck": "European prosecutors in Munich filed charges at the Regional Court of Würzburg accusing three electronics-trade executives of routing brand-new phones through E.U. and U.K. shell firms disguised as used goods to abuse margin taxation. All defendants are presumed innocent.",
+  "byline": "By The European Bureau",
+  "dateline": "WÜRZBURG, Germany",
+  "read_time_min": 3,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 52200000,
+    "amount_display": "€48M (~$52.2M Estimated Unpaid VAT)",
+    "fine_usd": null,
+    "fine_display": "Pending Trial (€4M Assets Seized)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending Trial",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "EPPO Munich indicted three individuals at the Regional Court of Würzburg in Investigation Mela over an alleged €48 million ($52.2M) cross-border VAT scheme active since 2018 disguising new mobile phones as second-hand goods under margin taxation; defendants presumed innocent.",
+    "street_equivalent": "If proven, the scheme would mirror slapping 'used' stickers on factory-sealed smartphones to dodge sales tax across an entire regional retail chain",
+    "street_sentence": "Aggravated tax-evasion indictment with pre-trial asset freezes and multi-year prison exposure if proven"
+  },
+  "sources": [
+    {
+      "title": "Investigation Mela: EPPO indicts three individuals in €48 million VAT fraud case involving electronic goods",
+      "agency": "European Public Prosecutor’s Office (EPPO)",
+      "url": "https://www.eppo.europa.eu/media/news/investigation-mela-eppo-indicts-three-individuals-eur48-million-vat-fraud-case-involving-electronic-2026-11-23_en",
+      "date": "2026-11-23"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "The Regional Court of Würzburg (Landgericht Würzburg) in Bavaria, where the European Public Prosecutor’s Office filed an indictment against three individuals in Investigation Mela.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

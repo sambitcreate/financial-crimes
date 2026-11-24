@@ -1,0 +1,57 @@
+{
+  "id": "fc-2026-039",
+  "slug": "sfc-da-yue-financial-client-money-restriction",
+  "publish_date": "2026-11-24T06:01:00-05:00",
+  "edition_date": "2026-11-24",
+  "city": "Hong Kong",
+  "edition": "global",
+  "jurisdiction": {
+    "country_iso": "HK",
+    "venue": "Securities and Futures Commission (SFC), Hong Kong"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "SFC"
+  ],
+  "docket_number": "26PR197",
+  "legal_stage": "interim_order",
+  "template": "news",
+  "eyebrow": "ASIA-PACIFIC",
+  "headline": "Hong Kong’s S.F.C. Freezes Broker DA YUE Financial Over HK$29.6 Million Client-Money Shortfall",
+  "deck": "Regulators issued an emergency restriction notice barring the licensed futures brokerage from conducting business or moving client assets after initial inquiries indicated customer cash was tapped to cover other clients’ margin losses.",
+  "byline": "By The Asia-Pacific Desk",
+  "dateline": "HONG KONG",
+  "read_time_min": 3,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 3800000,
+    "amount_display": "HK$29.6M (~$3.8M Client Money Shortfall)",
+    "fine_usd": null,
+    "fine_display": "Asset Freeze / Restriction Notice (Review Ongoing)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Regulatory Restriction (No Criminal Charges)",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "Hong Kong's SFC issued an emergency restriction notice under sections 204 and 205 of the SFO freezing operations and client assets at DA YUE Financial Group Limited after uncovering an estimated HK$29.6 million (~$3.8M) client-money shortfall affecting ~270 active clients.",
+    "street_equivalent": "A neighborhood escrow agent dipping into 270 customers' segregated trust deposits to cover another gambler's losing margin calls",
+    "street_sentence": "Emergency license suspension, account freeze, and regulatory enforcement review"
+  },
+  "sources": [
+    {
+      "title": "SFC issues restriction notice to DA YUE Financial Group Limited",
+      "agency": "Securities and Futures Commission (SFC), Hong Kong",
+      "url": "https://apps.sfc.hk/edistributionWeb/gateway/EN/news-and-announcements/news/doc?refNo=26PR197",
+      "date": "2026-11-23"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "sage",
+    "theme": "newsprint",
+    "caption": "Hong Kong’s Victoria Harbour financial district at night. On Nov. 23, the Securities and Futures Commission froze regulated business and client property at DA YUE Financial Group Limited over a HK$29.6 million client-money shortfall.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

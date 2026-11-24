@@ -191,6 +191,22 @@
     "toySubtext": "15 YRS · $7.3M/DAY",
     "alt": "Impressionist oil portrait of Terraform Labs co-founder Do Kwon, who was sentenced to 15 years in federal prison following the $40 billion TerraUSD and LUNA collapse."
   },
+  "doj-binance-north-korea-crypto-forfeiture": {
+    "refImage": "/paint-refs/doj-binance-north-korea-crypto-forfeiture.jpg",
+    "subject": "E. Barrett Prettyman U.S. Courthouse, Washington",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:E._Barrett_Prettyman_United_States_Courthouse_-_2026_(55266857098).jpg",
+    "sourceLicense": "CC BY 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.45,
+      "v": 0.62
+    },
+    "paletteMood": "verdict-crimson",
+    "toyKind": "crash-line",
+    "toyText": "$1.1B USDC ACTION",
+    "toySubtext": "$6B HACK · FORFEITURE SUIT",
+    "alt": "Impressionist oil study of the E. Barrett Prettyman United States Courthouse in Washington, accompanying coverage of the Justice Department's civil forfeiture action seeking over $1.1 billion in stablecoins traced to the $6 billion Binance theft."
+  },
   "doj-dallas-370m-bank-account-takeover-ring": {
     "refImage": "/paint-refs/doj-dallas-370m-bank-account-takeover-ring.jpg",
     "subject": "1920 Federal Reserve Bank building entrance, Dallas",
@@ -239,6 +255,22 @@
     "toySubtext": "GUILTY PLEA · S.D.N.Y.",
     "alt": "Impressionist oil still life of gold bullion bars on dark slate, accompanying coverage of Jingbin Jiang's 240-month federal prison sentence and $148.18 million restitution order in Manhattan."
   },
+  "doj-joshua-mandel-film-accountant-fun-fun-fun": {
+    "refImage": "/paint-refs/doj-joshua-mandel-film-accountant-fun-fun-fun.jpg",
+    "subject": "First Street U.S. Courthouse, Downtown Los Angeles",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:First_Street_U.S._Courthouse_in_Downtown_Los_Angeles.jpg",
+    "sourceLicense": "CC0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.52
+    },
+    "paletteMood": "bullion-gold",
+    "toyKind": "coins",
+    "toyText": "“FUN FUN FUN” ACCT",
+    "toySubtext": "41 MOS PRISON · $1.75M",
+    "alt": "Impressionist oil study of the pleated glass facade of the First Street United States Courthouse in Downtown Los Angeles, where film production accountant Joshua Mandel was sentenced to 41 months in federal prison."
+  },
   "elie-schwartz-nightingale-crowdstreet-fraud": {
     "refImage": "/paint-refs/elie-schwartz-nightingale-crowdstreet-fraud.jpg",
     "subject": "Gold Swiss luxury dress wristwatch on black leather",
@@ -270,6 +302,22 @@
     "toyText": "€213.7M RAIL GRANT",
     "toySubtext": "INDICTED · TRIAL PENDING",
     "alt": "Impressionist oil painting of a Bulgarian State Railways electric locomotive at a station platform, accompanying coverage of an E.P.P.O. indictment over an alleged false solvency declaration on a €213.7 million Sofia–Plovdiv rail grant."
+  },
+  "eppo-investigation-mela-electronics-vat-indictment": {
+    "refImage": "/paint-refs/eppo-investigation-mela-electronics-vat-indictment.jpg",
+    "subject": "Regional Court of Würzburg (Landgericht Würzburg), Germany",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Landgericht_W%C3%BCrzburg.png",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.68,
+      "v": 0.5
+    },
+    "paletteMood": "subpoena-cobalt",
+    "toyKind": "stamp",
+    "toyText": "€48M VAT ALLEGED",
+    "toySubtext": "3 INDICTED · EPPO MELA",
+    "alt": "Impressionist oil study of the neoclassical sandstone facade of the Regional Court of Würzburg in Bavaria, where the European Public Prosecutor's Office indicted three individuals in an alleged €48 million electronics VAT scheme."
   },
   "eppo-investigation-midas-airpods-vat-carousel": {
     "refImage": "/paint-refs/eppo-investigation-midas-airpods-vat-carousel.jpg",
@@ -334,6 +382,22 @@
     "toyText": "₹116.5CR ALLEGED",
     "toySubtext": "4 MACHINES SEIZED · CGST",
     "alt": "Impressionist oil painting of North Block on Raisina Hill in New Delhi, headquarters of India's Ministry of Finance, accompanying coverage of a C.G.S.T. Faridabad raid in Rewari under the H.S.N.S. Cess Act."
+  },
+  "india-ed-royal-twinkle-citrus-ponzi-attachment": {
+    "refImage": "/paint-refs/india-ed-royal-twinkle-citrus-ponzi-attachment.jpg",
+    "subject": "Supreme Court of India, New Delhi",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Supreme_Court_of_India_-_Retouched.jpg",
+    "sourceLicense": "CC BY-SA 3.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.36
+    },
+    "paletteMood": "courtroom-ochre",
+    "toyKind": "envelopes",
+    "toyText": "₹557CR ATTACHED",
+    "toySubtext": "87+ SHELLS · PMLA PROBE",
+    "alt": "Impressionist oil study of the Supreme Court of India in New Delhi, accompanying coverage of the Enforcement Directorate's ₹556.72 crore provisional property attachment in the ₹8,852 crore Royal Twinkle Star Club and Citrus Check Inns investigation."
   },
   "indusind-bank-derivatives-insider-trading": {
     "refImage": "/paint-refs/indusind-bank-derivatives-insider-trading.jpg",
@@ -478,6 +542,22 @@
     "toyText": "4 SHELL PAIRS · $37.4M",
     "toySubtext": "S.E.C. CIVIL COMPLAINT · D. COLO.",
     "alt": "Impressionist oil study of the neoclassical colonnade at the Byron White United States Courthouse in Denver, illustrating the S.E.C.'s civil complaint against eight Colorado entities over fake crypto platforms."
+  },
+  "sfc-da-yue-financial-client-money-restriction": {
+    "refImage": "/paint-refs/sfc-da-yue-financial-client-money-restriction.jpg",
+    "subject": "Victoria Harbour financial district skyline, Hong Kong",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Victoria_Harbour_skyscrapers.jpg",
+    "sourceLicense": "CC0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.48,
+      "v": 0.5
+    },
+    "paletteMood": "banknote-emerald",
+    "toyKind": "gavel-ripple",
+    "toyText": "HK$29.6M SHORTFALL",
+    "toySubtext": "SFC FREEZE · ~270 CLIENTS",
+    "alt": "Impressionist oil study of Hong Kong's Victoria Harbour financial skyline at night, accompanying coverage of the Securities and Futures Commission restriction notice freezing client assets at DA YUE Financial Group Limited."
   },
   "sfo-guralp-systems-bribery-dpa-enforcement": {
     "refImage": "/paint-refs/sfo-guralp-systems-bribery-dpa-enforcement.jpg",
