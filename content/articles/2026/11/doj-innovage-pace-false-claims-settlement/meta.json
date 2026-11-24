@@ -24,6 +24,13 @@
   "dateline": "WASHINGTON",
   "read_time_min": 2,
   "layout_slot": "lead-right",
+  "corrections": [
+    {
+      "date": "2026-11-24",
+      "note": "Updated to include a post-publication statement from an InnovAge spokesperson.",
+      "type": "update"
+    }
+  ],
   "financials": {
     "amount_usd": null,
     "amount_display": "Not Quantified (FCA Allegations)",
@@ -54,5 +61,6 @@
     "caption": "The Robert F. Kennedy Department of Justice Building in Washington. The Civil Division called the $36 million InnovAge agreement its first False Claims Act settlement with a PACE operator.",
     "credit": "Oil Study · The Financial Crimes"
   },
-  "status": "published"
+  "status": "published",
+  "updated_at": "2026-11-24T14:42:00-05:00"
 }
