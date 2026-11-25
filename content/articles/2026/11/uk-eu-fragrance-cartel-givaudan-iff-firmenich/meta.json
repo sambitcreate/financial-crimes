@@ -1,0 +1,75 @@
+{
+  "id": "fc-2026-041",
+  "slug": "uk-eu-fragrance-cartel-givaudan-iff-firmenich",
+  "publish_date": "2026-11-25T06:04:00-05:00",
+  "edition_date": "2026-11-25",
+  "city": "London",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "GB",
+    "venue": "U.K. Competition and Markets Authority & European Commission (Case AT.40826)"
+  },
+  "category": "Antitrust & Cartels",
+  "agencies": [
+    "UK CMA",
+    "European Commission"
+  ],
+  "docket_number": "AT.40826",
+  "legal_stage": "regulatory_order",
+  "template": "news",
+  "eyebrow": "ANTITRUST & CARTELS",
+  "headline": "World’s Three Largest Fragrance Makers Fined €472 Million by EU and £85 Million by U.K. Over ‘Beer and Curry’ Cartel",
+  "deck": "Givaudan, Firmenich, and IFF admitted four years of coordinating price hikes, energy surcharges, and a no-poach pact targeting Unilever via WhatsApp and London dinners—earning 20% to 65% leniency discounts and zero executive prosecutions.",
+  "byline": "By The London & Brussels Desks",
+  "dateline": "LONDON",
+  "read_time_min": 4,
+  "layout_slot": "lead-right",
+  "financials": {
+    "amount_usd": null,
+    "amount_display": "4-Year EEA & U.K. Fragrance Cartel (2019–2023)",
+    "fine_usd": 607600000,
+    "fine_display": "€471.97M EU + £85.17M U.K. (~$608M Combined)",
+    "fine_ratio_pct": null,
+    "prison_months": 0,
+    "prison_display": "0 Days (Corporate Civil Antitrust Settlements Only)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 63,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-25T06:08:00-05:00",
+    "components": {
+      "fine_ratio": 28,
+      "no_admission": 0,
+      "accountability_gap": 35
+    },
+    "rationale": "Givaudan, Firmenich, and IFF admitted four years of EEA and U.K. fragrance collusion—receiving 20%–65% leniency discounts plus 10%–20% settlement cuts toward €471.97 million in EU fines and £85.17 million in U.K. fines (~$608 million combined across three multi-billion-dollar conglomerates)—with zero executives criminally charged or jailed."
+  },
+  "street_crime_compare": {
+    "exec_summary": "The European Commission fined Givaudan, Firmenich, and IFF €471.97 million and the U.K. CMA fined them £85.17 million (~$608M combined) after all three admitted four years of price coordination and no-poach collusion targeting Unilever, with zero executives charged.",
+    "street_equivalent": "Three regional grocery wholesalers meeting over dinner to rig shampoo and detergent prices for four years, confessing after a raid for a half-off coupon, and sending nobody to court",
+    "street_sentence": "Criminal price-fixing conspiracy charges in jurisdictions with individual cartel liability, versus pure corporate balance-sheet settlements here"
+  },
+  "sources": [
+    {
+      "title": "Major fragrance suppliers fined £85 million by the CMA for illegal collusion",
+      "agency": "U.K. Competition and Markets Authority (GOV.UK)",
+      "url": "https://www.gov.uk/government/news/major-fragrance-suppliers-fined-85-million-by-the-cma-for-illegal-collusion",
+      "date": "2026-11-25"
+    },
+    {
+      "title": "Commission fines Firmenich, Givaudan and IFF €471.9 million for participating in an international fragrance cartel",
+      "agency": "European Commission (Case AT.40826)",
+      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_2574",
+      "date": "2026-11-25"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "Unilever House on the Victoria Embankment in London, headquarters of the consumer-goods giant whose fragrance purchasing was targeted in four years of admitted collusion by Givaudan, Firmenich, and IFF.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

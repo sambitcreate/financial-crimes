@@ -1,0 +1,61 @@
+{
+  "id": "fc-2026-042",
+  "slug": "doj-credit-reset-600m-covid-tax-fraud",
+  "publish_date": "2026-11-25T06:03:00-05:00",
+  "edition_date": "2026-11-25",
+  "city": "New York",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Eastern District of New York, Central Islip"
+  },
+  "category": "Tax & Pandemic Fraud",
+  "agencies": [
+    "DOJ",
+    "USAO-EDNY",
+    "IRS-CI",
+    "USPIS",
+    "HSI"
+  ],
+  "docket_number": "2:25-cr-00020",
+  "legal_stage": "guilty_plea",
+  "template": "news",
+  "eyebrow": "TAX & PANDEMIC FRAUD",
+  "headline": "Long Island Father and Son Plead Guilty in $600 Million COVID Tax-Credit Mill Run Out of ‘Credit Reset’",
+  "deck": "Keith Williams and Jamari Lewis admitted filing more than 8,000 bogus employment tax returns claiming over $600 million in pandemic payroll credits—extracting $46.76 million from the IRS before their guilty pleas in Central Islip.",
+  "byline": "By The Courts Desk",
+  "dateline": "CENTRAL ISLIP, N.Y.",
+  "read_time_min": 3,
+  "layout_slot": "lead-live",
+  "financials": {
+    "amount_usd": 600000000,
+    "amount_display": "$600M+ Claimed ($46.76M Paid Out by IRS)",
+    "fine_usd": null,
+    "fine_display": "$46.76M Agreed Restitution + $5.52M Forfeiture (Pending Sentencing)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending Sentencing (Lewis Set April 19, 2027)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "West Hempstead father and son Keith Williams and Jamari Lewis pleaded guilty in E.D.N.Y. to filing over 8,000 fraudulent COVID-19 tax returns seeking $600 million+ (receiving $46.76 million), agreeing to $46.76 million in IRS restitution ahead of sentencing.",
+    "street_equivalent": "Mailing 8,000 fabricated municipal rebate coupons from a storefront office until the city treasury mails back $46.7 million in real checks",
+    "street_sentence": "Mandatory multi-year federal felony imprisonment under Sentencing Guidelines, with statutory wire-fraud caps of 30 years"
+  },
+  "sources": [
+    {
+      "title": "New York Father and Son Plead Guilty in $600M Covid Tax Fraud Scheme",
+      "agency": "U.S. Department of Justice, Office of Public Affairs",
+      "url": "https://www.justice.gov/opa/pr/new-york-father-and-son-plead-guilty-600m-covid-tax-fraud-scheme",
+      "date": "2026-11-24"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "The Alfonse M. D’Amato United States Courthouse in Central Islip, New York, where Keith Williams and Jamari Lewis pleaded guilty in a $600 million COVID-19 employment tax-credit conspiracy.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

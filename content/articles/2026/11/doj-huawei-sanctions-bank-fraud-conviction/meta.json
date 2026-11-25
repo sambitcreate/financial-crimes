@@ -1,0 +1,65 @@
+{
+  "id": "fc-2026-040",
+  "slug": "doj-huawei-sanctions-bank-fraud-conviction",
+  "publish_date": "2026-11-25T06:05:00-05:00",
+  "edition_date": "2026-11-25",
+  "city": "New York",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Eastern District of New York, Brooklyn"
+  },
+  "category": "Sanctions & Fraud",
+  "agencies": [
+    "DOJ",
+    "USAO-EDNY",
+    "FBI"
+  ],
+  "docket_number": "1:18-cr-00457",
+  "legal_stage": "convicted",
+  "template": "news",
+  "eyebrow": "SANCTIONS & FRAUD",
+  "headline": "Brooklyn Jury Convicts Huawei on 10 Federal Counts After ‘ocsic’ Code Theft and Iran Sanctions Trial",
+  "deck": "Following a three-month trial before Judge Ann M. Donnelly, Huawei Technologies and three subsidiaries were found guilty of bank fraud, wire fraud, money laundering conspiracy, IEEPA sanctions violations, and trade-secret theft—while winning acquittals on RICO and obstruction.",
+  "byline": "By The New York Bureau",
+  "dateline": "NEW YORK",
+  "read_time_min": 4,
+  "layout_slot": "lead-hero",
+  "financials": {
+    "amount_usd": null,
+    "amount_display": "Billions in U.S.-Dollar Clearing & Trade Secrets",
+    "fine_usd": null,
+    "fine_display": "Pending Sentencing (Sept. 14, 2027)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Corporate Defendants Only (Sentencing Pending)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "A Brooklyn federal jury convicted Huawei Technologies Co., Ltd. and three subsidiaries on 10 of 12 counts—including bank fraud, wire fraud, Iran sanctions violations, money laundering conspiracy, and trade-secret theft—with sentencing set for Sept. 14, 2027.",
+    "street_equivalent": "Lifting a rival workshop's patented machine arm into a backpack, renaming the blueprint backwards on the cover, and falsifying loan applications to keep the bank credit line open",
+    "street_sentence": "Multi-year federal felony custody plus restitution for individual defendants; corporate defendants face financial penalties at sentencing"
+  },
+  "sources": [
+    {
+      "title": "Chinese Tech Giant Huawei and Subsidiaries Convicted of Sanctions Violations, Fraud, Conspiracy to Steal Trade Secrets, and Money Laundering",
+      "agency": "U.S. Department of Justice, Office of Public Affairs",
+      "url": "https://www.justice.gov/opa/pr/chinese-tech-giant-huawei-and-subsidiaries-convicted-sanctions-violations-fraud-conspiracy",
+      "date": "2026-11-24"
+    },
+    {
+      "title": "Chinese Telecommunications Conglomerate Huawei and Subsidiaries Convicted of Sanctions Violations, Fraud, Conspiracy to Steal Trade Secrets and Money Laundering",
+      "agency": "U.S. Attorney’s Office, Eastern District of New York",
+      "url": "https://www.justice.gov/usao-edny/pr/chinese-telecommunications-conglomerate-huawei-and-subsidiaries-convicted-sanctions",
+      "date": "2026-11-24"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "The Theodore Roosevelt United States Courthouse in Brooklyn, where a federal jury convicted Huawei Technologies Co., Ltd. and three subsidiaries on 10 of 12 criminal counts following a three-month trial.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

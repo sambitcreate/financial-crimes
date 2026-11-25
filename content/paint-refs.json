@@ -207,6 +207,22 @@
     "toySubtext": "$6B HACK · FORFEITURE SUIT",
     "alt": "Impressionist oil study of the E. Barrett Prettyman United States Courthouse in Washington, accompanying coverage of the Justice Department's civil forfeiture action seeking over $1.1 billion in stablecoins traced to the $6 billion Binance theft."
   },
+  "doj-credit-reset-600m-covid-tax-fraud": {
+    "refImage": "/paint-refs/doj-credit-reset-600m-covid-tax-fraud.jpg",
+    "subject": "Alfonse M. D'Amato U.S. Courthouse, Central Islip, New York",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Damato-courthouse.jpg",
+    "sourceLicense": "CC BY-SA 3.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.45,
+      "v": 0.46
+    },
+    "paletteMood": "verdict-crimson",
+    "toyKind": "envelopes",
+    "toyText": "8,000+ RETURNS",
+    "toySubtext": "GUILTY PLEAS · $600M CLAIM",
+    "alt": "Impressionist oil study of the Alfonse M. D'Amato United States Courthouse in Central Islip, New York, where Keith Williams and Jamari Lewis pleaded guilty in a $600 million COVID-19 tax-credit scheme."
+  },
   "doj-dallas-370m-bank-account-takeover-ring": {
     "refImage": "/paint-refs/doj-dallas-370m-bank-account-takeover-ring.jpg",
     "subject": "1920 Federal Reserve Bank building entrance, Dallas",
@@ -222,6 +238,22 @@
     "toyText": "14 INDICTED",
     "toySubtext": "$370M ALLEGED · N.D. TEX.",
     "alt": "Impressionist oil painting of the carved limestone entrance of the historic 1920 Federal Reserve Bank building in Dallas, accompanying coverage of a 14-defendant federal bank-account-takeover indictment."
+  },
+  "doj-huawei-sanctions-bank-fraud-conviction": {
+    "refImage": "/paint-refs/doj-huawei-sanctions-bank-fraud-conviction.jpg",
+    "subject": "Theodore Roosevelt U.S. Courthouse, Eastern District of New York, Brooklyn",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:United_States_Courthouse_-_Eastern_District_of_New_York_(48228039566).jpg",
+    "sourceLicense": "CC BY 2.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.4
+    },
+    "paletteMood": "verdict-crimson",
+    "toyKind": "gavel-ripple",
+    "toyText": "10 OF 12 COUNTS",
+    "toySubtext": "CONVICTED · E.D.N.Y. JURY",
+    "alt": "Impressionist oil study of the Theodore Roosevelt United States Courthouse in Brooklyn, where a federal jury convicted Huawei Technologies Co., Ltd. and three subsidiaries on 10 of 12 criminal counts."
   },
   "doj-innovage-pace-false-claims-settlement": {
     "refImage": "/paint-refs/doj-innovage-pace-false-claims-settlement.jpg",
@@ -350,6 +382,22 @@
     "toyText": "€410M VAT PROBE",
     "toySubtext": "62 DETAINED · 8-NATION RAIDS",
     "alt": "Impressionist oil portrait of European Chief Prosecutor Laura Codruța Kövesi against a European Union blue backdrop, accompanying coverage of E.P.P.O. Operation Hermes."
+  },
+  "eppo-syracuse-school-labs-kickback-ring": {
+    "refImage": "/paint-refs/eppo-syracuse-school-labs-kickback-ring.jpg",
+    "subject": "Piazza Duomo, Syracuse, Sicily",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blue_Hour_Piazza_Duomo_5_-_Syracuse_-_Unesco_World_Heritage.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.78,
+      "v": 0.44
+    },
+    "paletteMood": "subpoena-cobalt",
+    "toyKind": "envelopes",
+    "toyText": "15% ALLEGED SPLIT",
+    "toySubtext": "OFFICE BAN · EPPO SYRACUSE",
+    "alt": "Impressionist oil study of Piazza Duomo in Syracuse, Sicily at twilight, accompanying coverage of E.P.P.O. precautionary public-office bans and asset seizures in an alleged €1.5 million school-grant kickback probe."
   },
   "gensol-blusmart-ev-loan-camellias-condo": {
     "refImage": "/paint-refs/gensol-blusmart-ev-loan-camellias-condo.jpg",
@@ -543,6 +591,22 @@
     "toySubtext": "S.E.C. CIVIL COMPLAINT · D. COLO.",
     "alt": "Impressionist oil study of the neoclassical colonnade at the Byron White United States Courthouse in Denver, illustrating the S.E.C.'s civil complaint against eight Colorado entities over fake crypto platforms."
   },
+  "sec-j-streicher-hanlon-non-depleting-escrow": {
+    "refImage": "/paint-refs/sec-j-streicher-hanlon-non-depleting-escrow.jpg",
+    "subject": "Richard B. Russell Federal Building and U.S. Courthouse, Atlanta",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Richard_Russell_Federal_Building.jpg",
+    "sourceLicense": "CC BY 3.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.44,
+      "v": 0.38
+    },
+    "paletteMood": "courtroom-ochre",
+    "toyKind": "crash-line",
+    "toyText": "$15M ESCROW SUIT",
+    "toySubtext": "S.E.C. COMPLAINT · N.D. GA",
+    "alt": "Impressionist oil study of the Richard B. Russell Federal Building and United States Courthouse in Atlanta, illustrating the S.E.C.'s civil complaint against Michael P. Hanlon and J. Streicher Financial, LLC."
+  },
   "sfc-da-yue-financial-client-money-restriction": {
     "refImage": "/paint-refs/sfc-da-yue-financial-client-money-restriction.jpg",
     "subject": "Victoria Harbour financial district skyline, Hong Kong",
@@ -622,5 +686,21 @@
     "toyText": "50% D.P.A. DISCOUNT",
     "toySubtext": "NO COMPLIANCE MONITOR",
     "alt": "Impressionist oil portrait of U.S. Attorney General Todd Blanche, accompanying coverage of the Justice Department's post-Blanche Memo F.C.P.A. and F.E.P.A. bribery enforcement shift."
+  },
+  "uk-eu-fragrance-cartel-givaudan-iff-firmenich": {
+    "refImage": "/paint-refs/uk-eu-fragrance-cartel-givaudan-iff-firmenich.jpg",
+    "subject": "Unilever House, Victoria Embankment, London",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Unilever_House_Mars_2014_02.jpg",
+    "sourceLicense": "CC BY-SA 3.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.52,
+      "v": 0.42
+    },
+    "paletteMood": "bullion-gold",
+    "toyKind": "stamp",
+    "toyText": "€472M + £85M FINES",
+    "toySubtext": "0 EXECS CHARGED · CARTEL",
+    "alt": "Impressionist oil study of Unilever House on the Victoria Embankment in London, accompanying coverage of coordinated European Commission and U.K. CMA antitrust fines against Givaudan, Firmenich, and IFF."
   }
 }

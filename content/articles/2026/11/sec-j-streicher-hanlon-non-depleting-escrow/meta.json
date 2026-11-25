@@ -1,0 +1,57 @@
+{
+  "id": "fc-2026-043",
+  "slug": "sec-j-streicher-hanlon-non-depleting-escrow",
+  "publish_date": "2026-11-25T06:02:00-05:00",
+  "edition_date": "2026-11-25",
+  "city": "Atlanta",
+  "edition": "us",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the Northern District of Georgia, Atlanta"
+  },
+  "category": "Securities & Advisory",
+  "agencies": [
+    "SEC"
+  ],
+  "docket_number": "1:26-cv-07148-MHC",
+  "legal_stage": "civil_complaint",
+  "template": "news",
+  "eyebrow": "SECURITIES & ADVISORY",
+  "headline": "SEC Sues J. Streicher Financial and Michael Hanlon Over Allegedly Depleted $15 Million ‘Non-Depleting Escrow’",
+  "deck": "Regulators allege the Georgia adviser promised a public-company client 2% monthly returns inside a principal-protected escrow account, then diverted the $15 million into a parent real-estate joint venture and payouts for a failed European project.",
+  "byline": "By The Markets Desk",
+  "dateline": "ATLANTA",
+  "read_time_min": 3,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 15000000,
+    "amount_display": "$15M Allegedly Diverted From Client Escrow",
+    "fine_usd": null,
+    "fine_display": "Pending (SEC Seeks Penalties & Disgorgement)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Civil SEC Enforcement Suit",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "The SEC filed a civil complaint in N.D. Ga. alleging Michael P. Hanlon and J. Streicher Financial, LLC misappropriated $15 million promised to a public company's 'non-depleting escrow account' to fund real-estate ventures and Ponzi-like payouts.",
+    "street_equivalent": "Accepting $150,000 in a locked safe-deposit box with a written promise never to touch the cash, spending it on an unrelated building project, and assuring the owner's auditor the box is still full",
+    "street_sentence": "Civil fraud enforcement seeking disgorgement and penalties; no parallel criminal charges announced in the SEC release"
+  },
+  "sources": [
+    {
+      "title": "SEC Charges Georgia Resident and Related Company with Operating Alleged Fraudulent Investment Advisory Scheme (Litigation Release No. 26695)",
+      "agency": "U.S. Securities and Exchange Commission",
+      "url": "https://www.sec.gov/enforcement-litigation/litigation-releases/lr-26695",
+      "date": "2026-11-25"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "The Richard B. Russell Federal Building and United States Courthouse in Atlanta, where the S.E.C. filed civil antifraud charges against Michael P. Hanlon and J. Streicher Financial, LLC.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

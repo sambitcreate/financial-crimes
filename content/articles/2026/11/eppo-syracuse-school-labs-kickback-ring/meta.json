@@ -1,0 +1,58 @@
+{
+  "id": "fc-2026-044",
+  "slug": "eppo-syracuse-school-labs-kickback-ring",
+  "publish_date": "2026-11-25T06:01:00-05:00",
+  "edition_date": "2026-11-25",
+  "city": "Syracuse",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "IT",
+    "venue": "Court of Syracuse (Judge for Preliminary Investigations), Sicily"
+  },
+  "category": "Public Procurement",
+  "agencies": [
+    "EPPO",
+    "Guardia di Finanza"
+  ],
+  "docket_number": null,
+  "legal_stage": "interim_order",
+  "template": "news",
+  "eyebrow": "PUBLIC PROCUREMENT",
+  "headline": "Sicilian School Official and Five Businessmen Barred From Public Office in €1.5 Million EU Lab-Tender Kickback Probe",
+  "deck": "At the request of the European Public Prosecutor’s Office in Palermo, an Italian court imposed public-office bans and seized €33,500 over alleged staged tenders and 15% kickbacks—leaving schools missing doors, lighting, and paint.",
+  "byline": "By The Europe Desk",
+  "dateline": "SYRACUSE, ITALY",
+  "read_time_min": 3,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 1590000,
+    "amount_display": "€1.5M EU School-Lab Funds (15% Alleged Kickbacks)",
+    "fine_usd": null,
+    "fine_display": "€33,500 Precautionary Asset Seizure",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Public-Office Ban (Trial Pending)",
+    "admitted_guilt": null
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "At EPPO Palermo's request, the Court of Syracuse banned a school administrative director and five businessmen from holding public office and ordered €33,500 seized in an investigation into alleged 15% kickbacks on €1.5 million in EU school-upgrade contracts.",
+    "street_equivalent": "Skimming 15% off a neighborhood school's repair budget through rigged contractor bids while invoicing the town for doors and lights that were never installed",
+    "street_sentence": "Precautionary public-office ban and €33,500 asset seizure pending Italian criminal proceedings; all suspects presumed innocent"
+  },
+  "sources": [
+    {
+      "title": "Italy: School director investigated for corruption involving €1.5 million in EU funds to improve educational facilities",
+      "agency": "European Public Prosecutor’s Office (EPPO)",
+      "url": "https://www.eppo.europa.eu/media/news/italy-school-director-investigated-corruption-involving-eur15-million-eu-funds-improve-educational-2026-11-24_en",
+      "date": "2026-11-24"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "Piazza Duomo in Syracuse, Sicily, where the Judge for Preliminary Investigations imposed public-office bans and a €33,500 asset seizure at the request of E.P.P.O. Palermo.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}
