@@ -1,0 +1,68 @@
+{
+  "id": "fc-2026-048",
+  "slug": "sfc-china-longevity-directors-disqualified",
+  "publish_date": "2026-11-26T06:02:00-05:00",
+  "edition_date": "2026-11-26",
+  "city": "Hong Kong",
+  "edition": "global",
+  "jurisdiction": {
+    "country_iso": "HK",
+    "venue": "Court of First Instance, High Court of Hong Kong"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "SFC"
+  ],
+  "docket_number": "26PR200 (SFO Section 214)",
+  "legal_stage": "regulatory_order",
+  "template": "news",
+  "eyebrow": "ASIA-PACIFIC",
+  "headline": "Fourteen Years After RMB 302 Million Cash Overstatement, Hong Kong Court Bars Three China Longevity Directors — With HK$0 in Fines",
+  "deck": "Under a Carecraft agreed-facts order obtained by the S.F.C., former chairman Lin Shengxiong and executive director Zhang Hongwang drew 10-year board bans, Huang Wanneng received four years, and all three were ordered to pay legal costs only.",
+  "byline": "By The Asia-Pacific Desk",
+  "dateline": "HONG KONG",
+  "read_time_min": 3,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 42000000,
+    "amount_display": "RMB 302.4M Overstated Cash (19.9% of Net Assets)",
+    "fine_usd": 0,
+    "fine_display": "HK$0 Monetary Fine (SFC Legal Costs + 4–10 Yr Bans)",
+    "fine_ratio_pct": 0,
+    "prison_months": 0,
+    "prison_display": "0 Days (Civil SFO Section 214 Disqualification Only)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 76,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-26T06:08:00-05:00",
+    "components": {
+      "fine_ratio": 50,
+      "no_admission": 0,
+      "accountability_gap": 26
+    },
+    "rationale": "Fourteen years after China Longevity overstated cash by RMB 302.4 million (19.9% of net assets), three former executive directors resolved civil SFO section 214 proceedings via Carecraft agreed facts with HK$0 in monetary fines and zero prison time, mitigated only by 4-to-10-year Hong Kong board disqualifications and SFC legal costs."
+  },
+  "street_crime_compare": {
+    "exec_summary": "Hong Kong’s Court of First Instance disqualified three former China Longevity Group executive directors for 4 to 10 years under SFO section 214 over RMB 302.4 million (~$42M) in overstated cash—with HK$0 in monetary fines and zero prison time fourteen years after auditors flagged the shortfall.",
+    "street_equivalent": "Inflating a small business’s bank statement by 20% to reassure lenders, keeping the shares frozen for twelve years, and agreeing to sit out of corporate directorships while paying only court fees",
+    "street_sentence": "Criminal false-accounting charges and custodial exposure in ordinary commercial fraud cases, versus civil board bans and legal costs here"
+  },
+  "sources": [
+    {
+      "title": "SFC obtains disqualification orders against three former directors of China Longevity Group Company Limited over material financial misstatements and disclosure failures",
+      "agency": "Securities and Futures Commission (SFC), Hong Kong",
+      "url": "https://apps.sfc.hk/edistributionWeb/gateway/EN/news-and-announcements/news/doc?refNo=26PR200",
+      "date": "2026-11-26"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "sage",
+    "theme": "newsprint",
+    "caption": "Hong Kong’s High Court Building on Queensway in Admiralty, where the Court of First Instance issued 10-year and four-year corporate disqualification orders against three former executive directors of China Longevity Group Company Limited.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

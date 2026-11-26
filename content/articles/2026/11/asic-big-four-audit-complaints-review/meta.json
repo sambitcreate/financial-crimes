@@ -1,0 +1,63 @@
+{
+  "id": "fc-2026-049",
+  "slug": "asic-big-four-audit-complaints-review",
+  "publish_date": "2026-11-26T06:01:00-05:00",
+  "edition_date": "2026-11-26",
+  "city": "Sydney",
+  "edition": "global",
+  "jurisdiction": {
+    "country_iso": "AU",
+    "venue": "Australian Securities and Investments Commission (ASIC), Sydney"
+  },
+  "category": "Opinion",
+  "agencies": [
+    "ASIC"
+  ],
+  "docket_number": "ASIC Report 848 (26-292MR)",
+  "legal_stage": "investigation",
+  "template": "opinion",
+  "eyebrow": "OPINION",
+  "headline": "Australia’s Big Four Logged 35 Statutory Audit Red Flags — and Their Regulator Still Can’t License the Firms",
+  "deck": "ASIC’s compulsory review of internal complaints at Deloitte, EY, KPMG, and PwC surfaced allegations of unverified assets, copy-pasted audit files, and whistleblower retaliation—yet the watchdog can only refer accountants and ask Treasury for powers.",
+  "byline": "By The Editorial Board",
+  "dateline": "SYDNEY",
+  "read_time_min": 3,
+  "layout_slot": "rail-opinion",
+  "financials": {
+    "amount_usd": null,
+    "amount_display": "94% of ASX Market Cap & 85% of Super Funds Audited",
+    "fine_usd": null,
+    "fine_display": "A$0 (Firm-Level Licensing Powers Still Absent)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "None (Surveillance & Referrals Ongoing)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "ASIC Report 848 reviewed 558 responsive internal complaints across Deloitte, EY, KPMG, and PwC (2023–2026) and identified 35 raising statutory audit misconduct or client-confidentiality concerns, while noting ASIC still lacks statutory power to license or directly regulate audit firms.",
+    "street_equivalent": "Inspecting four garages that certify 94% of the city’s bridges, finding 35 internal whistleblower complaints about unchecked bolts, and realizing your permit system only covers individual mechanics",
+    "street_sentence": "Immediate facility audit and licensing suspension in regulated safety trades, versus de-identified summaries and referrals to industry associations here"
+  },
+  "sources": [
+    {
+      "title": "26-292MR ASIC complaints probe uncovers potential audit-related issues at Big Four",
+      "agency": "Australian Securities and Investments Commission (ASIC)",
+      "url": "https://www.asic.gov.au/about-asic/news-centre/find-a-media-release/2026-releases/26-292mr-asic-complaints-probe-uncovers-potential-audit-related-issues-at-big-four",
+      "date": "2026-11-25"
+    },
+    {
+      "title": "REP 848: ASIC’s review of internal complaints at major audit firms",
+      "agency": "Australian Securities and Investments Commission (ASIC)",
+      "url": "https://www.asic.gov.au/regulatory-resources/find-a-document/reports/rep-848-asic-s-review-of-internal-complaints-at-major-audit-firms",
+      "date": "2026-11-25"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "monochrome",
+    "caption": "Sydney’s central business district skyline at sunset. Deloitte, EY, KPMG, and PwC audit more than 94% of Australia’s listed market capitalisation and over 85% of superannuation entities, yet remain outside firm-level ASIC licensing.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

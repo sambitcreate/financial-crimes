@@ -1,0 +1,59 @@
+{
+  "id": "fc-2026-047",
+  "slug": "eppo-bulgaria-haskovo-eu-subsidy-fraud",
+  "publish_date": "2026-11-26T06:03:00-05:00",
+  "edition_date": "2026-11-26",
+  "city": "Sofia",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "BG",
+    "venue": "European Public Prosecutor’s Office (EPPO), Sofia"
+  },
+  "category": "Public Funds & Corruption",
+  "agencies": [
+    "EPPO",
+    "GDBOP",
+    "Bulgaria Anti-Corruption Commission"
+  ],
+  "docket_number": "EPPO Sofia — Haskovo Municipality Probe",
+  "legal_stage": "arrested",
+  "template": "news",
+  "eyebrow": "PUBLIC FUNDS & CORRUPTION",
+  "headline": "Five Bulgarian Municipal Councillors Among Eight Detained Over Alleged €70 Million EU Subsidy Scheme in Haskovo",
+  "deck": "EPPO Sofia alleges public officials steered European Regional Development and Recovery Facility contracts—for an elderly home, an arts centre, and renewable energy—toward companies they helped manage, as raids netted €135,000 in cash and gold coins.",
+  "byline": "By The European Desk",
+  "dateline": "SOFIA",
+  "read_time_min": 3,
+  "layout_slot": "lead-right",
+  "financials": {
+    "amount_usd": 73500000,
+    "amount_display": "€70M+ Alleged EU Budget Losses",
+    "fine_usd": null,
+    "fine_display": "Pending (€135K Cash, $9K & Gold Coins Seized)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending (8 Detained; Presumed Innocent)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "EPPO Sofia detained five Haskovo municipal councillors and three company representatives over an alleged five-year scheme targeting more than €70 million in EU Regional Development and Recovery Facility grants, seizing gold coins and €135,000 in cash.",
+    "street_equivalent": "Sitting on the town board that votes to fund a new senior center and quietly signing the winning contractor’s checks to a firm you help run",
+    "street_sentence": "Aggravated public-corruption and EU-subsidy prosecution in Bulgarian criminal courts if indicted and proven; all eight detainees remain presumed innocent"
+  },
+  "sources": [
+    {
+      "title": "Bulgaria: Eight detained in suspected EU subsidy fraud scheme, including five public officials",
+      "agency": "European Public Prosecutor’s Office (EPPO)",
+      "url": "https://www.eppo.europa.eu/media/news/bulgaria-eight-detained-suspected-eu-subsidy-fraud-scheme-including-five-public-officials-2026-11-25_en",
+      "date": "2026-11-25"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "The Palace of Justice in Sofia, Bulgaria. At the request of EPPO Sofia, Bulgarian anti-corruption and organised-crime units detained five municipal councillors and three corporate representatives in the municipality of Haskovo.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

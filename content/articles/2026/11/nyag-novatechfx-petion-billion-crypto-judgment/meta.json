@@ -1,0 +1,74 @@
+{
+  "id": "fc-2026-045",
+  "slug": "nyag-novatechfx-petion-billion-crypto-judgment",
+  "publish_date": "2026-11-26T06:05:00-05:00",
+  "edition_date": "2026-11-26",
+  "city": "New York",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "Supreme Court of the State of New York, County of New York (Commercial Division, Part 45)"
+  },
+  "category": "Crypto & Ponzi Schemes",
+  "agencies": [
+    "NY OAG"
+  ],
+  "docket_number": "Index No. 451633/2024",
+  "legal_stage": "regulatory_order",
+  "template": "news",
+  "eyebrow": "CRYPTO & PONZI SCHEMES",
+  "headline": "New York Court Orders Fled NovaTechFx Founders to Pay $1.37 Billion Over Crypto Pyramid Scheme Targeting Haitian Communities",
+  "deck": "Commercial Division Justice Anar Rathod Patel entered $1,367,023,585 in disgorgement and 9% prejudgment interest against Cynthia and Eddy Petion and three NovaTech entities after the couple defaulted and fled the country.",
+  "byline": "By The New York Bureau",
+  "dateline": "NEW YORK",
+  "read_time_min": 4,
+  "layout_slot": "lead-hero",
+  "financials": {
+    "amount_usd": 1134549691,
+    "amount_display": "$1.13B Disgorgement Principal (+ $3.93M AWS Mining)",
+    "fine_usd": 1367023585,
+    "fine_display": "$1.367B Civil Default Judgment (+ $6.15M AWS Mining)",
+    "fine_ratio_pct": 120.5,
+    "prison_months": 0,
+    "prison_display": "0 Days (Civil Default Judgment; Founders Fled U.S.)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": 52,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-26T06:08:00-05:00",
+    "components": {
+      "fine_ratio": 2,
+      "no_admission": 15,
+      "accountability_gap": 35
+    },
+    "rationale": "New York Supreme Court ordered $1,367,023,585 in disgorgement and 9% prejudgment interest (120.5% of the $1,134,549,691 NovaTech principal) alongside permanent industry bans, yet with no admission of liability and both founders having fled the country with zero days in prison, the civil paper award leaves a complete custody gap."
+  },
+  "street_crime_compare": {
+    "exec_summary": "A Manhattan state judge entered a $1.367 billion default judgment ($1.135 billion disgorgement plus $232.5 million interest) against fled NovaTechFx founders Cynthia and Eddy Petion for defrauding over 11,000 New Yorkers and hundreds of thousands worldwide, with zero days in prison.",
+    "street_equivalent": "Soliciting life savings from church congregations and neighborhood chat groups for a phantom investment pool and boarding a one-way flight before the bill arrives",
+    "street_sentence": "Multi-decade state or federal larceny custody upon apprehension, versus an uncollected civil default judgment here"
+  },
+  "sources": [
+    {
+      "title": "Attorney General James Wins $1.3 Billion Judgment Against Crypto Scammers Who Targeted Haitian Community",
+      "agency": "Office of the New York Attorney General",
+      "url": "https://ag.ny.gov/press-release/2026/attorney-general-james-wins-13-billion-judgment-against-crypto-scammers-who",
+      "date": "2026-11-25"
+    },
+    {
+      "title": "Order and Judgment for Monetary Relief — People of the State of New York v. Nova Tech Ltd, et al. (Index No. 451633/2024, NYSCEF Doc. No. 165)",
+      "agency": "Supreme Court of the State of New York, County of New York",
+      "url": "https://ag.ny.gov/sites/default/files/decisions/new-york-v-nova-tech-ltd-et-al-order-and-judgement-2026.pdf",
+      "date": "2026-11-24"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "The New York County Courthouse at 60 Centre Street in Lower Manhattan, where Commercial Division Justice Anar Rathod Patel entered a $1.367 billion monetary judgment against NovaTechFx founders Cynthia and Eddy Petion.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

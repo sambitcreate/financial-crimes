@@ -31,6 +31,22 @@
     "toySubtext": "23 MOS PRISON · A$0 FINE",
     "alt": "Impressionist oil study of Collins Street in Melbourne's financial district, accompanying coverage of the Full Federal Court refusing former Berndale Capital Securities director Stavro D'Amore leave to appeal his prison sentence."
   },
+  "asic-big-four-audit-complaints-review": {
+    "refImage": "/paint-refs/asic-big-four-audit-complaints-review.jpg",
+    "subject": "Sydney central business district skyline at sunset",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2019-04-10_Sydney_CBD_view_from_Pyrmont_at_sunset.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.48,
+      "v": 0.36
+    },
+    "paletteMood": "monochrome-noir",
+    "toyKind": "redaction",
+    "toyText": "35 AUDIT FLAGS",
+    "toySubtext": "NO FIRM LICENSE · REP 848",
+    "alt": "Monochrome impressionist oil study of Sydney's central business district skyline, accompanying an Opinion column on ASIC Report 848 reviewing internal audit complaints at Deloitte, EY, KPMG, and PwC."
+  },
   "backward-hat-capital-forex-ponzi": {
     "refImage": "/paint-refs/backward-hat-capital-forex-ponzi.jpg",
     "subject": "New York Stock Exchange facade, Lower Manhattan",
@@ -319,6 +335,22 @@
     "toySubtext": "87 MOS · LUXURY WATCHES",
     "alt": "Impressionist oil painting of a gold Swiss luxury wristwatch, illustrating the diverted CrowdStreet investor funds in former Nightingale Properties chief executive Elie Schwartz's sentencing."
   },
+  "eppo-bulgaria-haskovo-eu-subsidy-fraud": {
+    "refImage": "/paint-refs/eppo-bulgaria-haskovo-eu-subsidy-fraud.jpg",
+    "subject": "Palace of Justice (Sudebna Palata), Sofia, Bulgaria",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palace_of_Justice_in_Sofia_at_night_PD_2012_4.JPG",
+    "sourceLicense": "CC BY-SA 3.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.58,
+      "v": 0.68
+    },
+    "paletteMood": "courtroom-ochre",
+    "toyKind": "gavel-ripple",
+    "toyText": "€70M+ PROBE",
+    "toySubtext": "5 COUNCILLORS DETAINED",
+    "alt": "Impressionist oil study of the illuminated Palace of Justice and bronze lion statue in Sofia at night, accompanying coverage of E.P.P.O. detentions in an alleged €70 million Haskovo municipal EU-subsidy probe."
+  },
   "eppo-bulgaria-railway-insolvent-consortium": {
     "refImage": "/paint-refs/eppo-bulgaria-railway-insolvent-consortium.jpg",
     "subject": "Bulgarian State Railways Class 44 electric locomotive",
@@ -366,6 +398,22 @@
     "toyText": "€23M ALLEGED",
     "toySubtext": "3 ARRESTED · EPPO MIDAS",
     "alt": "Impressionist oil painting of the Palace of Justice in Munich at dusk, accompanying coverage of European Public Prosecutor's Office arrests across Bulgaria, the Netherlands, and Poland in Investigation Midas."
+  },
+  "eppo-investigation-pecunia-vat-underground-banking": {
+    "refImage": "/paint-refs/eppo-investigation-pecunia-vat-underground-banking.jpg",
+    "subject": "Federal Ministry of Finance (Bundesministerium der Finanzen), Berlin",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Berlin,_Bundesministerium_der_Finanzen.jpg",
+    "sourceLicense": "CC BY 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.42,
+      "v": 0.48
+    },
+    "paletteMood": "subpoena-cobalt",
+    "toyKind": "envelopes",
+    "toyText": "€120M ALLEGED",
+    "toySubtext": "21 ARRESTED · 12 NATIONS",
+    "alt": "Impressionist oil study of Germany's Federal Ministry of Finance in Berlin, accompanying coverage of E.P.P.O. Munich's Investigation Pecunia targeting an alleged €120 million shell-invoice laundering network."
   },
   "eppo-operation-hermes-smartphone-vat-carousel": {
     "refImage": "/paint-refs/eppo-operation-hermes-smartphone-vat-carousel.jpg",
@@ -511,6 +559,22 @@
     "toySubtext": "INDICTED · TRIAL PENDING",
     "alt": "Impressionist oil painting of Metro Manila's illuminated night skyline, accompanying coverage of federal charges alleging the shopping app Nate relied on human night-shift operators rather than artificial intelligence."
   },
+  "nyag-novatechfx-petion-billion-crypto-judgment": {
+    "refImage": "/paint-refs/nyag-novatechfx-petion-billion-crypto-judgment.jpg",
+    "subject": "New York County Courthouse, 60 Centre Street, Manhattan",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:New_York_State_Supreme_Courthouse_60_Centre_Street_from_southwest.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.36,
+      "v": 0.44
+    },
+    "paletteMood": "verdict-crimson",
+    "toyKind": "crash-line",
+    "toyText": "$1.37B DEFAULT",
+    "toySubtext": "0 PRISON · FOUNDERS FLED",
+    "alt": "Impressionist oil study of the neoclassical colonnade of the New York County Courthouse at 60 Centre Street in Lower Manhattan, accompanying coverage of the $1.367 billion civil default judgment against NovaTechFx founders Cynthia and Eddy Petion."
+  },
   "pwc-hong-kong-evergrande-audit-sanctions": {
     "refImage": "/paint-refs/pwc-hong-kong-evergrande-audit-sanctions.jpg",
     "subject": "Prince's Building, Central, Hong Kong (PwC Hong Kong offices)",
@@ -606,6 +670,22 @@
     "toyText": "$15M ESCROW SUIT",
     "toySubtext": "S.E.C. COMPLAINT · N.D. GA",
     "alt": "Impressionist oil study of the Richard B. Russell Federal Building and United States Courthouse in Atlanta, illustrating the S.E.C.'s civil complaint against Michael P. Hanlon and J. Streicher Financial, LLC."
+  },
+  "sfc-china-longevity-directors-disqualified": {
+    "refImage": "/paint-refs/sfc-china-longevity-directors-disqualified.jpg",
+    "subject": "High Court Building, Queensway, Admiralty, Hong Kong",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Queensway_at_the_High_Court_(Hong_Kong).jpg",
+    "sourceLicense": "CC BY-SA 3.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.44,
+      "v": 0.36
+    },
+    "paletteMood": "banknote-emerald",
+    "toyKind": "stamp",
+    "toyText": "HK$0 FINE · 14 YRS",
+    "toySubtext": "3 DIRECTORS BANNED 4–10 YR",
+    "alt": "Impressionist oil study of Hong Kong's High Court Building on Queensway in Admiralty, accompanying coverage of S.F.C. section 214 corporate disqualification orders against three former China Longevity Group executive directors."
   },
   "sfc-da-yue-financial-client-money-restriction": {
     "refImage": "/paint-refs/sfc-da-yue-financial-client-money-restriction.jpg",

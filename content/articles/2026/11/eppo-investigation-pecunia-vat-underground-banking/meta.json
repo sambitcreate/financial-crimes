@@ -1,0 +1,70 @@
+{
+  "id": "fc-2026-046",
+  "slug": "eppo-investigation-pecunia-vat-underground-banking",
+  "publish_date": "2026-11-26T06:04:00-05:00",
+  "edition_date": "2026-11-26",
+  "city": "Munich",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "DE",
+    "venue": "European Public Prosecutor’s Office (EPPO), Munich"
+  },
+  "category": "Tax & Money Laundering",
+  "agencies": [
+    "EPPO",
+    "Europol",
+    "BaFin",
+    "FIU Germany"
+  ],
+  "docket_number": "Investigation Pecunia (EPPO Munich)",
+  "legal_stage": "arrested",
+  "template": "news",
+  "eyebrow": "TAX & MONEY LAUNDERING",
+  "headline": "Over 3,000 Officers Raid 12 Countries in ‘Investigation Pecunia’ Over Alleged €120 Million Shell-Invoice Laundering Network",
+  "deck": "The European Public Prosecutor’s Office in Munich announced 21 arrests across Germany, Belgium, and Estonia over an alleged underground banking ring using 22 German shell companies to sell fictitious VAT invoices.",
+  "byline": "By The European Desk",
+  "dateline": "MUNICH",
+  "read_time_min": 3,
+  "layout_slot": "lead-live",
+  "live_updates": [
+    {
+      "text": "Over 3,000 police, tax, and customs officers execute more than 300 searches across 12 countries in Investigation Pecunia.",
+      "ago": "Today"
+    },
+    {
+      "text": "21 suspects arrested in Germany, Belgium, and Estonia over 22 alleged German shell firms; all suspects are presumed innocent.",
+      "ago": "Nov. 26"
+    }
+  ],
+  "financials": {
+    "amount_usd": 126000000,
+    "amount_display": "€120M+ Alleged Laundering (€18.9M+ German VAT Loss)",
+    "fine_usd": null,
+    "fine_display": "Pending (Cash, Luxury Cars, Watches & Jewellery Seized)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending (21 Arrested; Presumed Innocent)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "EPPO Munich, Europol, and 12 national authorities arrested 21 suspects and conducted 300+ searches over an alleged €120 million underground banking and fictitious-invoice VAT ring tied to €18.9 million in German tax losses.",
+    "street_equivalent": "Printing fake receipts at a corner copy shop to claim tax refunds while handing envelopes of off-the-books payroll cash out the back door",
+    "street_sentence": "Mandatory felony tax-evasion and money-laundering prosecution in German regional courts upon conviction; all suspects remain presumed innocent"
+  },
+  "sources": [
+    {
+      "title": "Investigation Pecunia: EPPO moves against large-scale money laundering via VAT fraud",
+      "agency": "European Public Prosecutor’s Office (EPPO)",
+      "url": "https://www.eppo.europa.eu/media/news/investigation-pecunia-eppo-moves-against-large-scale-money-laundering-vat-fraud-2026-11-26_en",
+      "date": "2026-11-26"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "Germany’s Federal Ministry of Finance in Berlin. EPPO Munich alleges 22 German shell companies issued fictitious service invoices causing at least €18.9 million in German VAT losses inside a €120 million laundering network.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}
