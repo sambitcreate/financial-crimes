@@ -1,0 +1,71 @@
+{
+  "id": "fc-2026-054",
+  "slug": "sec-petiq-former-coo-smith-insider-trading-judgment",
+  "publish_date": "2026-11-27T06:01:00-05:00",
+  "edition_date": "2026-11-27",
+  "city": "Boise",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "U.S. District Court for the District of Idaho"
+  },
+  "category": "Insider Trading",
+  "agencies": [
+    "SEC",
+    "DOJ",
+    "USPIS",
+    "FINRA"
+  ],
+  "docket_number": "No. 26-cv-00193 (D. Idaho) · 25-cr-00277 · 26-cr-00048",
+  "legal_stage": "settlement",
+  "template": "news",
+  "eyebrow": "INSIDER TRADING · PUBLIC MARKETS",
+  "headline": "Former PetIQ President Who Traded Buyout Secrets in His Ex-Wife’s Accounts Settles S.E.C. Suit for $25,000 Civil Penalty",
+  "deck": "An Idaho federal judge entered final judgments against Michael A. Smith and tipped friend Douglas Joshua Dalton—both of whom pleaded guilty to parallel criminal securities fraud—with $242,270 in disgorgement offset by criminal forfeiture and a five-year officer bar.",
+  "byline": "By The Markets Desk",
+  "dateline": "BOISE",
+  "read_time_min": 3,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 242270,
+    "amount_display": "$242,270 Illicit Buyout Trading Profits",
+    "fine_usd": 292270,
+    "fine_display": "$292,270 Combined ($242.3K Forfeiture + $50K SEC Penalties)",
+    "fine_ratio_pct": 120.6,
+    "prison_months": null,
+    "prison_display": "Criminal Sentencing Separate (Both Pleaded Guilty)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 24,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-27T06:07:00-05:00",
+    "components": {
+      "fine_ratio": 6,
+      "no_admission": 0,
+      "accountability_gap": 18
+    },
+    "rationale": "Former PetIQ COO Michael A. Smith and tippee Douglas Joshua Dalton both pleaded guilty to federal securities fraud and consented to $292,270.13 in combined forfeiture and SEC civil penalties (120.6% of their $242,270.13 illicit profits), though the SEC sought only $25,000 civil penalties each and a five-year rather than permanent officer bar while criminal prison terms remain separate."
+  },
+  "street_crime_compare": {
+    "exec_summary": "Former PetIQ President and COO Michael A. Smith and friend Douglas Joshua Dalton settled SEC insider-trading charges over a 48% buyout jump using Smith’s ex-wife’s brokerage accounts and call options—paying $25,000 civil penalties each on top of $242,270.13 in criminal forfeiture, with a five-year C-suite bar and parallel guilty pleas.",
+    "street_equivalent": "Sneaking an advance copy of a sealed corporate buyout bid out of the boardroom to buy stock in an ex-spouse’s account and text a friend to load up on call options",
+    "street_sentence": "Parallel criminal securities-fraud guilty pleas carry up to 20 years’ statutory exposure, while the SEC civil surcharge itself came to 20.6 cents on the illicit dollar"
+  },
+  "sources": [
+    {
+      "title": "Litigation Release No. 26696: SEC Obtains Final Judgments Against Former PetIQ Executive and his Friend Charged with Insider Trading",
+      "agency": "U.S. Securities and Exchange Commission (SEC)",
+      "url": "https://www.sec.gov/enforcement-litigation/litigation-releases/lr-26696",
+      "date": "2026-11-25"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "The James A. McClure Federal Building and United States Courthouse in Boise, Idaho, where final civil judgments were entered against former PetIQ President and C.O.O. Michael A. Smith and Douglas Joshua Dalton.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

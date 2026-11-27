@@ -15,6 +15,22 @@
     "toySubtext": "4 YRS 8 MOS PRISON",
     "alt": "Impressionist oil painting of a CFM56 commercial turbofan jet engine, illustrating the AOG Technics forged airworthiness certificate prosecution."
   },
+  "asic-aig-australia-complaints-handling-lawsuit": {
+    "refImage": "/paint-refs/asic-aig-australia-complaints-handling-lawsuit.jpg",
+    "subject": "Supreme Court of Victoria, Melbourne",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Supreme_Court_of_Victoria.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.52,
+      "v": 0.54
+    },
+    "paletteMood": "subpoena-cobalt",
+    "toyKind": "redaction",
+    "toyText": "534 LATE REPLIES",
+    "toySubtext": "306-DAY WAIT · ASIC SUIT",
+    "alt": "Impressionist oil study of the domed Supreme Court of Victoria in Melbourne, accompanying coverage of ASIC's civil penalty lawsuit alleging complaints-handling breaches by AIG Australia Limited."
+  },
   "asic-berndale-stavro-damore-appeal-refused": {
     "refImage": "/paint-refs/asic-berndale-stavro-damore-appeal-refused.jpg",
     "subject": "Collins Street financial district, Melbourne",
@@ -479,6 +495,22 @@
     "toySubtext": "4 MACHINES SEIZED · CGST",
     "alt": "Impressionist oil painting of North Block on Raisina Hill in New Delhi, headquarters of India's Ministry of Finance, accompanying coverage of a C.G.S.T. Faridabad raid in Rewari under the H.S.N.S. Cess Act."
   },
+  "india-ed-ozone-urbana-homebuyer-pmla-attachment": {
+    "refImage": "/paint-refs/india-ed-ozone-urbana-homebuyer-pmla-attachment.jpg",
+    "subject": "Attara Kacheri (High Court of Karnataka), Bengaluru",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Karnataka_High_Court_-_June_2019.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.44
+    },
+    "paletteMood": "verdict-crimson",
+    "toyKind": "envelopes",
+    "toyText": "₹702.7CR ATTACHED",
+    "toySubtext": "₹1,305CR PROBE · PMLA PAO",
+    "alt": "Impressionist oil study of Attara Kacheri, the terracotta neoclassical High Court of Karnataka in Bengaluru, accompanying coverage of the Enforcement Directorate's ₹702.70 crore provisional attachment in the Ozone Urbana investigation."
+  },
   "india-ed-royal-twinkle-citrus-ponzi-attachment": {
     "refImage": "/paint-refs/india-ed-royal-twinkle-citrus-ponzi-attachment.jpg",
     "subject": "Supreme Court of India, New Delhi",
@@ -494,6 +526,22 @@
     "toyText": "₹557CR ATTACHED",
     "toySubtext": "87+ SHELLS · PMLA PROBE",
     "alt": "Impressionist oil study of the Supreme Court of India in New Delhi, accompanying coverage of the Enforcement Directorate's ₹556.72 crore provisional property attachment in the ₹8,852 crore Royal Twinkle Star Club and Citrus Check Inns investigation."
+  },
+  "india-ed-vatika-group-double-sold-plots-attachment": {
+    "refImage": "/paint-refs/india-ed-vatika-group-double-sold-plots-attachment.jpg",
+    "subject": "Gurugram commercial and residential skyline, Haryana",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gurgaon_skyline.jpg",
+    "sourceLicense": "CC BY-SA 3.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.56,
+      "v": 0.54
+    },
+    "paletteMood": "bullion-gold",
+    "toyKind": "coins",
+    "toyText": "66 PLOTS RESOLD",
+    "toySubtext": "₹546CR ATTACHED · CUSTODY",
+    "alt": "Impressionist oil study of Gurugram's commercial and residential skyline in Haryana, accompanying coverage of the Enforcement Directorate's ₹545.96 crore provisional attachment in the Vatika Group PMLA investigation."
   },
   "indusind-bank-derivatives-insider-trading": {
     "refImage": "/paint-refs/indusind-bank-derivatives-insider-trading.jpg",
@@ -671,6 +719,22 @@
     "toySubtext": "S.E.C. COMPLAINT · N.D. GA",
     "alt": "Impressionist oil study of the Richard B. Russell Federal Building and United States Courthouse in Atlanta, illustrating the S.E.C.'s civil complaint against Michael P. Hanlon and J. Streicher Financial, LLC."
   },
+  "sec-petiq-former-coo-smith-insider-trading-judgment": {
+    "refImage": "/paint-refs/sec-petiq-former-coo-smith-insider-trading-judgment.jpg",
+    "subject": "James A. McClure Federal Building and U.S. Courthouse, Boise",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:James_A._McClure_Federal_Bldg_%26_U.S._Courthouse.JPG",
+    "sourceLicense": "CC BY-SA 3.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.48,
+      "v": 0.78
+    },
+    "paletteMood": "subpoena-cobalt",
+    "toyKind": "stamp",
+    "toyText": "$25K SEC PENALTY",
+    "toySubtext": "5-YR BAR · GUILTY PLEAS",
+    "alt": "Impressionist oil study of the James A. McClure Federal Building and United States Courthouse in Boise framed by autumn foliage, accompanying coverage of S.E.C. final judgments against former PetIQ President Michael A. Smith and Douglas Joshua Dalton."
+  },
   "sfc-china-longevity-directors-disqualified": {
     "refImage": "/paint-refs/sfc-china-longevity-directors-disqualified.jpg",
     "subject": "High Court Building, Queensway, Admiralty, Hong Kong",
@@ -782,5 +846,21 @@
     "toyText": "€472M + £85M FINES",
     "toySubtext": "0 EXECS CHARGED · CARTEL",
     "alt": "Impressionist oil study of Unilever House on the Victoria Embankment in London, accompanying coverage of coordinated European Commission and U.K. CMA antitrust fines against Givaudan, Firmenich, and IFF."
+  },
+  "uk-hope-and-pride-director-suspended-sentence": {
+    "refImage": "/paint-refs/uk-hope-and-pride-director-suspended-sentence.jpg",
+    "subject": "The Royal Exchange, City of London",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Royal_Exchange_(Ank_Kumar,_Infosys_Limited)_02.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.49,
+      "v": 0.46
+    },
+    "paletteMood": "courtroom-ochre",
+    "toyKind": "gavel-ripple",
+    "toyText": "£1.1M · NO BOOKS",
+    "toySubtext": "6 MOS SUSPENDED · £0 FINE",
+    "alt": "Impressionist oil study of the Corinthian portico of the Royal Exchange in the City of London, accompanying coverage of former Hope & Pride Limited director Jenna Lennon's suspended sentence at Southwark Crown Court."
   }
 }

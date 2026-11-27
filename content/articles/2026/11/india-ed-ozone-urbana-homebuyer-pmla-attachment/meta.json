@@ -1,0 +1,59 @@
+{
+  "id": "fc-2026-050",
+  "slug": "india-ed-ozone-urbana-homebuyer-pmla-attachment",
+  "publish_date": "2026-11-27T06:05:00-05:00",
+  "edition_date": "2026-11-27",
+  "city": "Bengaluru",
+  "edition": "india",
+  "jurisdiction": {
+    "country_iso": "IN",
+    "venue": "Directorate of Enforcement (ED), Bengaluru Zonal Office (PMLA, 2002)"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "ED",
+    "CBI",
+    "Karnataka Police"
+  ],
+  "docket_number": "PAO No. 45 of 2026 (PMLA, 2002)",
+  "legal_stage": "interim_order",
+  "template": "news",
+  "eyebrow": "INDIA & ASIA · REAL ESTATE",
+  "headline": "India’s E.D. Attaches ₹702.7 Crore in Ozone Urbana Assets Over Alleged ₹1,305 Crore Homebuyer Diversion",
+  "deck": "The Bengaluru Zonal Office’s second provisional attachment order lifts total frozen Ozone Group assets to ₹1,126.07 crore after investigators alleged housing loans and subvention-plan deposits were routed into inter-corporate debt service instead of apartments.",
+  "byline": "By The South Asia Bureau",
+  "dateline": "BENGALURU",
+  "read_time_min": 4,
+  "layout_slot": "lead-hero",
+  "financials": {
+    "amount_usd": 153500000,
+    "amount_display": "₹1,305.11 Cr Alleged Diversion (~$153.5M)",
+    "fine_usd": null,
+    "fine_display": "₹702.70 Cr Attached (₹1,126.07 Cr Cumulative PAOs)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending (PMLA Investigation Ongoing)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "India’s Enforcement Directorate provisionally attached ₹702.70 crore in land and flats tied to Ozone Urbana Infra Developers and chairman-managing director Vasudevan S, bringing total attachments to ₹1,126.07 crore in an ongoing probe alleging ₹1,305.11 crore in undelivered homebuyer funds were diverted across group entities.",
+    "street_equivalent": "Taking full upfront mortgage payments from hundreds of families for apartments with a promise to cover their bank installments until move-in day, then using the construction kitty to pay off older creditors",
+    "street_sentence": "Mandatory multi-year imprisonment under India’s Prevention of Money Laundering Act upon adjudication and conviction; all allegations remain under investigation"
+  },
+  "sources": [
+    {
+      "title": "Press Release: ED Bengaluru Provisionally Attaches Immovable Properties Worth Rs. 702.70 Crore in M/s Ozone Urbana Infra Developers Pvt. Ltd. & Others (PAO No. 45 of 2026)",
+      "agency": "Directorate of Enforcement (ED), India",
+      "url": "https://enforcementdirectorate.gov.in/media/press-release-documents/0f7a23c7-9862-469b-9d99-4a06c2a976d2_Press%20release-%20Ozone%20PAO_1.pdf",
+      "date": "2026-11-26"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "Attara Kacheri, seat of the High Court of Karnataka in Bengaluru. The Enforcement Directorate’s Bengaluru Zonal Office provisionally attached ₹702.70 crore in Ozone Group flats and land under PMLA Provisional Attachment Order No. 45 of 2026.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

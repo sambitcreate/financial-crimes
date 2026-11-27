@@ -1,0 +1,69 @@
+{
+  "id": "fc-2026-053",
+  "slug": "uk-hope-and-pride-director-suspended-sentence",
+  "publish_date": "2026-11-27T06:02:00-05:00",
+  "edition_date": "2026-11-27",
+  "city": "London",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "GB",
+    "venue": "Southwark Crown Court, London"
+  },
+  "category": "Corporate Insolvency",
+  "agencies": [
+    "The Insolvency Service",
+    "HMRC"
+  ],
+  "docket_number": "Company No. 11871782 (Insolvency Act 1986)",
+  "legal_stage": "sentenced",
+  "template": "news",
+  "eyebrow": "UNITED KINGDOM · INSOLVENCY",
+  "headline": "London Director Draws Suspended Sentence and 100 Hours Unpaid Work After £1.1 Million Passes Through Firm With Zero Books",
+  "deck": "Southwark Crown Court handed former Hope & Pride Limited sole director Jenna Lennon six months suspended for a year after missing accounting records left liquidators unable to verify £1.1 million in inflows or a £396,630 HMRC director’s loan.",
+  "byline": "By The London Bureau",
+  "dateline": "LONDON",
+  "read_time_min": 3,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 1390000,
+    "amount_display": "£1.1M+ Unverified Inflows (£396.6K HMRC Loan Claim)",
+    "fine_usd": 0,
+    "fine_display": "£0 Criminal Fine (100 Hrs Unpaid Work + 7-Yr Ban)",
+    "fine_ratio_pct": 0,
+    "prison_months": 0,
+    "prison_display": "0 Days Immediate Custody (6 Mos Suspended 12 Mos)",
+    "admitted_guilt": true
+  },
+  "slap_on_wrist_score": 75,
+  "score_provenance": {
+    "model": "gemini-4-neon-high",
+    "prompt_sha256": "fc241c944c3f42c86c2c31874ec19eb107aa27995999479a03f51aaf3a8de5d1",
+    "judged_at": "2026-11-27T06:07:00-05:00",
+    "components": {
+      "fine_ratio": 50,
+      "no_admission": 0,
+      "accountability_gap": 25
+    },
+    "rationale": "After pleading guilty to withholding books that left liquidators unable to verify over £1.1 million in bank inflows and a £396,630 HMRC director's loan claim, Jenna Lennon received £0 in criminal fines and zero days of immediate custody under a six-month suspended sentence, offset only by a seven-year directorship ban and 100 hours of unpaid work."
+  },
+  "street_crime_compare": {
+    "exec_summary": "Former Hope & Pride Limited sole director Jenna Lennon pleaded guilty under the Insolvency Act 1986 after failing to hand over accounting records covering over £1.1 million (~$1.39M) in bank inflows and a £396,630 HMRC director’s loan claim, receiving a six-month suspended sentence, 100 hours of unpaid work, and £0 in criminal fines.",
+    "street_equivalent": "Losing every single receipt for £1.1 million in cash deposits—including nearly £400,000 paid to yourself—and walking out of Crown Court with 100 hours of community service",
+    "street_sentence": "Immediate custodial sentences are routine in Crown Court fraud and theft cases involving seven-figure sums, versus zero days behind bars here"
+  },
+  "sources": [
+    {
+      "title": "Company director sentenced after liquidators unable to verify more than £1 million",
+      "agency": "The Insolvency Service (UK)",
+      "url": "https://www.gov.uk/government/news/company-director-sentenced-after-liquidators-unable-to-verify-more-than-1-million",
+      "date": "2026-11-26"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "The Royal Exchange in the City of London. At Southwark Crown Court, former Hope & Pride Limited sole director Jenna Lennon received a six-month suspended sentence and 100 hours of unpaid work after withholding accounting records covering over £1.1 million in bank inflows.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

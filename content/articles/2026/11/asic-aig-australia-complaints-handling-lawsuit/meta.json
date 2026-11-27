@@ -1,0 +1,57 @@
+{
+  "id": "fc-2026-052",
+  "slug": "asic-aig-australia-complaints-handling-lawsuit",
+  "publish_date": "2026-11-27T06:03:00-05:00",
+  "edition_date": "2026-11-27",
+  "city": "Melbourne",
+  "edition": "global",
+  "jurisdiction": {
+    "country_iso": "AU",
+    "venue": "Supreme Court of Victoria, Melbourne"
+  },
+  "category": "Corporate Compliance",
+  "agencies": [
+    "ASIC"
+  ],
+  "docket_number": "26-294MR (Supreme Court of Victoria)",
+  "legal_stage": "civil_complaint",
+  "template": "news",
+  "eyebrow": "ASIA-PACIFIC · INSURANCE",
+  "headline": "ASIC Sues AIG Australia Over 534 Missed Complaint Deadlines, a 306-Day Wait, and a Template Pre-Filled With ‘Complexity’",
+  "deck": "Australia’s corporate regulator filed Supreme Court of Victoria civil penalty proceedings alleging AIG left injured and bereaved policyholders waiting months while failing to inform 179 customers of their right to escalate disputes.",
+  "byline": "By The Asia-Pacific Desk",
+  "dateline": "MELBOURNE",
+  "read_time_min": 3,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": null,
+    "amount_display": "534 Late Complaints (Up to 306-Day Wait)",
+    "fine_usd": null,
+    "fine_display": "Pending (ASIC Seeks Civil Penalties & Publicity Order)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "N/A (Civil Penalty Action Against Insurer)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "ASIC sued AIG Australia Limited in the Supreme Court of Victoria alleging 534 failures to meet mandatory 30-day complaint response deadlines between October 2021 and December 2025—including a 306-day delay, 179 omitted AFCA escalation notices, and a delay-letter template prepopulated with ‘complexity.’",
+    "street_equivalent": "Ignoring 534 refund demands for up to ten months with a form letter that automatically blames ‘complexity’ while omitting the address of the ombudsman",
+    "street_sentence": "ASIC seeks civil declarations, pecuniary penalties, adverse publicity orders, and an independent expert review; AIG may contest the allegations in court"
+  },
+  "sources": [
+    {
+      "title": "26-294MR: ASIC sues AIG over alleged complaints handling failures that left some customers waiting months for answers",
+      "agency": "Australian Securities and Investments Commission (ASIC)",
+      "url": "https://www.asic.gov.au/about-asic/news-centre/find-a-media-release/2026-releases/26-294mr-asic-sues-aig-over-alleged-complaints-handling-failures-that-left-some-customers-waiting-months-for-answers",
+      "date": "2026-11-26"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "The Supreme Court of Victoria in Melbourne, where the Australian Securities and Investments Commission commenced civil penalty proceedings against AIG Australia Limited over alleged internal dispute-resolution breaches.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

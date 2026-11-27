@@ -1,0 +1,58 @@
+{
+  "id": "fc-2026-051",
+  "slug": "india-ed-vatika-group-double-sold-plots-attachment",
+  "publish_date": "2026-11-27T06:04:00-05:00",
+  "edition_date": "2026-11-27",
+  "city": "Gurugram",
+  "edition": "india",
+  "jurisdiction": {
+    "country_iso": "IN",
+    "venue": "Directorate of Enforcement (ED), Gurugram Zonal Office (PMLA, 2002)"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "ED",
+    "Delhi Police EOW"
+  ],
+  "docket_number": "PMLA Provisional Attachment (25.11.2026) · Vatika Group",
+  "legal_stage": "arrested",
+  "template": "news",
+  "eyebrow": "INDIA & ASIA · REAL ESTATE",
+  "headline": "E.D. Attaches ₹545.96 Crore in Vatika Group Assets, Including Mehrauli Farmhouse, Over Alleged Double-Sold Gurugram Plots",
+  "deck": "Fourteen years after upfront payments yielded zero plots in Vatika India Next-2, investigators allege promoters Anil and Gautam Bhalla—in judicial custody since September—resold 66 plots already contracted to a ₹473 crore buyer.",
+  "byline": "By The South Asia Bureau",
+  "dateline": "GURUGRAM",
+  "read_time_min": 4,
+  "layout_slot": "lead-right",
+  "financials": {
+    "amount_usd": 66800000,
+    "amount_display": "₹568 Cr Alleged Proceeds (~$66.8M)",
+    "fine_usd": null,
+    "fine_display": "₹545.96 Cr Attached (+ ₹22.58 Cr Earlier Seizure)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending (Anil & Gautam Bhalla in Judicial Custody)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "India’s Enforcement Directorate provisionally attached ₹545.96 crore in Vatika Group and Bhalla family-trust properties—quantifying ₹568 crore (~$66.8M) in alleged proceeds—over accusations of 14-year plot non-delivery, 22 employee-less land-bank shells, and double-selling 66 already-sold Gurugram plots.",
+    "street_equivalent": "Collecting full upfront payment for the same residential lot twice from two different buyers without telling either one, while keeping the original purchaser waiting fourteen years for an empty deed",
+    "street_sentence": "Up to seven years’ rigorous imprisonment under the Prevention of Money Laundering Act upon conviction; both detained promoters remain presumed innocent"
+  },
+  "sources": [
+    {
+      "title": "Press Release on the Provisional Attachment Order of Vatika Group & Its Promoters in a Money Laundering Case",
+      "agency": "Directorate of Enforcement (ED), India",
+      "url": "https://www.enforcementdirectorate.gov.in/media/press-release-documents/32d7ff14-3442-4ab0-954f-36efe0e30b79_PR%20Vatika%20PAO%20GNZO_2.pdf",
+      "date": "2026-11-26"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "Gurugram’s commercial and residential skyline in Haryana. The Enforcement Directorate’s Gurugram Zonal Office provisionally attached ₹545.96 crore in Vatika Group and Bhalla family-trust real estate, including a Sultanpur Farms property in Mehrauli, New Delhi.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}
