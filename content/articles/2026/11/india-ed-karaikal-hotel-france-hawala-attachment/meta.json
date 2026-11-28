@@ -1,0 +1,58 @@
+{
+  "id": "fc-2026-058",
+  "slug": "india-ed-karaikal-hotel-france-hawala-attachment",
+  "publish_date": "2026-11-28T06:02:00-05:00",
+  "edition_date": "2026-11-28",
+  "city": "Chennai",
+  "edition": "india",
+  "jurisdiction": {
+    "country_iso": "IN",
+    "venue": "Directorate of Enforcement (ED), Chennai Zonal Office-II (PMLA, 2002)"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "ED",
+    "Government of the French Republic"
+  ],
+  "docket_number": "ED Chennai Zonal Office-II PMLA PAO (Nov. 26, 2026)",
+  "legal_stage": "interim_order",
+  "template": "news",
+  "eyebrow": "INDIA & ASIA · CROSS-BORDER AML",
+  "headline": "India’s E.D. Attaches ₹12.64 Crore Karaikal Hotel Linked to Alleged France Gold-Smuggling and Crypto Hawala Trail",
+  "deck": "Acting on a referral from the French government, Chennai investigators provisionally attached the five-story Hotel Le Royale Palace in Puducherry after alleging commission-based smuggling proceeds were wired via the U.A.E. into an Indian N.R.E. account.",
+  "byline": "By The South Asia Bureau",
+  "dateline": "CHENNAI",
+  "read_time_min": 3,
+  "layout_slot": "lead-grid",
+  "financials": {
+    "amount_usd": 1490000,
+    "amount_display": "₹12.64 Cr Attached Property (~$1.49M)",
+    "fine_usd": null,
+    "fine_display": "₹12.64 Cr Hotel & Land Provisionally Attached",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending (PMLA Investigation Ongoing)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "India’s Enforcement Directorate provisionally attached the land and five-story building of Hotel Le Royale Palace in Karaikal, Puducherry (valued at ₹12.64 crore) following information from France alleging gold smuggling, hawala, and illegal crypto transfers from 2019 to 2023 funded the hotel’s construction through UAE wires and cash deposits.",
+    "street_equivalent": "Running an off-the-books gold-and-crypto courier desk in Paris, bouncing the commissions through Dubai cash agents, and bricking the balance into a five-story coastal hotel",
+    "street_sentence": "Multi-year imprisonment and asset confiscation under India’s Prevention of Money Laundering Act upon adjudication; all allegations remain under investigation"
+  },
+  "sources": [
+    {
+      "title": "Press Release: ED Chennai Zonal Office-II Provisionally Attaches Hotel Le Royale Palace, Karaikal Valued at Approx. Rs. 12.64 Crore Under PMLA, 2002",
+      "agency": "Directorate of Enforcement (ED), India",
+      "url": "https://enforcementdirectorate.gov.in/media/press-release-documents/c59050ca-6421-4896-8911-ee56468fa2f9_PR%20-%20MLAR%20case%20-%20PAO%20_1.pdf",
+      "date": "2026-11-26"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "gold",
+    "theme": "newsprint",
+    "caption": "The Madras High Court in Chennai, whose jurisdiction spans Tamil Nadu and Puducherry. The Enforcement Directorate’s Chennai Zonal Office-II provisionally attached the five-story Hotel Le Royale Palace in Karaikal following a French government referral.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

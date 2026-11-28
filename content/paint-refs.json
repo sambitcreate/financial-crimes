@@ -431,6 +431,22 @@
     "toySubtext": "21 ARRESTED · 12 NATIONS",
     "alt": "Impressionist oil study of Germany's Federal Ministry of Finance in Berlin, accompanying coverage of E.P.P.O. Munich's Investigation Pecunia targeting an alleged €120 million shell-invoice laundering network."
   },
+  "eppo-italy-telecom-vat-nine-countries-seizure": {
+    "refImage": "/paint-refs/eppo-italy-telecom-vat-nine-countries-seizure.jpg",
+    "subject": "Palazzo di Giustizia (Corte di Cassazione), Rome",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palace_of_Justice_-_Rome.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.44
+    },
+    "paletteMood": "verdict-crimson",
+    "toyKind": "envelopes",
+    "toyText": "€14.5M VAT PROBE",
+    "toySubtext": "9 NATIONS · €2.2M FROZEN",
+    "alt": "Impressionist oil study of Rome's Palazzo di Giustizia flying Italian and European Union flags, accompanying coverage of E.P.P.O. Rome's nine-country preventive seizure targeting €14.5 million in alleged telecom VAT losses."
+  },
   "eppo-operation-hermes-smartphone-vat-carousel": {
     "refImage": "/paint-refs/eppo-operation-hermes-smartphone-vat-carousel.jpg",
     "subject": "Laura Codruța Kövesi, European Chief Prosecutor (E.P.P.O.)",
@@ -447,6 +463,22 @@
     "toySubtext": "62 DETAINED · 8-NATION RAIDS",
     "alt": "Impressionist oil portrait of European Chief Prosecutor Laura Codruța Kövesi against a European Union blue backdrop, accompanying coverage of E.P.P.O. Operation Hermes."
   },
+  "eppo-romania-belgium-smart-buildings-iot-fraud": {
+    "refImage": "/paint-refs/eppo-romania-belgium-smart-buildings-iot-fraud.jpg",
+    "subject": "Palace of Culture (Palatul Culturii), Iași, Romania",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palatul_Culturii_Ia%C8%99i_-_seara_din_lateral.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.65,
+      "v": 0.56
+    },
+    "paletteMood": "subpoena-cobalt",
+    "toyKind": "envelopes",
+    "toyText": "19 PHANTOM STAFF",
+    "toySubtext": "€1.1M PROBE · 14 RAIDS",
+    "alt": "Impressionist oil study of the illuminated Palace of Culture in Iași at twilight, accompanying coverage of E.P.P.O. searches in Romania and Belgium over an alleged €1.1 million smart-buildings IoT grant probe."
+  },
   "eppo-syracuse-school-labs-kickback-ring": {
     "refImage": "/paint-refs/eppo-syracuse-school-labs-kickback-ring.jpg",
     "subject": "Piazza Duomo, Syracuse, Sicily",
@@ -462,6 +494,22 @@
     "toyText": "15% ALLEGED SPLIT",
     "toySubtext": "OFFICE BAN · EPPO SYRACUSE",
     "alt": "Impressionist oil study of Piazza Duomo in Syracuse, Sicily at twilight, accompanying coverage of E.P.P.O. precautionary public-office bans and asset seizures in an alleged €1.5 million school-grant kickback probe."
+  },
+  "fincen-sdtm-outage-bsa-sar-filing-holiday": {
+    "refImage": "/paint-refs/fincen-sdtm-outage-bsa-sar-filing-holiday.jpg",
+    "subject": "United States Treasury Building, Washington",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:United_States_Treasury_building_2023.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.52,
+      "v": 0.55
+    },
+    "paletteMood": "monochrome-noir",
+    "toyKind": "redaction",
+    "toyText": "42-DAY SAR PAUSE",
+    "toySubtext": "SDTM OUTAGE · DEC. 30 DUE",
+    "alt": "Monochrome impressionist oil study of the United States Treasury Building in Washington at dusk, accompanying an Opinion column on FinCEN Order FIN-2026-R002 and interagency supervisory waivers during the SDTM outage."
   },
   "gensol-blusmart-ev-loan-camellias-condo": {
     "refImage": "/paint-refs/gensol-blusmart-ev-loan-camellias-condo.jpg",
@@ -494,6 +542,22 @@
     "toyText": "₹116.5CR ALLEGED",
     "toySubtext": "4 MACHINES SEIZED · CGST",
     "alt": "Impressionist oil painting of North Block on Raisina Hill in New Delhi, headquarters of India's Ministry of Finance, accompanying coverage of a C.G.S.T. Faridabad raid in Rewari under the H.S.N.S. Cess Act."
+  },
+  "india-ed-karaikal-hotel-france-hawala-attachment": {
+    "refImage": "/paint-refs/india-ed-karaikal-hotel-france-hawala-attachment.jpg",
+    "subject": "High Court of Judicature at Madras, Chennai",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chennai_High_Court.jpg",
+    "sourceLicense": "CC BY 3.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.68,
+      "v": 0.36
+    },
+    "paletteMood": "bullion-gold",
+    "toyKind": "coins",
+    "toyText": "₹12.6CR HOTEL PAO",
+    "toySubtext": "FRANCE REFERRAL · PMLA",
+    "alt": "Impressionist oil study of the red Indo-Saracenic domes of the Madras High Court in Chennai, accompanying coverage of the Enforcement Directorate's ₹12.64 crore provisional attachment of Hotel Le Royale Palace in Karaikal."
   },
   "india-ed-ozone-urbana-homebuyer-pmla-attachment": {
     "refImage": "/paint-refs/india-ed-ozone-urbana-homebuyer-pmla-attachment.jpg",
@@ -542,6 +606,22 @@
     "toyText": "66 PLOTS RESOLD",
     "toySubtext": "₹546CR ATTACHED · CUSTODY",
     "alt": "Impressionist oil study of Gurugram's commercial and residential skyline in Haryana, accompanying coverage of the Enforcement Directorate's ₹545.96 crore provisional attachment in the Vatika Group PMLA investigation."
+  },
+  "india-ed-vuenow-mycloudparticle-data-center-attachment": {
+    "refImage": "/paint-refs/india-ed-vuenow-mycloudparticle-data-center-attachment.jpg",
+    "subject": "Data-centre server rack corridor, India",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Racks_Amravati_Data_Center.jpg",
+    "sourceLicense": "CC BY-SA 4.0",
+    "isPortrait": false,
+    "focalPoint": {
+      "u": 0.5,
+      "v": 0.48
+    },
+    "paletteMood": "verdict-crimson",
+    "toyKind": "crash-line",
+    "toyText": "₹1,917CR ALLEGED",
+    "toySubtext": "61 PROPERTIES · PMLA PAO",
+    "alt": "Impressionist oil study of a white server-rack corridor inside an Indian data centre, accompanying coverage of the Enforcement Directorate's ₹39.73 crore provisional attachment in the Vuenow MyCloudParticle investigation."
   },
   "indusind-bank-derivatives-insider-trading": {
     "refImage": "/paint-refs/indusind-bank-derivatives-insider-trading.jpg",

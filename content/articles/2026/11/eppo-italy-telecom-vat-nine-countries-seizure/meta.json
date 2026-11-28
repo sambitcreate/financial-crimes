@@ -1,0 +1,68 @@
+{
+  "id": "fc-2026-056",
+  "slug": "eppo-italy-telecom-vat-nine-countries-seizure",
+  "publish_date": "2026-11-28T06:04:00-05:00",
+  "edition_date": "2026-11-28",
+  "city": "Rome",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "IT",
+    "venue": "European Public Prosecutor’s Office (EPPO), Rome & Court of Rome"
+  },
+  "category": "Europe",
+  "agencies": [
+    "EPPO",
+    "Guardia di Finanza"
+  ],
+  "docket_number": "Court of Rome GIP Preventive Seizure Order (Nov. 27, 2026)",
+  "legal_stage": "interim_order",
+  "template": "news",
+  "eyebrow": "EUROPE · VAT & TELECOM",
+  "headline": "E.P.P.O. Targets €14.5 Million Across Nine E.U. Nations in Alleged Italian Discount-Smartphone VAT Scheme",
+  "deck": "Rome prosecutors and the Guardia di Finanza seized €2.2 million in real estate, luxury goods, cash, and bank accounts after alleging four companies and 11 suspects dumped unpaid VAT onto abandoned shell firms.",
+  "byline": "By The European Bureau",
+  "dateline": "ROME",
+  "read_time_min": 3,
+  "layout_slot": "lead-live",
+  "live_updates": [
+    {
+      "text": "Guardia di Finanza executes Court of Rome preventive seizure order targeting €14.5M across nine EU Member States.",
+      "ago": "14h ago"
+    },
+    {
+      "text": "Over €2.2M in real estate, luxury items, cash, and bank balances frozen across Italy, Romania, and seven partner states.",
+      "ago": "14h ago"
+    }
+  ],
+  "financials": {
+    "amount_usd": 15700000,
+    "amount_display": "€14.5M Est. VAT Loss (~$15.7M)",
+    "fine_usd": null,
+    "fine_display": "€14.5M Seizure Target (€2.2M+ Frozen)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "Pending (11 Suspects; Presumed Innocent)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "At EPPO Rome’s request, the Court of Rome issued a preventive seizure order targeting €14.5 million across nine EU countries against four companies and 11 individuals suspected of evading VAT on discounted online mobile-phone sales and laundering the proceeds into luxury cars and real estate.",
+    "street_equivalent": "Undercutting neighborhood electronics shops by pocketing the sales tax at checkout, walking away from the storefront LLC when the tax bill arrives, and buying sports cars with the register",
+    "street_sentence": "Multi-year prison sentences under Italian tax-fraud and self-laundering statutes upon conviction; all 11 suspects remain presumed innocent"
+  },
+  "sources": [
+    {
+      "title": "Italy: EPPO investigates large-scale VAT fraud in the telecommunications sector",
+      "agency": "European Public Prosecutor’s Office (EPPO)",
+      "url": "https://www.eppo.europa.eu/media/news/italy-eppo-investigates-large-scale-vat-fraud-telecommunications-sector-2026-11-27_en",
+      "date": "2026-11-27"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "Palazzo di Giustizia in Rome, flying the Italian and European Union flags. At the request of E.P.P.O. Rome, Italian financial police executed a nine-country preventive seizure order targeting €14.5 million in alleged telecom VAT losses.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

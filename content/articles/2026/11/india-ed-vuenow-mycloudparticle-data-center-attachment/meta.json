@@ -1,0 +1,58 @@
+{
+  "id": "fc-2026-055",
+  "slug": "india-ed-vuenow-mycloudparticle-data-center-attachment",
+  "publish_date": "2026-11-28T06:05:00-05:00",
+  "edition_date": "2026-11-28",
+  "city": "Jalandhar",
+  "edition": "india",
+  "jurisdiction": {
+    "country_iso": "IN",
+    "venue": "Directorate of Enforcement (ED), Jalandhar Zonal Office & Special Court (PMLA), Jalandhar"
+  },
+  "category": "India & Asia",
+  "agencies": [
+    "ED",
+    "Uttar Pradesh Police"
+  ],
+  "docket_number": "PAO No. 16 of 2026 (PMLA, 2002)",
+  "legal_stage": "interim_order",
+  "template": "news",
+  "eyebrow": "INDIA & ASIA · TECH & CLOUD",
+  "headline": "India’s E.D. Attaches 61 Vuenow Properties Over Alleged ₹1,917 Crore ‘Cloud Particle’ Server Mirage",
+  "deck": "Investigators say investors paid ₹3,717 crore for sale-and-lease-back data-centre units that never existed on live servers, leaving ₹1,917 crore allegedly diverted even after ₹1,800 crore was recycled to early buyers.",
+  "byline": "By The South Asia Bureau",
+  "dateline": "JALANDHAR",
+  "read_time_min": 4,
+  "layout_slot": "lead-hero",
+  "financials": {
+    "amount_usd": 225500000,
+    "amount_display": "₹1,917 Cr Alleged Diversion (~$225.5M; ₹3,717 Cr Intake)",
+    "fine_usd": null,
+    "fine_display": "₹39.73 Cr Attached (₹236.95 Cr Cumulative PAOs)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "3 Previously Arrested; PMLA Prosecution Pending",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "India’s Enforcement Directorate provisionally attached ₹39.73 crore across 61 immovable properties and a bank balance tied to Vuenow Infotech, raising cumulative attachments to ₹236.95 crore in a probe alleging ₹3,717 crore was collected for non-existent ‘Cloud Particle’ server units and ₹1,917 crore was diverted.",
+    "street_equivalent": "Renting out imaginary storage lockers in a warehouse that does not have enough square footage, paying early renters out of new deposits, and pocketing the rest",
+    "street_sentence": "Mandatory multi-year imprisonment under India’s Prevention of Money Laundering Act upon adjudication and trial; all allegations remain contested before the Special Court"
+  },
+  "sources": [
+    {
+      "title": "Press Release: ED Jalandhar Provisionally Attaches Movable and Immovable Properties Valued at Rs. 39.73 Crore in Vuenow Group PMLA Investigation (PAO No. 16 of 2026)",
+      "agency": "Directorate of Enforcement (ED), India",
+      "url": "https://enforcementdirectorate.gov.in/media/press-release-documents/ee155166-fdfa-4abc-901d-4c4b74a2c7f4_Final%20Press%20Release%20-%20PAO%2016%20of%202026_2.pdf",
+      "date": "2026-11-26"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "crimson",
+    "theme": "newsprint",
+    "caption": "Rows of data-centre server racks in India. The Enforcement Directorate’s Jalandhar Zonal Office alleges Vuenow Group collected ₹3,717 crore for ‘MyCloudParticle’ server capacity that substantially exceeded its actual live hardware.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

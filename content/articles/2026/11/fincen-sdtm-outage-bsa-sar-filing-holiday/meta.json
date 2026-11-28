@@ -1,0 +1,67 @@
+{
+  "id": "fc-2026-059",
+  "slug": "fincen-sdtm-outage-bsa-sar-filing-holiday",
+  "publish_date": "2026-11-28T06:01:00-05:00",
+  "edition_date": "2026-11-28",
+  "city": "Washington",
+  "edition": "new-york",
+  "jurisdiction": {
+    "country_iso": "US",
+    "venue": "Financial Crimes Enforcement Network (FinCEN) & Federal Reserve / OCC / FDIC / NCUA"
+  },
+  "category": "Opinion",
+  "agencies": [
+    "FinCEN",
+    "Federal Reserve",
+    "OCC",
+    "FDIC",
+    "NCUA"
+  ],
+  "docket_number": "FinCEN Order FIN-2026-R002 & Federal Reserve SR 26-10",
+  "legal_stage": "interim_order",
+  "template": "opinion",
+  "eyebrow": "OPINION",
+  "headline": "America’s Anti-Money-Laundering Watchdog Went Offline — and Handed Wall Street a 42-Day Filing Holiday",
+  "deck": "Weeks after fining Bank of America $1.21 billion over late suspicious activity reports, FinCEN’s own batch-transfer channel suffered a service disruption, prompting four banking regulators to waive citations until Dec. 30 and point urgent tips to a 1-866 phone line.",
+  "byline": "By The Editorial Board",
+  "dateline": "WASHINGTON",
+  "read_time_min": 3,
+  "layout_slot": "rail-opinion",
+  "financials": {
+    "amount_usd": null,
+    "amount_display": "42-Day BSA / BOI Batch-Filing Extension",
+    "fine_usd": null,
+    "fine_display": "$0 (Supervisory Citation Waiver Through Dec. 30)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "None (Interagency Exceptive Relief Order)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "FinCEN Order FIN-2026-R002 (Nov. 24) and Joint Statement SR 26-10 by the Federal Reserve, FDIC, OCC, and NCUA (Nov. 25) paused Bank Secrecy Act and Beneficial Ownership Information batch-filing deadlines from Nov. 18 through Dec. 29 until Dec. 30, 2026, waiving enforcement for affected SDTM filers during FinCEN’s service disruption.",
+    "street_equivalent": "Spending a decade fining drivers for missing toll-transponder pings, then shutting down the highway toll server for six weeks and asking anyone witnessing a bank heist to call an 866 hotline",
+    "street_sentence": "Zero supervisory citations for batch-filing banks through Dec. 30, contrasted with automatic statutory penalties when ordinary taxpayers miss a filing window"
+  },
+  "sources": [
+    {
+      "title": "Order FIN-2026-R002: Temporary, Limited Exceptive Relief for Certain Bank Secrecy Act and Corporate Transparency Act Submissions",
+      "agency": "Financial Crimes Enforcement Network (FinCEN)",
+      "url": "https://www.fincen.gov/sites/default/files/100/ORDER-FIN-2026-R002.pdf",
+      "date": "2026-11-24"
+    },
+    {
+      "title": "SR 26-10: Joint Statement of Supervisory Policy for Bank Secrecy Act Reporting in Response to a Service Disruption",
+      "agency": "Board of Governors of the Federal Reserve System (with FDIC, OCC, and NCUA)",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2610.htm",
+      "date": "2026-11-25"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "monochrome",
+    "caption": "The United States Treasury Building in Washington at dusk. Treasury’s Financial Crimes Enforcement Network granted 42 days of temporary exceptive relief for batch Bank Secrecy Act filings disrupted by a Secure Data Transfer Mode outage.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

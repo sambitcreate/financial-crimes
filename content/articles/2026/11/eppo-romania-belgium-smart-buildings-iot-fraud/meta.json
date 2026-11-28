@@ -1,0 +1,59 @@
+{
+  "id": "fc-2026-057",
+  "slug": "eppo-romania-belgium-smart-buildings-iot-fraud",
+  "publish_date": "2026-11-28T06:03:00-05:00",
+  "edition_date": "2026-11-28",
+  "city": "Iași",
+  "edition": "europe",
+  "jurisdiction": {
+    "country_iso": "RO",
+    "venue": "European Public Prosecutor’s Office (EPPO), Iași, Romania"
+  },
+  "category": "Europe",
+  "agencies": [
+    "EPPO",
+    "Romanian Police",
+    "Belgian Federal Police"
+  ],
+  "docket_number": "EPPO Iași Judicial Supervision & Seizure Action (Nov. 27, 2026)",
+  "legal_stage": "investigation",
+  "template": "news",
+  "eyebrow": "EUROPE · E.U. SUBSIDIES",
+  "headline": "E.P.P.O. Raids Romania and Belgium Over ‘Smart Buildings’ IoT Grant Billed With 19 Phantom Employees",
+  "deck": "Prosecutors in Iași placed three suspects under judicial supervision and froze nine properties worth €1 million after alleging a €1.1 million E.U.-funded project invoiced salaries for nonexistent staff and unpurchased know-how.",
+  "byline": "By The European Bureau",
+  "dateline": "IAȘI, ROMANIA",
+  "read_time_min": 3,
+  "layout_slot": "lead-right",
+  "financials": {
+    "amount_usd": 1190000,
+    "amount_display": "€1.1M IoT Project (~$1.19M; €655K+ Disbursed)",
+    "fine_usd": null,
+    "fine_display": "€1.0M Seized (9 Properties + Bank Freeze)",
+    "fine_ratio_pct": null,
+    "prison_months": null,
+    "prison_display": "3 Under Judicial Supervision (Presumed Innocent)",
+    "admitted_guilt": false
+  },
+  "slap_on_wrist_score": null,
+  "street_crime_compare": {
+    "exec_summary": "EPPO Iași and Belgian Federal Police carried out 14 searches across Romania and Belgium, placing three suspects under judicial supervision and seizing €1 million in real estate over alleged fictitious salaries for 19 non-working employees and fake know-how purchases on a €1.1 million EU-co-funded IoT smart-buildings grant.",
+    "street_equivalent": "Winning a public tech grant, padding the payroll ledger with 19 people who never showed up to work, and wiring the grant money through two foreign countries back into your personal pocket",
+    "street_sentence": "Multi-year prison terms for EU-fund subsidy fraud, forgery, and money laundering under Romanian law if proven at trial; all suspects remain presumed innocent"
+  },
+  "sources": [
+    {
+      "title": "EPPO carries out searches in Romania and Belgium in investigation into €1.1 million fraud involving smart buildings",
+      "agency": "European Public Prosecutor’s Office (EPPO)",
+      "url": "https://www.eppo.europa.eu/media/news/eppo-carries-out-searches-romania-and-belgium-investigation-eur11-million-fraud-involving-smart-2026-11-27_en",
+      "date": "2026-11-27"
+    }
+  ],
+  "interactive_art_spec": {
+    "accent": "slate",
+    "theme": "newsprint",
+    "caption": "The Palace of Culture in Iași, Romania. E.P.P.O. prosecutors in Iași seized five plots of land, two houses, and two apartments across the county in a cross-border probe into an alleged €1.1 million smart-buildings IoT grant scheme.",
+    "credit": "Oil Study · The Financial Crimes"
+  },
+  "status": "published"
+}

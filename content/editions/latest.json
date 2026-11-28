@@ -1,34 +1,39 @@
 {
-  "edition_date": "2026-11-27",
-  "volume": "Vol. I, No. 8",
-  "display_date": "Friday, November 27, 2026",
+  "edition_date": "2026-11-28",
+  "volume": "Vol. I, No. 9",
+  "display_date": "Saturday, November 28, 2026",
   "tagline": "All the Crimes Fit to Fine.",
-  "published_at": "2026-11-27T06:10:00-05:00",
+  "published_at": "2026-11-28T06:10:00-05:00",
   "slots": {
-    "lead_hero": "india-ed-ozone-urbana-homebuyer-pmla-attachment",
-    "lead_live": "eppo-investigation-pecunia-vat-underground-banking",
-    "lead_right": "india-ed-vatika-group-double-sold-plots-attachment",
+    "lead_hero": "india-ed-vuenow-mycloudparticle-data-center-attachment",
+    "lead_live": "eppo-italy-telecom-vat-nine-countries-seizure",
+    "lead_right": "eppo-romania-belgium-smart-buildings-iot-fraud",
     "lead_grid": [
-      "asic-aig-australia-complaints-handling-lawsuit",
-      "uk-hope-and-pride-director-suspended-sentence",
-      "sec-petiq-former-coo-smith-insider-trading-judgment",
-      "nyag-novatechfx-petion-billion-crypto-judgment"
+      "india-ed-karaikal-hotel-france-hawala-attachment",
+      "india-ed-ozone-urbana-homebuyer-pmla-attachment",
+      "eppo-investigation-pecunia-vat-underground-banking",
+      "india-ed-vatika-group-double-sold-plots-attachment"
     ],
-    "secondary_1": "eppo-bulgaria-haskovo-eu-subsidy-fraud",
-    "secondary_2": "sfc-china-longevity-directors-disqualified",
+    "secondary_1": "asic-aig-australia-complaints-handling-lawsuit",
+    "secondary_2": "uk-hope-and-pride-director-suspended-sentence",
     "rail_feature": "sebi-jane-street-mumbai-options-manipulation",
     "rail_mini": [
+      "sec-petiq-former-coo-smith-insider-trading-judgment",
+      "nyag-novatechfx-petion-billion-crypto-judgment",
+      "eppo-bulgaria-haskovo-eu-subsidy-fraud",
+      "sfc-china-longevity-directors-disqualified"
+    ],
+    "rail_opinion": [
+      "fincen-sdtm-outage-bsa-sar-filing-holiday",
+      "asic-big-four-audit-complaints-review",
+      "roger-ver-bitcoin-exit-tax-dpa"
+    ],
+    "ledger": [
+      "bafin-jpmorgan-germany-record-aml-fine",
       "doj-huawei-sanctions-bank-fraud-conviction",
       "uk-eu-fragrance-cartel-givaudan-iff-firmenich",
       "doj-credit-reset-600m-covid-tax-fraud",
-      "sec-j-streicher-hanlon-non-depleting-escrow"
-    ],
-    "rail_opinion": [
-      "asic-big-four-audit-complaints-review",
-      "roger-ver-bitcoin-exit-tax-dpa",
-      "bafin-jpmorgan-germany-record-aml-fine"
-    ],
-    "ledger": [
+      "sec-j-streicher-hanlon-non-depleting-escrow",
       "bank-of-america-aml-bundle-discount",
       "eppo-syracuse-school-labs-kickback-ring",
       "doj-binance-north-korea-crypto-forfeiture",
@@ -68,23 +73,28 @@
     ]
   },
   "article_slugs": [
+    "india-ed-vuenow-mycloudparticle-data-center-attachment",
+    "eppo-italy-telecom-vat-nine-countries-seizure",
+    "eppo-romania-belgium-smart-buildings-iot-fraud",
+    "india-ed-karaikal-hotel-france-hawala-attachment",
     "india-ed-ozone-urbana-homebuyer-pmla-attachment",
     "eppo-investigation-pecunia-vat-underground-banking",
     "india-ed-vatika-group-double-sold-plots-attachment",
     "asic-aig-australia-complaints-handling-lawsuit",
     "uk-hope-and-pride-director-suspended-sentence",
+    "sebi-jane-street-mumbai-options-manipulation",
     "sec-petiq-former-coo-smith-insider-trading-judgment",
     "nyag-novatechfx-petion-billion-crypto-judgment",
     "eppo-bulgaria-haskovo-eu-subsidy-fraud",
     "sfc-china-longevity-directors-disqualified",
-    "sebi-jane-street-mumbai-options-manipulation",
+    "fincen-sdtm-outage-bsa-sar-filing-holiday",
+    "asic-big-four-audit-complaints-review",
+    "roger-ver-bitcoin-exit-tax-dpa",
+    "bafin-jpmorgan-germany-record-aml-fine",
     "doj-huawei-sanctions-bank-fraud-conviction",
     "uk-eu-fragrance-cartel-givaudan-iff-firmenich",
     "doj-credit-reset-600m-covid-tax-fraud",
     "sec-j-streicher-hanlon-non-depleting-escrow",
-    "asic-big-four-audit-complaints-review",
-    "roger-ver-bitcoin-exit-tax-dpa",
-    "bafin-jpmorgan-germany-record-aml-fine",
     "bank-of-america-aml-bundle-discount",
     "eppo-syracuse-school-labs-kickback-ring",
     "doj-binance-north-korea-crypto-forfeiture",
